@@ -39,8 +39,8 @@ class Cwl:
          self.tool_id = tool_id
          self.tool_class = tool_class
          self.label = label
-         self.inputs = [] # List of Function objects
-         self.outputs = []    # List of Topic objects
+         self.inputs = [] # List of Input objects
+         self.outputs = []    # List of Output objects
          self.documentation = None # Documentation object
          self.base_command = base_command
 
@@ -53,8 +53,50 @@ class Cwl:
         cwl_tool['label'] = self.label
         cwl_tool['baseCommand'] = self.base_command
         cwl_tool['class'] = self.tool_class
+        if self.documentation is not None:
+            cwl_tool['doc'] = self.documentation.text
+        # Add Inputs
+        if self.inputs:
+            cwl_tool['inputs'] = {}
+            for in_param in self.inputs:
+                cwl_tool['inputs'][in_param.name] = {}
+                cwl_tool['inputs'][in_param.name]['type'] = in_param.param_type
+                if in_param.edam_format is not None:
+                    cwl_tool['inputs'][in_param.name]['format'] = in_param.edam_format
+                if in_param.doc is not None:
+                    cwl_tool['inputs'][in_param.name]['doc'] = in_param.doc
+                if in_param.position is not None:
+                    cwl_tool['inputs'][in_param.name]['inputBinding'] = {}
+                    cwl_tool['inputs'][in_param.name]['inputBinding']['position'] = \
+                             in_param.position
+                if in_param.prefix is not None:
+                    cwl_tool['inputs'][in_param.name]['inputBinding'] = {}
+                    cwl_tool['inputs'][in_param.name]['inputBinding']['prefix'] = \
+                             in_param.prefix
+
+        # Add Outputs
+        if self.outputs:
+            cwl_tool['outputs'] = {}
+            for out_param in self.outputs:
+                cwl_tool['outputs'][out_param.name] = {}
+                cwl_tool['outputs'][out_param.name]['type'] = out_param.param_type
+                if out_param.edam_format is not None:
+                    cwl_tool['outputs'][out_param.name]['format'] = out_param.edam_format
+                if out_param.doc is not None:
+                    cwl_tool['outputs'][out_param.name]['doc'] = out_param.doc
+                if out_param.glob is not None:
+                    cwl_tool['outputs'][out_param.name]['outputBinding'] = {}
+                    cwl_tool['outputs'][out_param.name]['outputBinding']['glob'] = \
+                             out_param.glob
+                
+        # Write CWL file in YAML
         if outfile is None:
             print(yaml.dump(cwl_tool, default_flow_style=False))
+        else:
+            out_write = open(outfile,'w')
+            out_write.write(yaml.dump(cwl_tool, default_flow_style=False))
+            out_write.close()
+            
 
 class Documentation:
 
@@ -62,7 +104,7 @@ class Documentation:
         '''
         documentation: documentation of the tool [STRING]
         '''
-        self.text = documentation # [STRING]
+        self.text = "|" + documentation
 
 
 class Parameter:
@@ -75,7 +117,7 @@ class Parameter:
         doc: information about the parameter [STRING]
         '''
         self.name = name
-        self.param_type = Data_type(data_type) # Data_type object
+        self.param_type = param_type
         self.edam_format = edam_format
         self.doc = doc
 
