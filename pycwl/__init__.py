@@ -30,19 +30,19 @@ import yaml
 class Cwl:
 
     def __init__(self, tool_id, tool_class, label, base_command):
-         '''
-         tool_id: [STRING]
-         tool_class: [STRING]
-         label: [STRING]
-         base_command: command line for the tool [STRING]
-         '''
-         self.tool_id = tool_id
-         self.tool_class = tool_class
-         self.label = label
-         self.inputs = [] # List of Input objects
-         self.outputs = []    # List of Output objects
-         self.documentation = None # Documentation object
-         self.base_command = base_command
+        '''
+        tool_id: [STRING]
+        tool_class: [STRING]
+        label: [STRING]
+        base_command: command line for the tool [STRING]
+        '''
+        self.tool_id = tool_id
+        self.tool_class = tool_class
+        self.label = label
+        self.inputs = [] # List of Input objects
+        self.outputs = []    # List of Output objects
+        self.documentation = None # Documentation object
+        self.base_command = base_command
 
     def export(self, outfile=None):
         '''
@@ -88,15 +88,15 @@ class Cwl:
                     cwl_tool['outputs'][out_param.name]['outputBinding'] = {}
                     cwl_tool['outputs'][out_param.name]['outputBinding']['glob'] = \
                              out_param.glob
-                
+
         # Write CWL file in YAML
         if outfile is None:
             print(yaml.dump(cwl_tool, default_flow_style=False))
         else:
-            out_write = open(outfile,'w')
+            out_write = open(outfile, 'w')
             out_write.write(yaml.dump(cwl_tool, default_flow_style=False))
             out_write.close()
-            
+
 
 class Documentation:
 
@@ -147,6 +147,6 @@ class Output(Parameter):
         edam_format: uri of edam format [STRING]
         doc: information about the parameter [STRING]
         glob: name of a file in the output directory [STRING]
-        ''' 
+        '''
         Parameter.__init__(self, name, param_type, edam_format, doc)
         self.glob = glob
