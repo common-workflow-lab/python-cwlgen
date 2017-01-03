@@ -24,16 +24,16 @@ if __name__ == "__main__":
 
     ## MAIN
     # Create a tool
-    cwl_tool = pycwl.Cwl('pouet', 'CommandLineTool', 'pouet cest la vie', 'pouet')
+    cwl_tool = pycwl.CommandLineTool('pouet', 'CommandLineTool', 'pouet cest la vie', 'pouet')
 
     # Add 2 inputs
-    input_1 = pycwl.Input('config_file', 'File', position=1, doc='config file', edam_format='http://edamontology.org/format_0000')
+    input_1 = pycwl.Input('config_file', 'File', position=1, doc='config file', param_format='http://edamontology.org/format_0000')
     cwl_tool.inputs.append(input_1)
     input_2 = pycwl.Input('threads', 'int', prefix='-t', doc='number of threads')
     cwl_tool.inputs.append(input_2)
 
     # Add 1 output
-    output_1 = pycwl.Output('result_file', 'File', glob='counts.txt', edam_format='http://edamontology.org/format_1111', doc='counts of blablabla')
+    output_1 = pycwl.Output('result_file', 'File', glob='counts.txt', param_format='http://edamontology.org/format_1111', doc='counts of blablabla')
     cwl_tool.outputs.append(output_1)
 
     # Add documentation

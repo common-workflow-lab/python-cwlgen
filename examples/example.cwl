@@ -1,6 +1,6 @@
 baseCommand: pouet
 class: CommandLineTool
-doc: '|Ceci est une super documentation'
+doc: Ceci est une super documentation
 id: pouet
 inputs:
   config_file:
