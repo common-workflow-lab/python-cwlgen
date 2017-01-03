@@ -32,7 +32,7 @@ class CommandLineTool(object):
     Contain all informations to describe a CWL command line tool
     '''
 
-    def __init__(self, tool_id, tool_class, label, base_command):
+    def __init__(self, tool_id, tool_class, label, base_command, doc=None):
         '''
         tool_id: [STRING]
         tool_class: [STRING]
@@ -42,9 +42,9 @@ class CommandLineTool(object):
         self.tool_id = tool_id
         self.tool_class = tool_class
         self.label = label
+        self.doc = doc
         self.inputs = [] # List of Input objects
         self.outputs = []    # List of Output objects
-        self.documentation = None # Documentation object
         self.base_command = base_command
 
     def export(self, outfile=None):
@@ -77,18 +77,6 @@ class CommandLineTool(object):
             out_write = open(outfile, 'w')
             out_write.write(yaml.dump(cwl_tool, default_flow_style=False))
             out_write.close()
-
-
-class Documentation(object):
-    '''
-    Class to structure doc of any fields (Tool 'doc' field, input or output 'doc' fields) ...
-    '''
-
-    def __init__(self, documentation):
-        '''
-        documentation: documentation of the tool [STRING]
-        '''
-        self.text = documentation
 
 
 class Parameter(object):
