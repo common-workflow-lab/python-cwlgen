@@ -17,7 +17,7 @@ import argparse
 import sys
 
 # External libraries
-import yaml
+import ruamel.yaml
 
 # Class and Objects
 
@@ -56,8 +56,8 @@ class CommandLineTool(object):
         cwl_tool['label'] = self.label
         cwl_tool['baseCommand'] = self.base_command
         cwl_tool['class'] = self.tool_class
-        if self.documentation is not None:
-            cwl_tool['doc'] = self.documentation.text
+        if self.doc is not None:
+            cwl_tool['doc'] = self.doc
         # Add Inputs
         if self.inputs:
             cwl_tool['inputs'] = {}
@@ -72,10 +72,10 @@ class CommandLineTool(object):
 
         # Write CWL file in YAML
         if outfile is None:
-            print(yaml.dump(cwl_tool, default_flow_style=False))
+            print(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
         else:
             out_write = open(outfile, 'w')
-            out_write.write(yaml.dump(cwl_tool, default_flow_style=False))
+            out_write.write(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
             out_write.close()
 
 

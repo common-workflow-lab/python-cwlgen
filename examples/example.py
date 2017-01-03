@@ -37,7 +37,7 @@ if __name__ == "__main__":
     cwl_tool.outputs.append(output_1)
 
     # Add documentation
-    cwl_tool.documentation = pycwl.Documentation("Ceci est une super documentation")
+    cwl_tool.documentation = "Ceci est une super documentation"
 
     # Write both on STDOUT and a file
     cwl_tool.export()
