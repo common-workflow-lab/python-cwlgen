@@ -1,12 +1,13 @@
-id: pouet
-label: pouet cest la vie
-baseCommand: pouet
+id: my_tool
+label: my_tool is magic
+baseCommand: run_my_tool
 class: CommandLineTool
+doc: Magic is no magic without secrets...
 inputs:
   config_file:
     type: File
     doc: config file
-    format: http://edamontology.org/format_0000
+    format: http://edamontology.org/format_2330
     inputBinding:
       position: 1
   threads:
@@ -17,7 +18,7 @@ inputs:
 outputs:
   result_file:
     type: File
-    doc: counts of blablabla
-    format: http://edamontology.org/format_1111
+    doc: magic results
+    format: http://edamontology.org/format_2330
     outputBinding:
       glob: counts.txt

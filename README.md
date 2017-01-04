@@ -23,7 +23,7 @@ pip install git+https://gitlab.pasteur.fr/kehillio/pycwl.git#egg=pycwl
 
 ### Manually
 
-Clone the repository and install pycwm:
+Clone the repository and install pycwl:
 
 ```bash
 git clone https://gitlab.pasteur.fr/kehillio/pycwl.git
@@ -33,4 +33,12 @@ pip install .
 
 ## How it works ?
 
+Coming soon...
+
+An example of usage is available in the `example/` folder of the repository.
+
 ## References
+
+CWL is developed by an informal, multi-vendor working group consisting of
+organizations and individuals aiming to enable scientists to share data
+analysis workflows.  [The CWL project is on Github.](https://github.com/common-workflow-language/common-workflow-language)
