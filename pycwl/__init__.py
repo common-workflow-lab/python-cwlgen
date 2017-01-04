@@ -2,11 +2,11 @@
 
 ## Author(s): Kenzo-Hugo Hillion
 ## Contact(s): kehillio@pasteur.fr
-## Python version: 3.5.2+
+## Python version: 3.6.0
 ## Creation : 12-30-2016
 
 '''
-Descrition
+Library to handle the manipulation and generation of CWL tool
 '''
 
 ###########  Import  ###########
@@ -171,6 +171,8 @@ class Input(Parameter):
             dict_cwl['inputBinding']['position'] = self.position
         elif self.prefix:
             dict_cwl['inputBinding']['prefix'] = self.prefix
+        if not dict_cwl['inputBinding']:
+            del dict_cwl['inputBinding']
         return dict_cwl
 
 class Output(Parameter):
