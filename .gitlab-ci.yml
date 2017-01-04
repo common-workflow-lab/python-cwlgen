@@ -1,0 +1,9 @@
+image: python:3.6.0
+
+before_script:
+  - pip install .
+  - pip install nose coverage requests_mock nose_parameterized
+
+test:
+  script:
+  - bash run_test.sh
