@@ -23,6 +23,8 @@ import ruamel.yaml
 
 ###########  Constant(s)  ###########
 
+DEF_CWL_VERSION = 'v1.0'
+
 ###########  Function(s)  ###########
 
 ###########  Class(es)  ###########
@@ -32,16 +34,18 @@ class CommandLineTool(object):
     Contain all informations to describe a CWL command line tool
     '''
 
-    def __init__(self, tool_id, label, base_command, doc=None):
+    def __init__(self, tool_id, label, base_command, doc=None, cwl_version=DEF_CWL_VERSION):
         '''
         tool_id: [STRING]
-        tool_class: [STRING]
         label: [STRING]
         base_command: command line for the tool [STRING]
+        doc: documentation for the tool [STRING]
+        cwl_version: [STRING]
         '''
         self.tool_id = tool_id
         self.label = label
         self.doc = doc
+        self.cwl_version = cwl_version
         self.inputs = [] # List of Input objects
         self.outputs = []    # List of Output objects
         self.base_command = base_command
@@ -51,6 +55,7 @@ class CommandLineTool(object):
         Export the tool in CWL
         '''
         cwl_tool = {}
+        cwl_tool['cwlVersion'] = self.cwl_version
         cwl_tool['id'] = self.tool_id
         cwl_tool['label'] = self.label
         cwl_tool['baseCommand'] = self.base_command
