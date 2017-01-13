@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 ## Author(s): Kenzo-Hugo Hillion
 ## Contact(s): kehillio@pasteur.fr
