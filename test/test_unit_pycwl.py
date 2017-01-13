@@ -30,12 +30,11 @@ import pycwl
 class TestCommandLineTool(unittest.TestCase):
 
     def setUp(self):
-        self.cwl = pycwl.CommandLineTool('an_id', 'a_class', 'a description '+\
+        self.cwl = pycwl.CommandLineTool('an_id', 'a description '+\
                                          'with spaces.', 'a_command')
 
     def test_init(self):
         self.assertEqual(self.cwl.tool_id, 'an_id')
-        self.assertEqual(self.cwl.tool_class, 'a_class')
         self.assertEqual(self.cwl.label, 'a description with spaces.')
         self.assertEqual(self.cwl.base_command, 'a_command')
         self.assertListEqual(self.cwl.inputs, [])

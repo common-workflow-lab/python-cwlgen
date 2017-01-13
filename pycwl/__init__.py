@@ -32,7 +32,7 @@ class CommandLineTool(object):
     Contain all informations to describe a CWL command line tool
     '''
 
-    def __init__(self, tool_id, tool_class, label, base_command, doc=None):
+    def __init__(self, tool_id, label, base_command, doc=None):
         '''
         tool_id: [STRING]
         tool_class: [STRING]
@@ -40,7 +40,6 @@ class CommandLineTool(object):
         base_command: command line for the tool [STRING]
         '''
         self.tool_id = tool_id
-        self.tool_class = tool_class
         self.label = label
         self.doc = doc
         self.inputs = [] # List of Input objects
@@ -55,7 +54,7 @@ class CommandLineTool(object):
         cwl_tool['id'] = self.tool_id
         cwl_tool['label'] = self.label
         cwl_tool['baseCommand'] = self.base_command
-        cwl_tool['class'] = self.tool_class
+        cwl_tool['class'] = 'CommandLineTool'
         if self.doc is not None:
             cwl_tool['doc'] = self.doc
         # Add Inputs
