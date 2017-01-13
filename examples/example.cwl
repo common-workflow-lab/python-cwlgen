@@ -2,8 +2,8 @@
 
 cwlVersion: v1.0
 id: my_tool
-label: CommandLineTool
-baseCommand: my_tool is magic
+label: my_tool is magic
+baseCommand: run_my_tool
 class: CommandLineTool
 doc: Magic is no magic without secrets...
 inputs:
