@@ -15,6 +15,7 @@ Library to handle the manipulation and generation of CWL tool
 import os
 import argparse
 import sys
+import six
 
 # External libraries
 import ruamel.yaml
@@ -77,8 +78,8 @@ class CommandLineTool(object):
 
         # Write CWL file in YAML
         if outfile is None:
-            print(CWL_SHEBANG, "\n", sep='')
-            print(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
+            six.print(CWL_SHEBANG, "\n", sep='')
+            six.print(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
         else:
             out_write = open(outfile, 'w')
             out_write.write(CWL_SHEBANG + '\n\n')
