@@ -1,6 +1,9 @@
+#!/usr/bin/env cwl-runner
+
+cwlVersion: v1.0
 id: my_tool
-label: my_tool is magic
-baseCommand: run_my_tool
+label: CommandLineTool
+baseCommand: my_tool is magic
 class: CommandLineTool
 doc: Magic is no magic without secrets...
 inputs:
