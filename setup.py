@@ -11,7 +11,7 @@ setup(name="pycwl",
         author='Kenzo-Hugo Hillion and Hervé Ménager',
         author_email='kehillio@pasteur.fr and hmenager@pasteur.fr',
         keywords = ['cwl'],
-        install_requires=['ruamel.yaml'],
+        install_requires=['six', 'ruamel.yaml'],
         packages=["pycwl"],
         classifiers=[
             'Development Status :: 2 - Pre-Alpha',
