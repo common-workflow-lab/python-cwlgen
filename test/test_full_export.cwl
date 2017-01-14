@@ -8,7 +8,7 @@ class: CommandLineTool
 doc: documentation
 inputs:
   an_in_id:
-    type: an_in_type
+    type: File
 outputs:
   an_out_id:
-    type: an_out_type
+    type: File

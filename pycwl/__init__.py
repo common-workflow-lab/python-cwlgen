@@ -82,13 +82,13 @@ class CommandLineTool(object):
         if self.inputs:
             cwl_tool['inputs'] = {}
             for in_param in self.inputs:
-                cwl_tool['inputs'][in_param.param_id] = in_param.get_dict()
+                cwl_tool['inputs'][in_param.id] = in_param.get_dict()
 
         # Add Outputs
         if self.outputs:
             cwl_tool['outputs'] = {}
             for out_param in self.outputs:
-                cwl_tool['outputs'][out_param.param_id] = out_param.get_dict()
+                cwl_tool['outputs'][out_param.id] = out_param.get_dict()
 
         # Write CWL file in YAML
         if outfile is None:
@@ -122,28 +122,28 @@ class Parameter(object):
         if not param_type in CWL_TYPE:
             print("The type is incorrect for the parameter")
             return 1
-        self.param_id = param_id
+        self.id = param_id
         self.label = label
         self.secondary_files = secondary_files
-        self.param_format = param_format
+        self.format = param_format
         self.streamable = streamable
         self.doc = doc
-        self.param_type = param_type
+        self.type = param_type
 
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL
         '''
         dict_param = {}
-        if self.param_type:
-            dict_param['type'] = self.param_type
+        if self.type:
+            dict_param['type'] = self.type
         if self.doc:
             dict_param['doc'] = self.doc
         if self.label:
             dict_param['label'] = self.label
-        if self.param_type == 'File':
-            if self.param_format:
-                dict_param['format'] = self.param_format
+        if self.type == 'File':
+            if self.format:
+                dict_param['format'] = self.format
             if self.secondary_files:
                 dict_param['secondaryFiles'] = self.secondary_files
             if self.streamable:
@@ -171,8 +171,9 @@ class CommandInputParameter(Parameter):
         default: default value [STRING]
         param_type: type of data assigned to the parameter [STRING] corresponding to CWLType
         '''
-        Parameter.__init__(self, param_id, label, secondary_files, param_format, streamable,\
-                           doc, param_type)
+        Parameter.__init__(self, param_id=param_id, label=label, \
+                           secondary_files=secondary_files, param_format=param_format,\
+                           streamable=streamable, doc=doc, param_type=param_type)
         self.input_binding = input_binding
         self.default = default
 
