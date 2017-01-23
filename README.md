@@ -1,6 +1,8 @@
 # pycwl
 
 [![Build Status](https://travis-ci.org/khillion/pycwl.svg?branch=master)](https://travis-ci.org/khillion/pycwl)
+[![codecov](https://codecov.io/gh/khillion/pycwl/branch/master/graph/badge.svg)](https://codecov.io/gh/khillion/pycwl)
+
 
 pycwl is a python library for the manipulation and generation of CWL tool.
 

@@ -14,7 +14,7 @@ setup(name="pycwl",
         install_requires=['six', 'ruamel.yaml'],
         packages=["pycwl"],
         classifiers=[
-            'Development Status :: 2 - Pre-Alpha',
+            'Development Status :: 3 - Alpha',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
