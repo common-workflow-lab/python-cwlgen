@@ -5,6 +5,9 @@ python:
 
 install:
   - pip install .
-  - pip install coverage requests_mock nose_parameterized
+  - pip install codecov coverage requests_mock nose_parameterized
 
-script: bash run_test.sh
+script: nosetests --with-coverage --cover-package=pycwl
+
+after_success:
+  - codecov

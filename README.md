@@ -1,5 +1,7 @@
 # pycwl
 
+[![Build Status](https://travis-ci.org/khillion/pycwl.svg?branch=master)](https://travis-ci.org/khillion/pycwl)
+
 pycwl is a python library for the manipulation and generation of CWL tool.
 
 ### Full documentation: [![Documentation Status](https://readthedocs.org/projects/pycwl/badge/?version=latest)](http://pycwl.readthedocs.io/en/latest/?badge=latest)
