@@ -1,13 +1,10 @@
-before_script:
+language: python
+python:
+  - "2.7"
+  - "3.6"
+
+install:
   - pip install .
-  - pip install nose coverage requests_mock nose_parameterized
+  - pip install coverage requests_mock nose_parameterized
 
-test_python3:
-  image: python:3.6.0
-  script:
-  - bash run_test.sh
-
-test_python2:
-  image: python:2.7.12
-  script:
-  - bash run_test.sh
+script: bash run_test.sh
