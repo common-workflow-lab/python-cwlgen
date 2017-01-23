@@ -1,4 +1,4 @@
-.. pycwl - Python3 library for manipulation and generation of CWL tools.
+.. pycwl - Python library for manipulation and generation of CWL tools.
 
 
 Welcome to pycwl's documentation!

@@ -1,4 +1,4 @@
-.. pycwl - Python3 library for manipulation and generation of CWL tools.
+.. pycwl - Python library for manipulation and generation of CWL tools.
 
 .. _install:
 
@@ -11,32 +11,27 @@ Installation
 pycwl dependencies
 ==================
 
-pycwl is built with Python 3.6 and uses the following libraries:
+pycwl is initially built with Python3 and uses the following libraries:
 
-- ruamel.yaml ()
+- ruamel.yaml (0.13.7)
+- six (1.10.0)
 
 .. _installation:
 
 Installation procedure
 ======================
 
-Conda
------
-
 Pip
 ---
 
 You can use pip to install directly for the git repository::
 
-    pip install git+https://gitlab.pasteur.fr/kehillio/pycwl.git#egg=pycwl
+    pip install git+https://github.com/khillion/pycwl#egg=pycwl
 
 .. _uninstallation:
 
 Uninstallation procedure
 =========================
-
-Conda
------
 
 Pip
 ---
@@ -44,4 +39,3 @@ Pip
 You can remove pycwl with the following command::
 
     pip uninstall pycwl
-

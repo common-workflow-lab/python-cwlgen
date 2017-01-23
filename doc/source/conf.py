@@ -278,7 +278,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   (master_doc, 'pycwl', u'pycwl Documentation',
-   author, 'pycwl', 'One line description of project.',
+   author, 'pycwl', 'Library for manipulation and generation of CWL tool.',
    'Miscellaneous'),
 ]
 
