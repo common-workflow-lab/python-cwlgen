@@ -1,11 +1,8 @@
 # pycwl
 
-[![build status](https://gitlab.pasteur.fr/kehillio/pycwl/badges/master/build.svg)](https://gitlab.pasteur.fr/kehillio/pycwl/commits/master)
-[![coverage report](https://gitlab.pasteur.fr/kehillio/pycwl/badges/master/coverage.svg)](https://gitlab.pasteur.fr/kehillio/pycwl/commits/master)
-
 pycwl is a python library for the manipulation and generation of CWL tool.
 
-### Full documentation: [here]()
+### Full documentation: [![Documentation Status](https://readthedocs.org/projects/pycwl/badge/?version=latest)](http://pycwl.readthedocs.io/en/latest/?badge=latest)
 
 ### License
 
