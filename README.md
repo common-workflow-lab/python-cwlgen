@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/khillion/python-cwlgen.svg?branch=master)](https://travis-ci.org/khillion/python-cwlgen)
 [![codecov](https://codecov.io/gh/khillion/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/khillion/python-cwlgen)
 [![Documentation Status](https://readthedocs.org/projects/python-cwlgen/badge/?version=latest)](http://python-cwlgen.readthedocs.io/en/latest/?badge=latest)
-[![Python version](https://img.shields.io/badge/python-2.7, 3.6-blue.svg)](https://www.python.org/downloads/)
 
 Python-cwlgen is a python library for the generation of CWL programmatically.
 It supports the generation of CommandLineTool and DockerRequirement.
