@@ -1,4 +1,4 @@
-.. pycwl - Python library for manipulation and generation of CWL tools.
+.. python-cwlgen - Python library for manipulation and generation of CWL tools.
 
 .. _introduction:
 
@@ -6,4 +6,5 @@
 Introduction
 ************
 
-Pycwl is a python library for the manipulation and generation of CWL tools.
+Python-cwlgen is a python library for the generation of CWL programmatically.
+It supports the generation of CommandLineTool and DockerRequirement.

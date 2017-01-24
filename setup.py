@@ -1,13 +1,8 @@
 from setuptools import setup
-import sys, os
 
-if sys.argv[-1] == 'publish':
-    os.system("python setup.py sdist bdist_wheel upload; git push")
-    sys.exit()
-
-setup(name="pycwl",
-        version='0.1.1',
-        description='',
+setup(name="python-cwlgen",
+        version='0.1.0',
+        description='Generation of CWL programmatically. Avaible types: CommandLineTool and DockerRequirement',
         author='Kenzo-Hugo Hillion and Hervé Ménager',
         author_email='kehillio@pasteur.fr and hmenager@pasteur.fr',
         keywords = ['cwl'],

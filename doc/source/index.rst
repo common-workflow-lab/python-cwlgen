@@ -1,8 +1,8 @@
-.. pycwl - Python library for manipulation and generation of CWL tools.
+.. python-cwlgen - Python library for manipulation and generation of CWL tools.
 
 
-Welcome to pycwl's documentation!
-===================================
+Welcome to python-cwlgen's documentation!
+=========================================
 
 
 .. toctree::

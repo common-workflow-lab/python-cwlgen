@@ -1,10 +1,12 @@
-# pycwl
+# python-cwlgen
 
-[![Build Status](https://travis-ci.org/khillion/pycwl.svg?branch=master)](https://travis-ci.org/khillion/pycwl)
-[![codecov](https://codecov.io/gh/khillion/pycwl/branch/master/graph/badge.svg)](https://codecov.io/gh/khillion/pycwl)
-[![Documentation Status](https://readthedocs.org/projects/pycwl/badge/?version=latest)](http://pycwl.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/khillion/python-cwlgen.svg?branch=master)](https://travis-ci.org/khillion/python-cwlgen)
+[![codecov](https://codecov.io/gh/khillion/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/khillion/python-cwlgen)
+[![Documentation Status](https://readthedocs.org/projects/python-cwlgen/badge/?version=latest)](http://python-cwlgen.readthedocs.io/en/latest/?badge=latest)
+![Python version](https://img.shields.io/badge/python-2.7%2C%203.6-blue.svg)
 
-Pycwl is a python library for the manipulation and generation of CWL tool.
+Python-cwlgen is a python library for the generation of CWL programmatically.
+It supports the generation of CommandLineTool and DockerRequirement.
 The library works for both Python 2.7.12+ and 3.6.0.
 
 ------------------------
@@ -13,10 +15,10 @@ The library works for both Python 2.7.12+ and 3.6.0.
 
 ## Installation
 
-You can install pycwl using pip with the following command:
+You can install python-cwlgen using pip with the following command:
 
 ```bash
-pip install git+https://github.com/khillion/pycwl#egg=pycwl
+pip install git+https://github.com/khillion/python-cwlgen#egg=python-cwlgen
 ```
 
 ## How it works ?
