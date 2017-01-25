@@ -26,7 +26,7 @@ Pip
 
 You can use pip to install directly for the git repository::
 
-    pip install git+https://github.com/khillion/python-cwlgen#egg=python-cwlgen
+    pip install git+https://github.com/common-workflow-language/python-cwlgen.git#egg=python-cwlgen
 
 .. _uninstallation:
 
