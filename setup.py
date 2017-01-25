@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name="python-cwlgen",
+setup(name="cwlgen",
         version='0.1.0',
         description='Generation of CWL programmatically. Avaible types: CommandLineTool and DockerRequirement',
         author='Kenzo-Hugo Hillion and Hervé Ménager',

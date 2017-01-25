@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# IntegronFinder documentation build configuration file, created by
-# sphinx-quickstart on Mon Jul 27 15:07:43 2015.
+# Python-cwlgen documentation build configuration file
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
