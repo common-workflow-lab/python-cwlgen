@@ -4,13 +4,22 @@
 Welcome to python-cwlgen's documentation!
 =========================================
 
-
+Python-cwlgen
+=============
 .. toctree::
    :maxdepth: 2
 
    introduction
    installation
    references
+   user_guide
+
+Python-cwlgen API documentation
+===============================
+.. toctree::
+   :maxdepth: 2
+
+   classes
 
 ..
   Indices and tables
