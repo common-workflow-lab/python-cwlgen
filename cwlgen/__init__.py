@@ -147,6 +147,9 @@ class Parameter(object):
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL
+
+        :return: dictionnary of the object
+        :rtype: DICT
         '''
         dict_param = {}
         if self.type:
@@ -203,6 +206,9 @@ class CommandInputParameter(Parameter):
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
         '''
         dict_in = Parameter.get_dict(self)
         if self.default:
@@ -246,6 +252,9 @@ class CommandOutputParameter(Parameter):
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
         '''
         dict_out = Parameter.get_dict(self)
         if self.output_binding:
@@ -287,6 +296,9 @@ class CommandLineBinding(object):
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
         '''
         dict_binding = {}
         if self.load_contents:
@@ -329,6 +341,9 @@ class CommandOutputBinding(object):
     def get_dict(self):
         '''
         Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
         '''
         dict_binding = {}
         if self.glob:

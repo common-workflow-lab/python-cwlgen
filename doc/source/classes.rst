@@ -69,10 +69,10 @@ Requirement
    :private-members:
    :special-members:
 
-InLineJavascriptReq
+InlineJavascriptReq
 """""""""""""""""""
 
-.. autoclass:: cwlgen.InLineJavascriptReq
+.. autoclass:: cwlgen.InlineJavascriptReq
    :members:
    :private-members:
    :special-members:
