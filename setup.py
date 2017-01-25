@@ -7,7 +7,7 @@ setup(name="python-cwlgen",
         author_email='kehillio@pasteur.fr and hmenager@pasteur.fr',
         keywords = ['cwl'],
         install_requires=['six', 'ruamel.yaml'],
-        packages=["pycwl"],
+        packages=["cwlgen"],
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Topic :: Scientific/Engineering :: Bio-Informatics',

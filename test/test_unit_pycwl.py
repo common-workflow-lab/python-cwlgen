@@ -6,7 +6,7 @@
 ## Creation : 01-02-2017
 
 '''
-Unit tests for pycwl library
+Unit tests for cwlgen library
 '''
 
 ###########  Import  ###########
@@ -17,7 +17,7 @@ import filecmp
 import unittest
 
 # External libraries
-import pycwl
+import cwlgen
 
 # Class and Objects
 
@@ -30,7 +30,7 @@ import pycwl
 class TestCommandLineTool(unittest.TestCase):
 
     def setUp(self):
-        self.cwl = pycwl.CommandLineTool(tool_id='an_id', label='a description '+\
+        self.cwl = cwlgen.CommandLineTool(tool_id='an_id', label='a description '+\
                                          'with spaces.', base_command='a_command')
 
     def test_init(self):
@@ -55,9 +55,9 @@ class TestCommandLineTool(unittest.TestCase):
         tmp_file = 'test_full_export.tmp'
         expected_file = os.path.dirname(__file__) + '/test_full_export.cwl'
         self.cwl.doc = "documentation"
-        an_input = pycwl.CommandInputParameter('an_in_id', param_type='File')
+        an_input = cwlgen.CommandInputParameter('an_in_id', param_type='File')
         self.cwl.inputs.append(an_input)
-        an_output = pycwl.CommandOutputParameter('an_out_id', param_type='File')
+        an_output = cwlgen.CommandOutputParameter('an_out_id', param_type='File')
         self.cwl.outputs.append(an_output)
         self.cwl.export(tmp_file)
         try:
@@ -69,7 +69,7 @@ class TestCommandLineTool(unittest.TestCase):
 class TestParameter(unittest.TestCase):
 
     def setUp(self):
-        self.param = pycwl.Parameter('an_id', param_type='File', label='a_label',\
+        self.param = cwlgen.Parameter('an_id', param_type='File', label='a_label',\
                                      doc='a_doc', param_format='a_format',\
                                      streamable=True, secondary_files='sec_files')
 
@@ -95,11 +95,11 @@ class TestParameter(unittest.TestCase):
 class TestCommandInputParameter(unittest.TestCase):
 
     def setUp(self):
-        self.frst_inp = pycwl.CommandInputParameter('frst_id', param_type='File',\
+        self.frst_inp = cwlgen.CommandInputParameter('frst_id', param_type='File',\
                                                     label='a_label', \
                                                     default='def_value')
-        binding = pycwl.CommandLineBinding(position=2, prefix='--prefix')
-        self.scnd_inp = pycwl.CommandInputParameter('scnd_id', param_type='File',\
+        binding = cwlgen.CommandLineBinding(position=2, prefix='--prefix')
+        self.scnd_inp = cwlgen.CommandInputParameter('scnd_id', param_type='File',\
                                                     input_binding=binding)
 
     def test_init(self):
@@ -130,7 +130,7 @@ class TestCommandInputParameter(unittest.TestCase):
 class TestCommandOutputParameter(unittest.TestCase):
 
     def setUp(self):
-        self.outp = pycwl.CommandOutputParameter('an_out_id', param_type='File')
+        self.outp = cwlgen.CommandOutputParameter('an_out_id', param_type='File')
 
     def test_init(self):
         self.assertEqual(self.outp.id, 'an_out_id')
@@ -144,7 +144,7 @@ class TestCommandOutputParameter(unittest.TestCase):
 class TestCommandLineBinding(unittest.TestCase):
 
     def setUp(self):
-        self.line_binding = pycwl.CommandLineBinding(load_contents=True, position=1, \
+        self.line_binding = cwlgen.CommandLineBinding(load_contents=True, position=1, \
                                                      prefix='--prefix', separate=True, \
                                                      item_separator='-', shell_quote=True,\
                                                      value_from='text.txt')
@@ -171,7 +171,7 @@ class TestCommandLineBinding(unittest.TestCase):
 class TestCommandOutputBinding(unittest.TestCase):
 
     def setUp(self):
-        self.out_binding = pycwl.CommandOutputBinding(glob='file.txt', load_contents=True,\
+        self.out_binding = cwlgen.CommandOutputBinding(glob='file.txt', load_contents=True,\
                                                       output_eval='eval')
 
     def test_init(self):
@@ -189,7 +189,7 @@ class TestCommandOutputBinding(unittest.TestCase):
 class TestRequirement(unittest.TestCase):
 
     def setUp(self):
-        self.requirement = pycwl.Requirement('a_class')
+        self.requirement = cwlgen.Requirement('a_class')
 
     def test_init(self):
         self.assertEqual(self.requirement.req_class, 'a_class')
@@ -198,7 +198,7 @@ class TestRequirement(unittest.TestCase):
 class TestInlineJavascriptReq(unittest.TestCase):
 
     def setUp(self):
-        self.js_req = pycwl.InlineJavascriptReq(expression_lib='expression')
+        self.js_req = cwlgen.InlineJavascriptReq(expression_lib='expression')
 
     def test_init(self):
         self.assertEqual(self.js_req.req_class, 'InlineJavascriptRequirement')
@@ -207,7 +207,7 @@ class TestInlineJavascriptReq(unittest.TestCase):
 class TestDockerRequirement(unittest.TestCase):
 
     def setUp(self):
-        self.dock_req = pycwl.DockerRequirement(docker_pull='pull', docker_load='load',\
+        self.dock_req = cwlgen.DockerRequirement(docker_pull='pull', docker_load='load',\
                                                 docker_file='file', docker_import='import',\
                                                 docker_image_id='id', docker_output_dir='dir')
 
