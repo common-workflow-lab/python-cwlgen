@@ -11,8 +11,8 @@ Python-cwlgen
 
    introduction
    installation
-   references
    user_guide
+   references
 
 Python-cwlgen API documentation
 ===============================
