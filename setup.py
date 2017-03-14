@@ -6,7 +6,7 @@ setup(name="cwlgen",
         author='Kenzo-Hugo Hillion and Hervé Ménager',
         author_email='kehillio@pasteur.fr and hmenager@pasteur.fr',
         keywords = ['cwl'],
-        install_requires=['six', 'ruamel.yaml'],
+        install_requires=['six', 'ruamel.yaml==0.13.13'],
         packages=["cwlgen"],
         classifiers=[
             'Development Status :: 3 - Alpha',
