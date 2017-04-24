@@ -10,7 +10,7 @@ setup(name="cwlgen",
         install_requires=['six', 'ruamel.yaml==0.13.13'],
         packages=["cwlgen"],
         classifiers=[
-            'Development Status :: 3 - Alpha',
+            'Development Status :: 4 - Beta',
             'Topic :: Scientific/Engineering :: Bio-Informatics',
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
