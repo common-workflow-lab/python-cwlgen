@@ -42,6 +42,46 @@ class CWLToolParser(object):
                                       stdout=cwl_dict.get('stdout', None))
         return tool
 
+    def _load_id(self, tool, id_el):
+        """
+        """
+        logger.info("id is loaded during initiation of the object.")
+
+    def _load_baseCommand(self, tool, command_el):
+        """
+        """
+        logger.info("baseCommand is loaded during initiation of the object.")
+
+    def _load_label(self, tool, label_el):
+        """
+        """
+        logger.info("label is loaded during initiation of the object.")
+
+    def _load_doc(self, tool, doc_el):
+        """
+        """
+        logger.info("doc is loaded during initiation of the object.")
+
+    def _load_cwlVersion(self, tool, cwl_version_el):
+        """
+        """
+        logger.info("cwlVersion is loaded during initiation of the object.")
+
+    def _load_stdin(self, tool, stdin_el):
+        """
+        """
+        logger.info("stdin is loaded during initiation of the object.")
+
+    def _load_stderr(self, tool, stderr_el):
+        """
+        """
+        logger.info("stderr is loaded during initiation of the object.")
+
+    def _load_stdout(self, tool, stdout_el):
+        """
+        """
+        logger.info("stdout is loaded during initiation of the object.")
+
     def import_cwl(self, cwl_path):
         """
         Load content of cwl into the :class:`cwlgen.CommandLineTool` object.
@@ -57,6 +97,6 @@ class CWLToolParser(object):
         for key in cwl_dict.keys():
             try:
                 getattr(self, '_load_{}'.format(key))(tool, cwl_dict[key]) 
-            except:
-                logger.warning(key + " is not processed.")
+            except AttributeError:
+                logger.warning(key + " content is not processed (yet).")
         return tool
