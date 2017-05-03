@@ -12,9 +12,7 @@ import sys
 # External libraries
 import ruamel.yaml
 import six
-
-version_info = (0,1,1)
-version = '.'.join(str(c) for c in version_info)
+from .version import __version__
 
 ###########  Constant(s)  ###########
 
