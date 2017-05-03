@@ -41,7 +41,7 @@ class CWLToolParser(object):
         :param tool: Tool object from cwlgen
         :type tool: :class:`cwlgen.CommandLineTool`
         :param id_el: Content of id
-        :type id_el: STRING
+        :type id_el: STRING or [STRING]
         """
         tool.tool_id = id_el
 
@@ -122,6 +122,42 @@ class CWLToolParser(object):
         """
         tool.stdout = stdout_el
 
+    def _load_class(self, tool, class_el):
+        """
+        Display message to inform that cwlgen only deal with CommandLineTool for the moment.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param class_el: Content of class
+        :type class_el: STRING
+        """
+        if class_el != 'CommandLineTool':
+            logger.warning('cwlgen library only handle CommandLineTool for the moment')
+
+    def _load_inputs(self, tool, inputs_el):
+        """
+        Load the content of inputs into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param inputs_el: Content of inputs
+        :type inputs_el: LIST or DICT
+        """
+        inp_parser = InputsParser()
+        inp_parser.load_inputs(tool.inputs, inputs_el)
+
+    def _load_outputs(self, tool, outputs_el):
+        """
+        Load the content of inputs into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param outputs_el: Content of outputs
+        :type outputs_el: LIST or DICT
+        """
+        inp_parser = OutputsParser()
+        inp_parser.load_outputs(tool.outputs, outputs_el)
+
     def import_cwl(self, cwl_path):
         """
         Load content of cwl into the :class:`cwlgen.CommandLineTool` object.
@@ -140,3 +176,43 @@ class CWLToolParser(object):
             except AttributeError:
                 logger.warning(key + " content is not processed (yet).")
         return tool
+
+
+class InputsParser(object):
+    """
+    Class to parse content of inputs from an existing CWL Tool.
+    """
+
+    def load_inputs(self, inputs, inputs_el):
+        """
+        Load the content of inputs into the inputs list.
+
+        :param inputs: list to store inputs
+        :type inputs: LIST
+        :param inputs_el: Content of inputs
+        :type inputs_el: LIST or DICT
+        """
+        # For the moment, only deal with the format exported by cwlgen
+        for key, value in inputs_el.items():
+            input_obj = cwlgen.CommandInputParameter(key)
+            inputs.append(input_obj)
+
+
+class OutputsParser(object):
+    """
+    Class to parse content of outputs from an existing CWL Tool.
+    """
+
+    def load_outputs(self, outputs, outputs_el):
+        """
+        Load the content of outputs into the outputs list.
+
+        :param outputs: list to store outputs
+        :type outputs: LIST
+        :param outputs_el: Content of outputs
+        :type outputs_el: LIST or DICT
+        """
+        # For the moment, only deal with the format exported by cwlgen
+        for key, value in outputs_el.items():
+            output_obj = cwlgen.CommandOutputParameter(key)
+            outputs.append(output_obj)
