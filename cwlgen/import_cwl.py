@@ -32,55 +32,95 @@ class CWLToolParser(object):
         :param cwl_dict: Full content of CWL file
         :type cwl_dict: DICT
         """
-        tool = cwlgen.CommandLineTool(tool_id=cwl_dict.get('id', None),
-                                      base_command=cwl_dict.get('baseCommand', None),
-                                      label=cwl_dict.get('label', None),
-                                      doc=cwl_dict.get('doc', None),
-                                      cwl_version=cwl_dict.get('cwlVersion', None),
-                                      stdin=cwl_dict.get('stdin', None),
-                                      stderr=cwl_dict.get('stderr', None),
-                                      stdout=cwl_dict.get('stdout', None))
-        return tool
+        return cwlgen.CommandLineTool()
 
     def _load_id(self, tool, id_el):
         """
+        Load the content of id into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param id_el: Content of id
+        :type id_el: STRING
         """
-        logger.info("id is loaded during initiation of the object.")
+        tool.tool_id = id_el
 
     def _load_baseCommand(self, tool, command_el):
         """
+        Load the content of baseCommand into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param command_el: Content of baseCommand
+        :type command_el: STRING
         """
-        logger.info("baseCommand is loaded during initiation of the object.")
+        tool.base_command = command_el
 
     def _load_label(self, tool, label_el):
         """
+        Load the content of label into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param label_el: Content of label
+        :type label_el: STRING
         """
-        logger.info("label is loaded during initiation of the object.")
+        tool.label = label_el
 
     def _load_doc(self, tool, doc_el):
         """
+        Load the content of doc into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param doc_el: Content of doc
+        :type doc_el: STRING
         """
-        logger.info("doc is loaded during initiation of the object.")
+        tool.doc = doc_el
 
     def _load_cwlVersion(self, tool, cwl_version_el):
         """
+        Load the content of cwlVersion into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param cwl_version_el: Content of cwlVersion
+        :type cwl_version_el: STRING
         """
-        logger.info("cwlVersion is loaded during initiation of the object.")
+        tool.cwl_version = cwl_version_el
 
     def _load_stdin(self, tool, stdin_el):
         """
+        Load the content of stdin into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param stdin_el: Content of stdin
+        :type stdin_el: STRING
         """
-        logger.info("stdin is loaded during initiation of the object.")
+        tool.stdin = stdin_el
 
     def _load_stderr(self, tool, stderr_el):
         """
+        Load the content of stderr into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param stderr_el: Content of stderr
+        :type stderr_el: STRING
         """
-        logger.info("stderr is loaded during initiation of the object.")
+        tool.stderr = stderr_el
 
     def _load_stdout(self, tool, stdout_el):
         """
+        Load the content of stdout into the tool.
+
+        :param tool: Tool object from cwlgen
+        :type tool: :class:`cwlgen.CommandLineTool`
+        :param stdout_el: Content of stdout
+        :type stdout_el: STRING
         """
-        logger.info("stdout is loaded during initiation of the object.")
+        tool.stdout = stdout_el
 
     def import_cwl(self, cwl_path):
         """
