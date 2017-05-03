@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-
-## Author(s): Kenzo-Hugo Hillion
-## Contact(s): kehillio@pasteur.fr
-## Python version: 3.6.0
-## Creation : 12-30-2016
-
 '''
 Library to handle the manipulation and generation of CWL tool
 '''
@@ -20,13 +13,15 @@ import sys
 import ruamel.yaml
 import six
 
-# Class and Objects
+version_info = (0,1,1)
+version = '.'.join(str(c) for c in version_info)
 
 ###########  Constant(s)  ###########
 
 CWL_SHEBANG = "#!/usr/bin/env cwl-runner"
 DEF_CWL_VERSION = 'v1.0'
-CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File', 'Directory']
+CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
+            'Directory', None]
 
 ###########  Function(s)  ###########
 
