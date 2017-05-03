@@ -170,9 +170,9 @@ class CWLToolParser(object):
         with open(cwl_path) as yaml_file:
             cwl_dict = ryaml.load(yaml_file, Loader=ryaml.Loader)
         tool = self._init_tool(cwl_dict)
-        for key in cwl_dict.keys():
+        for key, element in cwl_dict.items():
             try:
-                getattr(self, '_load_{}'.format(key))(tool, cwl_dict[key]) 
+                getattr(self, '_load_{}'.format(key))(tool, element) 
             except AttributeError:
                 logger.warning(key + " content is not processed (yet).")
         return tool
@@ -195,6 +195,11 @@ class InputsParser(object):
         # For the moment, only deal with the format exported by cwlgen
         for key, value in inputs_el.items():
             input_obj = cwlgen.CommandInputParameter(key)
+            for key, element in value.items():
+                try:
+                    getattr(self, '_load_{}'.format(key))(input_obj, element)
+                except AttributeError:
+                    logger.warning(key + " content for input is not processed (yet).")
             inputs.append(input_obj)
 
 
@@ -215,4 +220,9 @@ class OutputsParser(object):
         # For the moment, only deal with the format exported by cwlgen
         for key, value in outputs_el.items():
             output_obj = cwlgen.CommandOutputParameter(key)
+            for key, element in value.items():
+                try:
+                    getattr(self, '_load_{}'.format(key))(output_obj, element)
+                except AttributeError:
+                    logger.warning(key + " content for output is not processed (yet).")
             outputs.append(output_obj)
