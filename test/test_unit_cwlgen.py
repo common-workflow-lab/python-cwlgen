@@ -1,15 +1,10 @@
-#!/usr/bin/env python3
-
-## Author(s): Kenzo-Hugo Hillion
-## Contact(s): kehillio@pasteur.fr
-## Python version: 3.6.0
-## Creation : 01-02-2017
+#!/usr/bin/env python
 
 '''
 Unit tests for cwlgen library
 '''
 
-###########  Import  ###########
+#  Import  ------------------------------ 
 
 # General libraries
 import os
@@ -19,13 +14,7 @@ import unittest
 # External libraries
 import cwlgen
 
-# Class and Objects
-
-###########  Constant(s)  ###########
-
-###########  Function(s)  ###########
-
-###########  Class(es)  ###########
+#  Class(es)  ------------------------------ 
 
 class TestCommandLineTool(unittest.TestCase):
 
