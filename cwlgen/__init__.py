@@ -8,16 +8,22 @@ Library to handle the manipulation and generation of CWL tool
 import os
 import argparse
 import sys
+import logging
 
 # External libraries
 import ruamel.yaml
 import six
 from .version import __version__
 
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+
 ###########  Constant(s)  ###########
 
 CWL_SHEBANG = "#!/usr/bin/env cwl-runner"
-DEF_CWL_VERSION = 'v1.0'
+CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3', 
+                   'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
+                   'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0', None]
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', None]
 
@@ -31,7 +37,7 @@ class CommandLineTool(object):
     '''
 
     def __init__(self, tool_id=None, base_command=None, label=None, doc=None,\
-                 cwl_version=DEF_CWL_VERSION, stdin=None, stderr=None, stdout=None):
+                 cwl_version=None, stdin=None, stderr=None, stdout=None):
         '''
         :param tool_id: unique identifier for this tool.
         :type tool_id: STRING
@@ -56,35 +62,32 @@ class CommandLineTool(object):
         and requirements (:class:`cwlgen.Requirement` objects)
         are stored in lists which are initialized empty.
         '''
-        self.tool_id = tool_id
-        self.base_command = base_command
+        self.id = tool_id
+        self.baseCommand = base_command
         self.label = label
         self.doc = doc
-        self.cwl_version = cwl_version
+        if not cwl_version in CWL_VERSIONS:
+            LOGGER.warning("CWL version is not recognized as a valid version.")
+            cwl_version = None
+        self.cwlVersion = cwl_version
         self.stdin = stdin
         self.stderr = stderr
         self.stdout = stdout
-        self.inputs = [] # List of [CommandInputParameter] objects
-        self.outputs = []    # List of [CommandOutputParameter] objects
-        self.arguments = [] # List of [CommandLineBinding] objects
-        self.requirements = [] # List of Several object inhereting from [Requirement]
+        self.inputs = []  # List of [CommandInputParameter] objects
+        self.outputs = []  # List of [CommandOutputParameter] objects
+        self.arguments = []  # List of [CommandLineBinding] objects
+        self.requirements = []  # List of Several object inhereting from [Requirement]
         self.hints = []
-        self.success_codes = []
-        self.temporary_fail_codes = []
-        self.permanent_fail_codes = []
+        self.successCodes = []
+        self.temporaryFailCodes = []
+        self.permanentFailCodes = []
 
     def export(self, outfile=None):
         '''
         Export the tool in CWL either on STDOUT or in outfile
         '''
-        cwl_tool = {}
-        cwl_tool['cwlVersion'] = self.cwl_version
-        cwl_tool['id'] = self.tool_id
-        cwl_tool['label'] = self.label
-        cwl_tool['baseCommand'] = self.base_command
+        cwl_tool = {k:v for k,v in vars(self).items() if v is not None and v != []}
         cwl_tool['class'] = 'CommandLineTool'
-        if self.doc is not None:
-            cwl_tool['doc'] = self.doc
         # Add Inputs
         if self.inputs:
             cwl_tool['inputs'] = {}
@@ -127,11 +130,11 @@ class Parameter(object):
         param_type: type of data assigned to the parameter [STRING] corresponding to CWLType
         '''
         if not param_type in CWL_TYPE:
-            print("The type is incorrect for the parameter")
-            return 1
+            LOGGER.warning("The type is incorrect for the parameter")
+            param_type = None
         self.id = param_id
         self.label = label
-        self.secondary_files = secondary_files
+        self.secondaryFiles = secondary_files
         self.format = param_format
         self.streamable = streamable
         self.doc = doc
@@ -144,20 +147,14 @@ class Parameter(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_param = {}
-        if self.type:
-            dict_param['type'] = self.type
-        if self.doc:
-            dict_param['doc'] = self.doc
-        if self.label:
-            dict_param['label'] = self.label
-        if self.type == 'File':
-            if self.format:
-                dict_param['format'] = self.format
-            if self.secondary_files:
-                dict_param['secondaryFiles'] = self.secondary_files
-            if self.streamable:
-                dict_param['streamable'] = self.streamable
+        dict_param = {k:v for k,v in vars(self).items() if v is not None and v is not False}
+        if dict_param['type'] != 'File':
+            # Remove what is only for File
+            for key in ['format', 'secondaryFiles', 'streamable']:
+               try:
+                   del(dict_param[key])
+               except KeyError:
+                   pass
         return dict_param
 
 
@@ -193,7 +190,7 @@ class CommandInputParameter(Parameter):
         Parameter.__init__(self, param_id=param_id, label=label, \
                            secondary_files=secondary_files, param_format=param_format,\
                            streamable=streamable, doc=doc, param_type=param_type)
-        self.input_binding = input_binding
+        self.inputBinding = input_binding
         self.default = default
 
     def get_dict(self):
@@ -204,10 +201,8 @@ class CommandInputParameter(Parameter):
         :rtype: DICT
         '''
         dict_in = Parameter.get_dict(self)
-        if self.default:
-            dict_in['default'] = self.default
-        if self.input_binding:
-            dict_in['inputBinding'] = self.input_binding.get_dict()
+        if self.inputBinding:
+            dict_in['inputBinding'] = self.inputBinding.get_dict()
         return dict_in
 
 
@@ -240,7 +235,7 @@ class CommandOutputParameter(Parameter):
         '''
         Parameter.__init__(self, param_id, label, secondary_files, param_format, streamable,\
                            doc, param_type)
-        self.output_binding = output_binding
+        self.outputBinding = output_binding
 
     def get_dict(self):
         '''
@@ -250,8 +245,8 @@ class CommandOutputParameter(Parameter):
         :rtype: DICT
         '''
         dict_out = Parameter.get_dict(self)
-        if self.output_binding:
-            dict_out['outputBinding'] = self.output_binding.get_dict()
+        if self.outputBinding:
+            dict_out['outputBinding'] = self.outputBinding.get_dict()
         return dict_out
 
 
@@ -278,13 +273,13 @@ class CommandLineBinding(object):
         :param shell_quote:
         :type shell_quote: BOOLEAN
         '''
-        self.load_contents = load_contents
+        self.loadContents = load_contents
         self.position = position
         self.prefix = prefix
         self.separate = separate
-        self.item_separator = item_separator
-        self.value_from = value_from
-        self.shell_quote = shell_quote
+        self.itemSeparator = item_separator
+        self.valueFrom = value_from
+        self.shellQuote = shell_quote
 
     def get_dict(self):
         '''
@@ -293,22 +288,7 @@ class CommandLineBinding(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_binding = {}
-        if self.load_contents:
-            # Does not take care if type: File for the moment
-            dict_binding['loadContents'] = self.load_contents
-        if self.position:
-            dict_binding['position'] = self.position
-        if self.prefix:
-            dict_binding['prefix'] = self.prefix
-        if self.separate:
-            dict_binding['separate'] = self.separate
-        if self.item_separator:
-            dict_binding['itemSeparator'] = self.item_separator
-        if self.value_from:
-            dict_binding['valueFrom'] = self.value_from
-        if self.shell_quote:
-            dict_binding['shellQuote'] = self.shell_quote
+        dict_binding = {k:v for k,v in vars(self).items() if v is not None and v is not False}
         return dict_binding
 
 
@@ -328,8 +308,8 @@ class CommandOutputBinding(object):
         :type output_eval: STRING
         '''
         self.glob = glob
-        self.load_contents = load_contents
-        self.output_eval = output_eval
+        self.loadContents = load_contents
+        self.outputEval = output_eval
 
     def get_dict(self):
         '''
@@ -338,13 +318,7 @@ class CommandOutputBinding(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_binding = {}
-        if self.glob:
-            dict_binding['glob'] = self.glob
-            if self.load_contents:
-                dict_binding['loadContents'] = self.load_contents
-        if self.output_eval:
-            dict_binding['outputEval'] = self.output_eval
+        dict_binding = {k:v for k,v in vars(self).items() if v is not None and v is not False}
         return dict_binding
 
 
@@ -372,7 +346,7 @@ class InlineJavascriptReq(Requirement):
         :type expression_lib: STRING
         '''
         Requirement.__init__(self, 'InlineJavascriptRequirement')
-        self.expression_lib = expression_lib
+        self.expressionLib = expression_lib
 
 
 class DockerRequirement(Requirement):
@@ -398,9 +372,9 @@ class DockerRequirement(Requirement):
         :type docker_output_dir: STRING
         '''
         Requirement.__init__(self, 'DockerRequirement')
-        self.docker_pull = docker_pull
-        self.docker_load = docker_load
-        self.docker_file = docker_file
-        self.docker_import = docker_import
-        self.docker_image_id = docker_image_id
-        self.docker_output_dir = docker_output_dir
+        self.dockerPull = docker_pull
+        self.dockerLoad = docker_load
+        self.dockerFile = docker_file
+        self.dockerImport = docker_import
+        self.dockerImageId = docker_image_id
+        self.dockerOutputDir = docker_output_dir

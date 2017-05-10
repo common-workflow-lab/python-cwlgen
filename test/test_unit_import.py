@@ -26,10 +26,10 @@ class TestImport(unittest.TestCase):
 class TestImportCWL(TestImport):
 
     def test_load_id(self):
-        self.assertEqual(self.tool.tool_id, 'tool_id')
+        self.assertEqual(self.tool.id, 'tool_id')
 
     def test_load_baseCommand(self):
-        self.assertEqual(self.tool.base_command, 'share')
+        self.assertEqual(self.tool.baseCommand, 'share')
 
     def test_load_label(self):
         self.assertEqual(self.tool.label, 'a_label')
@@ -38,7 +38,7 @@ class TestImportCWL(TestImport):
         self.assertEqual(self.tool.doc, 'super_doc')
 
     def test_load_cwlVersion(self):
-        self.assertEqual(self.tool.cwl_version, 'v1.0')
+        self.assertEqual(self.tool.cwlVersion, 'v1.0')
 
     def test_load_stdin(self):
         self.assertEqual(self.tool.stdin, 'in')
@@ -59,7 +59,7 @@ class TestInputsParser(TestImport):
         self.assertEqual(self.tool.inputs[0].label, 'label_in')
 
     def test_load_secondaryFiles(self):
-        self.assertEqual(self.tool.inputs[0].secondary_file, 'sec_file_in')
+        self.assertEqual(self.tool.inputs[0].secondaryFile, 'sec_file_in')
 
     def test_load_format(self):
         self.assertEqual(self.tool.inputs[0].format, 'format_1930')
@@ -80,25 +80,25 @@ class TestInputsParser(TestImport):
 class TestInputBindingParser(TestImport):
 
     def test_load_loadContents(self):
-        self.assertTrue(self.tool.inputs[0].input_binding.load_contents)
+        self.assertTrue(self.tool.inputs[0].inputBinding.loadContents)
 
     def test_load_position(self):
-        self.assertEqual(self.tool.inputs[0].input_binding.position, 0)
+        self.assertEqual(self.tool.inputs[0].inputBinding.position, 0)
 
     def test_load_prefix(self):
-        self.assertEqual(self.tool.inputs[0].input_binding.prefix, '--input')
+        self.assertEqual(self.tool.inputs[0].inputBinding.prefix, '--input')
 
     def test_load_separate(self):
-        self.assertTrue(self.tool.inputs[0].input_binding.separate)
+        self.assertTrue(self.tool.inputs[0].inputBinding.separate)
 
     def test_load_itemSeparator(self):
-        self.assertEqual(self.tool.inputs[0].input_binding.item_separator, ';')
+        self.assertEqual(self.tool.inputs[0].inputBinding.itemSeparator, ';')
 
     def test_load_valueFrom(self):
-        self.assertEqual(self.tool.inputs[0].input_binding.value_from, 'here')
+        self.assertEqual(self.tool.inputs[0].inputBinding.valueFrom, 'here')
 
     def test_load_shellQuote(self):
-        self.assertTrue(self.tool.inputs[0].input_binding.shell_quote)
+        self.assertTrue(self.tool.inputs[0].inputBinding.shellQuote)
 
 
 class TestOutputsParser(TestImport):
@@ -110,7 +110,7 @@ class TestOutputsParser(TestImport):
         self.assertEqual(self.tool.outputs[0].label, 'label_out')
 
     def test_load_secondaryFiles(self):
-        self.assertEqual(self.tool.outputs[0].secondary_file, 'sec_file_out')
+        self.assertEqual(self.tool.outputs[0].secondaryFile, 'sec_file_out')
 
     def test_load_format(self):
         self.assertEqual(self.tool.outputs[0].format, 'format_1930')

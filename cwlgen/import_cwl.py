@@ -44,7 +44,7 @@ class CWLToolParser(object):
         :param id_el: Content of id
         :type id_el: STRING or [STRING]
         """
-        tool.tool_id = id_el
+        tool.id = id_el
 
     def _load_baseCommand(self, tool, command_el):
         """
@@ -55,7 +55,7 @@ class CWLToolParser(object):
         :param command_el: Content of baseCommand
         :type command_el: STRING
         """
-        tool.base_command = command_el
+        tool.baseCommand = command_el
 
     def _load_label(self, tool, label_el):
         """
@@ -88,7 +88,7 @@ class CWLToolParser(object):
         :param cwl_version_el: Content of cwlVersion
         :type cwl_version_el: STRING
         """
-        tool.cwl_version = cwl_version_el
+        tool.cwlVersion = cwl_version_el
 
     def _load_stdin(self, tool, stdin_el):
         """
@@ -204,7 +204,7 @@ class InputsParser(object):
         :param secfile_el: Content of secondaryFile
         :type secfile_el: STRING
         """
-        input_obj.secondary_file = secfile_el
+        input_obj.secondaryFile = secfile_el
 
     def _load_format(self, input_obj, format_el):
         """
@@ -307,7 +307,7 @@ class InputBindingParser(object):
         :param loadcontents_el: Content of loadContents
         :loadContents loadcontents_el: BOOLEAN
         """
-        inbinding_obj.load_contents = loadcontents_el
+        inbinding_obj.loadContents = loadcontents_el
 
     def _load_position(self, inbinding_obj, position_el):
         """
@@ -351,7 +351,7 @@ class InputBindingParser(object):
         :param itemsep_el: Content of loadContents
         :loadContents itemsep_el: STRING
         """
-        inbinding_obj.item_separator = itemsep_el
+        inbinding_obj.itemSeparator = itemsep_el
 
     def _load_valueFrom(self, inbinding_obj, valuefrom_el):
         """
@@ -362,7 +362,7 @@ class InputBindingParser(object):
         :param valuefrom_el: Content of loadContents
         :loadContents valuefrom_el: STRING
         """
-        inbinding_obj.value_from = valuefrom_el
+        inbinding_obj.valueFrom = valuefrom_el
 
     def _load_shellQuote(self, inbinding_obj, shellquote_el):
         """
@@ -373,7 +373,7 @@ class InputBindingParser(object):
         :param shellquote_el: Content of loadContents
         :loadContents shellquote_el: BOOLEAN
         """
-        inbinding_obj.shell_quote = shellquote_el
+        inbinding_obj.shellQuote = shellquote_el
 
     def load_inbinding(self, input_obj, inbinding_el):
         """
@@ -390,7 +390,7 @@ class InputBindingParser(object):
                 getattr(self, '_load_{}'.format(key))(inbinding_obj, value)
             except AttributeError:
                 logger.warning(key + " content for inputBinding is not processed (yet).")
-            input_obj.input_binding = inbinding_obj
+            input_obj.inputBinding = inbinding_obj
 
 
 class OutputsParser(object):
@@ -418,7 +418,7 @@ class OutputsParser(object):
         :param secfile_el: Content of secondaryFile
         :type secfile_el: STRING
         """
-        output_obj.secondary_file = secfile_el
+        output_obj.secondaryFile = secfile_el
 
     def _load_format(self, output_obj, format_el):
         """
