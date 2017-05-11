@@ -2,7 +2,7 @@
 Library to handle the manipulation and generation of CWL tool
 '''
 
-###########  Import  ###########
+#  Import  ------------------------------
 
 # General libraries
 import os
@@ -18,47 +18,48 @@ from .version import __version__
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-###########  Constant(s)  ###########
+#  Constant(s)  ------------------------------
 
 CWL_SHEBANG = "#!/usr/bin/env cwl-runner"
-CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3', 
-                   'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
-                   'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0', None]
+CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
+                'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
+                'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0', None]
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', None]
 
-###########  Function(s)  ###########
+#  Function(s)  ------------------------------
 
-###########  Class(es)  ###########
+#  Class(es)  ------------------------------
+
 
 class CommandLineTool(object):
     '''
     Contain all informations to describe a CWL command line tool.
     '''
 
-    def __init__(self, tool_id=None, base_command=None, label=None, doc=None,\
+    def __init__(self, tool_id=None, base_command=None, label=None, doc=None,
                  cwl_version=None, stdin=None, stderr=None, stdout=None):
         '''
-        :param tool_id: unique identifier for this tool.
+        :param tool_id: unique identifier for this tool
         :type tool_id: STRING
-        :param base_command: command line for the tool.
+        :param base_command: command line for the tool
         :type base_command: STRING
-        :param label: label of this tool.
+        :param label: label of this tool
         :type label: STRING
-        :param doc: documentation for the tool, usually longer than the label.
+        :param doc: documentation for the tool, usually longer than the label
         :type doc: STRING
-        :param cwl_version: version of the CWL tool.
+        :param cwl_version: version of the CWL tool
         :type cwl_version: STRING
-        :param stdin: path to a file whose contents must be piped into stdin.
+        :param stdin: path to a file whose contents must be piped into stdin
         :type stdin: STRING
-        :param stderr: capture stderr into the given file.
+        :param stderr: capture stderr into the given file
         :type stderr: STRING
-        :param stdout: capture stdout into the given file.
+        :param stdout: capture stdout into the given file
         :type stdout: STRING
-        
-        Inputs (:class:`cwlgen.CommandInputParameter` objects),
+
+        inputs (:class:`cwlgen.CommandInputParameter` objects),
         outputs (:class:`cwlgen.CommandOutputParameter` objects),
-        arguments (:class:`cwlgen.CommandLineBinding` objects) 
+        arguments (:class:`cwlgen.CommandLineBinding` objects),
         and requirements (:class:`cwlgen.Requirement` objects)
         are stored in lists which are initialized empty.
         '''
@@ -66,7 +67,7 @@ class CommandLineTool(object):
         self.baseCommand = base_command
         self.label = label
         self.doc = doc
-        if not cwl_version in CWL_VERSIONS:
+        if cwl_version not in CWL_VERSIONS:
             LOGGER.warning("CWL version is not recognized as a valid version.")
             cwl_version = None
         self.cwlVersion = cwl_version
@@ -84,9 +85,9 @@ class CommandLineTool(object):
 
     def export(self, outfile=None):
         '''
-        Export the tool in CWL either on STDOUT or in outfile
+        Export the tool in CWL either on STDOUT or in outfile.
         '''
-        cwl_tool = {k:v for k,v in vars(self).items() if v is not None and v != []}
+        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and v != []}
         cwl_tool['class'] = 'CommandLineTool'
         # Add Inputs
         if self.inputs:
@@ -116,21 +117,28 @@ class Parameter(object):
     A parameter (common field of Input and Output) for a CommandLineTool
     '''
 
-    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,\
+    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, param_type=None):
         '''
-        param_id: unique identifier for this parameter [STRING]
-        label: short, human-readable label [STRING]
-        secondary_files: If type is a file, describes files that must be included alongside
-                         the primary file(s) [STRING]
-        param_format: If type is a file, uri to ontology of the format or exact format [STRING]
-        streamable: If type is a file, true indicates that the file is read or written
-                    sequentially without seeking [BOOLEAN]
-        doc: documentation [STRING]
-        param_type: type of data assigned to the parameter [STRING] corresponding to CWLType
+        :param param_id: unique identifier for this parameter
+        :type param_id: STRING
+        :param label: short, human-readable label
+        :type label: STRING
+        :param secondary_files: If type is a file, describes files that must be
+                                included alongside the primary file(s)
+        :type secondary_files: STRING
+        :param param_format: If type is a file, uri to ontology of the format or exact format
+        :type param_format: STRING
+        :param streamable: If type is a file, true indicates that the file is read or written
+                           sequentially without seeking
+        :type streamable: BOOLEAN
+        :param doc: documentation
+        :type doc: STRING
+        :param param_type: type of data assigned to the parameter
+        :type param_type: STRING corresponding to CWLType
         '''
-        if not param_type in CWL_TYPE:
-            LOGGER.warning("The type is incorrect for the parameter")
+        if param_type not in CWL_TYPE:
+            LOGGER.warning("The type is incorrect for the parameter.")
             param_type = None
         self.id = param_id
         self.label = label
@@ -142,12 +150,12 @@ class Parameter(object):
 
     def get_dict(self):
         '''
-        Transform the object to a [DICT] to write CWL
+        Transform the object to a [DICT] to write CWL.
 
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_param = {k:v for k,v in vars(self).items() if v is not None and v is not False}
+        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False}
         if dict_param['type'] != 'File':
             # Remove what is only for File
             for key in ['format', 'secondaryFiles', 'streamable']:
@@ -163,32 +171,32 @@ class CommandInputParameter(Parameter):
     An input parameter for a :class:`cwlgen.CommandLineTool`.
     '''
 
-    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,\
+    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, input_binding=None, default=None, param_type=None):
         '''
-        :param param_id: unique identifier for this parameter.
+        :param param_id: unique identifier for this parameter
         :type param_id: STRING
-        :param label: short, human-readable label.
+        :param label: short, human-readable label
         :type label: STRING
         :param secondary_files: If type is a file, describes files that must be
-                                included alongside the primary file(s).
+                                included alongside the primary file(s)
         :type secondary_files: STRING
         :param param_format: If type is a file, uri to ontology of the format or exact format.
         :type param_format: STRING
         :param streamable: If type is a file, true indicates that the file is read or written
-                           sequentially without seeking.
+                           sequentially without seeking
         :type streamable: BOOLEAN
-        :param doc: documentation.
+        :param doc: documentation
         :type doc: STRING
-        :param input_binding: describes how to handle the input.
+        :param input_binding: describes how to handle the input
         :type input_binding: :class:`cwlgen.CommandLineBinding` object
-        :param default: default value.
+        :param default: default value
         :type default: STRING
-        :param param_type: type of data assigned to the parameter corresponding to CWLType.
+        :param param_type: type of data assigned to the parameter corresponding to CWLType
         :type param_type: STRING
         '''
-        Parameter.__init__(self, param_id=param_id, label=label, \
-                           secondary_files=secondary_files, param_format=param_format,\
+        Parameter.__init__(self, param_id=param_id, label=label,
+                           secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
         self.inputBinding = input_binding
         self.default = default
@@ -211,29 +219,29 @@ class CommandOutputParameter(Parameter):
     An output parameter for a :class:`cwlgen.CommandLineTool`.
     '''
 
-    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,\
+    def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, output_binding=None, param_type=None):
         '''
-        :param param_id: unique identifier for this parameter.
+        :param param_id: unique identifier for this parameter
         :type param_id: STRING
-        :param label: short, human-readable label.
+        :param label: short, human-readable label
         :type label: STRING
         :param secondary_files: If type is a file, describes files that must be
-                                included alongside the primary file(s).
+                                included alongside the primary file(s)
         :type secondary_files: STRING
-        :param param_format: If type is a file, uri to ontology of the format or exact format.
+        :param param_format: If type is a file, uri to ontology of the format or exact format
         :type param_format: STRING
         :param streamable: If type is a file, true indicates that the file is read or written
-                           sequentially without seeking.
+                           sequentially without seeking
         :type streamable: BOOLEAN
-        :param doc: documentation.
+        :param doc: documentation
         :type doc: STRING
-        :param output_binding: describes how to handle the output.
+        :param output_binding: describes how to handle the output
         :type output_binding: :class:`cwlgen.CommandOutputBinding` object
-        :param param_type: type of data assigned to the parameter corresponding to CWLType.
+        :param param_type: type of data assigned to the parameter corresponding to CWLType
         :type param_type: STRING
         '''
-        Parameter.__init__(self, param_id, label, secondary_files, param_format, streamable,\
+        Parameter.__init__(self, param_id, label, secondary_files, param_format, streamable,
                            doc, param_type)
         self.outputBinding = output_binding
 
@@ -255,22 +263,23 @@ class CommandLineBinding(object):
     Describes how the handle an input or an argument.
     '''
 
-    def __init__(self, load_contents=False, position=None, prefix=None, separate=False,\
+    def __init__(self, load_contents=False, position=None, prefix=None, separate=False,
                  item_separator=None, value_from=None, shell_quote=False):
         '''
-        :param load_contents:
+        :param load_contents: Read up to the fist 64 KiB of text from the file and
+                              place it in the "contents" field of the file object
         :type load_contents: BOOLEAN
-        :param position:
+        :param position: The sorting key
         :type positio: INT
-        :param prefix:
+        :param prefix: Command line prefix to add before the value
         :type prefix: STRING
         :param separate:
         :type separate: BOOLEAN
-        :param item_separator:
+        :param item_separator: Join the array elements into a single string separated by this item
         :type item_separator: STRING
-        :param value_from:
+        :param value_from: Use this as the value
         :type value_from: STRING
-        :param shell_quote:
+        :param shell_quote: Value is quoted on the command line
         :type shell_quote: BOOLEAN
         '''
         self.loadContents = load_contents
@@ -288,7 +297,7 @@ class CommandLineBinding(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_binding = {k:v for k,v in vars(self).items() if v is not None and v is not False}
+        dict_binding = {k: v for k, v in vars(self).items() if v is not None and v is not False}
         return dict_binding
 
 
@@ -299,12 +308,12 @@ class CommandOutputBinding(object):
 
     def __init__(self, glob=False, load_contents=False, output_eval=None):
         '''
-        :param glob: Find corresponding file(s).
+        :param glob: Find corresponding file(s)
         :type glob: STRING
         :param load_contents: For each file matched, read up to the 1st 64 KiB of text and
-                              place it in the contents field.
+                              place it in the contents field
         :type load_contents: BOOLEAN
-        :param output_eval: Evaluate an expression to generate the output value.
+        :param output_eval: Evaluate an expression to generate the output value
         :type output_eval: STRING
         '''
         self.glob = glob
@@ -318,7 +327,7 @@ class CommandOutputBinding(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_binding = {k:v for k,v in vars(self).items() if v is not None and v is not False}
+        dict_binding = {k: v for k, v in vars(self).items() if v is not None and v is not False}
         return dict_binding
 
 
@@ -329,7 +338,7 @@ class Requirement(object):
 
     def __init__(self, req_class):
         '''
-        :param req_class: requirement class.
+        :param req_class: requirement class
         :type req_class: STRING
         '''
         self.req_class = req_class
@@ -355,20 +364,20 @@ class DockerRequirement(Requirement):
     This class specifies how to fetch or build the image.
     '''
 
-    def __init__(self, docker_pull=None, docker_load=None, docker_file=None,\
+    def __init__(self, docker_pull=None, docker_load=None, docker_file=None,
                  docker_import=None, docker_image_id=None, docker_output_dir=None):
         '''
-        :param docker_pull: image to retrive with docker pull.
+        :param docker_pull: image to retrive with docker pull
         :type docker_pull: STRING
-        :param docker_load: HTTP URL from which to download Docker image.
+        :param docker_load: HTTP URL from which to download Docker image
         :type docker_load: STRING
-        :param docker_file: supply the contents of a Dockerfile.
+        :param docker_file: supply the contents of a Dockerfile
         :type docker_file: STRING
-        :param docker_import: HTTP URL to download and gunzip a Docker images.
+        :param docker_import: HTTP URL to download and gunzip a Docker images
         :type docker_import: STRING
-        :param docker_image_id: Image id for docker run.
+        :param docker_image_id: Image id for docker run
         :type docker_image_id: STRING
-        :param docker_output_dir: designated output dir inside the Docker container.
+        :param docker_output_dir: designated output dir inside the Docker container
         :type docker_output_dir: STRING
         '''
         Requirement.__init__(self, 'DockerRequirement')

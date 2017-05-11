@@ -300,7 +300,7 @@ class InputBindingParser(object):
 
     def _load_loadContents(self, inbinding_obj, loadcontents_el):
         """
-        Load the content of loadContents into the input object.
+        Load the content of loadContents into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -311,7 +311,7 @@ class InputBindingParser(object):
 
     def _load_position(self, inbinding_obj, position_el):
         """
-        Load the content of position into the input object.
+        Load the content of position into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -322,7 +322,7 @@ class InputBindingParser(object):
 
     def _load_prefix(self, inbinding_obj, prefix_el):
         """
-        Load the content of prefix into the input object.
+        Load the content of prefix into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -333,7 +333,7 @@ class InputBindingParser(object):
 
     def _load_separate(self, inbinding_obj, separate_el):
         """
-        Load the content of separate into the input object.
+        Load the content of separate into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -344,7 +344,7 @@ class InputBindingParser(object):
 
     def _load_itemSeparator(self, inbinding_obj, itemsep_el):
         """
-        Load the content of itemSeparator into the input object.
+        Load the content of itemSeparator into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -355,7 +355,7 @@ class InputBindingParser(object):
 
     def _load_valueFrom(self, inbinding_obj, valuefrom_el):
         """
-        Load the content of valueFrom into the input object.
+        Load the content of valueFrom into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
@@ -366,7 +366,7 @@ class InputBindingParser(object):
 
     def _load_shellQuote(self, inbinding_obj, shellquote_el):
         """
-        Load the content of shellQuote into the input object.
+        Load the content of shellQuote into the inputBinding object.
 
         :param inbinding_obj: input_binding object
         :loadContents inbinding_obj: : :class:`cwlgen.CommandLineBinding`
