@@ -1,15 +1,10 @@
-#!/usr/bin/env python3
-
-## Author(s): Kenzo-Hugo Hillion
-## Contact(s): kehillio@pasteur.fr
-## Python version: 3.6.0
-## Creation : 01-02-2017
+#!/usr/bin/env python
 
 '''
 Unit tests for cwlgen library
 '''
 
-###########  Import  ###########
+#  Import  ------------------------------ 
 
 # General libraries
 import os
@@ -19,13 +14,7 @@ import unittest
 # External libraries
 import cwlgen
 
-# Class and Objects
-
-###########  Constant(s)  ###########
-
-###########  Function(s)  ###########
-
-###########  Class(es)  ###########
+#  Class(es)  ------------------------------ 
 
 class TestCommandLineTool(unittest.TestCase):
 
@@ -34,14 +23,14 @@ class TestCommandLineTool(unittest.TestCase):
                                          'with spaces.', base_command='a_command')
 
     def test_init(self):
-        self.assertEqual(self.cwl.tool_id, 'an_id')
+        self.assertEqual(self.cwl.id, 'an_id')
         self.assertEqual(self.cwl.label, 'a description with spaces.')
-        self.assertEqual(self.cwl.base_command, 'a_command')
+        self.assertEqual(self.cwl.baseCommand, 'a_command')
         self.assertListEqual(self.cwl.inputs, [])
         self.assertListEqual(self.cwl.outputs, [])
         self.assertIsNone(self.cwl.doc)
 
-    '''
+    """
     def test_export(self):
         tmp_file = 'test_export.tmp'
         expected_file = os.path.dirname(__file__) + '/test_export.cwl'
@@ -64,7 +53,7 @@ class TestCommandLineTool(unittest.TestCase):
             self.assertTrue(filecmp.cmp(expected_file, tmp_file))
         finally:
             os.remove(tmp_file)
-    '''
+    """
 
 class TestParameter(unittest.TestCase):
 
@@ -79,7 +68,7 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(self.param.doc, 'a_doc')
         self.assertEqual(self.param.format, 'a_format')
         self.assertEqual(self.param.label, 'a_label')
-        self.assertEqual(self.param.secondary_files, 'sec_files')
+        self.assertEqual(self.param.secondaryFiles, 'sec_files')
         self.assertTrue(self.param.streamable)
 
     def test_get_dict(self):
@@ -111,8 +100,8 @@ class TestCommandInputParameter(unittest.TestCase):
         # Test second input
         self.assertEqual(self.scnd_inp.id, 'scnd_id')
         self.assertEqual(self.scnd_inp.type, 'File')
-        self.assertEqual(self.scnd_inp.input_binding.position, 2)
-        self.assertEqual(self.scnd_inp.input_binding.prefix, '--prefix')
+        self.assertEqual(self.scnd_inp.inputBinding.position, 2)
+        self.assertEqual(self.scnd_inp.inputBinding.prefix, '--prefix')
 
     def test_get_dict(self):
         # Test first input
@@ -150,13 +139,13 @@ class TestCommandLineBinding(unittest.TestCase):
                                                      value_from='text.txt')
 
     def test_init(self):
-        self.assertTrue(self.line_binding.load_contents)
+        self.assertTrue(self.line_binding.loadContents)
         self.assertEqual(self.line_binding.position, 1)
         self.assertEqual(self.line_binding.prefix, '--prefix')
         self.assertTrue(self.line_binding.separate)
-        self.assertEqual(self.line_binding.item_separator, '-')
-        self.assertTrue(self.line_binding.shell_quote)
-        self.assertEqual(self.line_binding.value_from, 'text.txt')
+        self.assertEqual(self.line_binding.itemSeparator, '-')
+        self.assertTrue(self.line_binding.shellQuote)
+        self.assertEqual(self.line_binding.valueFrom, 'text.txt')
 
     def test_get_dict(self):
         dict_test = self.line_binding.get_dict()
@@ -176,8 +165,8 @@ class TestCommandOutputBinding(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(self.out_binding.glob, 'file.txt')
-        self.assertTrue(self.out_binding.load_contents)
-        self.assertEqual(self.out_binding.output_eval, 'eval')
+        self.assertTrue(self.out_binding.loadContents)
+        self.assertEqual(self.out_binding.outputEval, 'eval')
 
     def test_get_dict(self):
         dict_test = self.out_binding.get_dict()
@@ -202,7 +191,7 @@ class TestInlineJavascriptReq(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(self.js_req.req_class, 'InlineJavascriptRequirement')
-        self.assertEqual(self.js_req.expression_lib, 'expression')
+        self.assertEqual(self.js_req.expressionLib, 'expression')
 
 class TestDockerRequirement(unittest.TestCase):
 
@@ -212,12 +201,12 @@ class TestDockerRequirement(unittest.TestCase):
                                                 docker_image_id='id', docker_output_dir='dir')
 
     def test_init(self):
-        self.assertEqual(self.dock_req.docker_pull, 'pull')
-        self.assertEqual(self.dock_req.docker_load, 'load')
-        self.assertEqual(self.dock_req.docker_file, 'file')
-        self.assertEqual(self.dock_req.docker_import, 'import')
-        self.assertEqual(self.dock_req.docker_image_id, 'id')
-        self.assertEqual(self.dock_req.docker_output_dir, 'dir')
+        self.assertEqual(self.dock_req.dockerPull, 'pull')
+        self.assertEqual(self.dock_req.dockerLoad, 'load')
+        self.assertEqual(self.dock_req.dockerFile, 'file')
+        self.assertEqual(self.dock_req.dockerImport, 'import')
+        self.assertEqual(self.dock_req.dockerImageId, 'id')
+        self.assertEqual(self.dock_req.dockerOutputDir, 'dir')
 
 
 ###########  Main  ###########
