@@ -20,6 +20,7 @@ Python-cwlgen API documentation
    :maxdepth: 2
 
    classes
+   changelogs
 
 ..
   Indices and tables

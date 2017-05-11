@@ -17,7 +17,7 @@ The library works for both Python 2.7.12+ and 3.6.0.
 You can install python-cwlgen using pip with the following command:
 
 ```bash
-pip install git+https://github.com/common-workflow-language/python-cwlgen.git#egg=python-cwlgen
+pip install cwlgen
 ```
 
 ## How it works ?
