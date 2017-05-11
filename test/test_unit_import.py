@@ -123,3 +123,15 @@ class TestOutputsParser(TestImport):
 
     def test_load_type(self):
         self.assertEqual(self.tool.outputs[0].type, 'File')
+
+
+class TestOutputBindingParser(TestImport):
+
+    def test_load_glob(self):
+        self.assertEqual(self.tool.outputs[0].outputBinding.glob, 'find')
+
+    def test_load_loadContents(self):
+        self.assertTrue(self.tool.outputs[0].outputBinding.loadContents)
+
+    def test_load_outputEval(self):
+        self.assertEqual(self.tool.outputs[0].outputBinding.outputEval, "eval")

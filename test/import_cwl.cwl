@@ -33,4 +33,8 @@ outputs:
     format: format_1930
     streamable: True
     doc: 'documentation_out'
+    outputBinding:
+      glob: "find"
+      loadContents: True
+      outputEval: "eval"
     type: File

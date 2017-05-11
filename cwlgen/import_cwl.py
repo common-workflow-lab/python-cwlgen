@@ -453,8 +453,17 @@ class OutputsParser(object):
         """
         output_obj.doc = doc_el
 
-    def _load_outputBinding(self, output_obj, inpb_el):
-        pass
+    def _load_outputBinding(self, output_obj, outpb_el):
+        """
+        Load the content of outputBinding into the output object.
+
+        :param output_obj: output obj
+        :type output_obj: : :class:`cwlgen.CommandOutputParameter`
+        :param outpb_el: Content of outputBinding
+        :type outpb_el: DICT
+        """
+        obparser = OutputBindingParser()
+        obparser.load_outbinding(output_obj, outpb_el)
 
     def _load_type(self, output_obj, type_el):
         """
@@ -485,3 +494,59 @@ class OutputsParser(object):
                 except AttributeError:
                     logger.warning(key + " content for output is not processed (yet).")
             outputs.append(output_obj)
+
+
+class OutputBindingParser(object):
+    """
+    Class to parse content of outputBinding of output from existing CWL Tool.
+    """
+
+    def _load_glob(self, outbinding_obj, glob_el):
+        """
+        Load the content of glob into the outputBinding object.
+
+        :param outbinding_obj: outputBinding object
+        :glob outbinding_obj: : :class:`cwlgen.CommandOutputBinding`
+        :param glob_el: Content of glob
+        :glob glob_el: STRING
+        """
+        outbinding_obj.glob = glob_el
+
+    def _load_loadContents(self, outbinding_obj, loadcontents_el):
+        """
+        Load the content of loadContents into the outputBinding object.
+
+        :param outbinding_obj: outputBinding object
+        :loadContents outbinding_obj: : :class:`cwlgen.CommandOutputBinding`
+        :param loadcontents_el: Content of loadContents
+        :loadContents loadcontents_el: BOOLEAN
+        """
+        outbinding_obj.loadContents = loadcontents_el
+
+    def _load_outputEval(self, outbinding_obj, outputeval_el):
+        """
+        Load the content of outputEval into the outputBinding object.
+
+        :param outbinding_obj: outputBinding object
+        :outputEval outbinding_obj: : :class:`cwlgen.CommandOutputBinding`
+        :param outputeval_el: Content of outputEval
+        :outputEval outputeval_el: STRING
+        """
+        outbinding_obj.outputEval = outputeval_el
+
+    def load_outbinding(self, output_obj, outbinding_el):
+        """
+        Load the content of outputBinding into the output object.
+
+        :param output_obj: output object
+        :type output_obj: :class:`cwlgen.CommandOutputParameter`
+        :param outbinding_el: Content of outputBinding element
+        :type outbinding_el: DICT
+        """
+        outbinding_obj = cwlgen.CommandOutputBinding()
+        for key, value in outbinding_el.items():
+            try:
+                getattr(self, '_load_{}'.format(key))(outbinding_obj, value)
+            except AttributeError:
+                logger.warning(key + " content for outputBinding is not processed (yet).")
+            output_obj.outputBinding = outbinding_obj
