@@ -24,6 +24,7 @@ CWL_SHEBANG = "#!/usr/bin/env cwl-runner"
 CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
                 'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
                 'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0', None]
+DEF_VERSION = 'v1.0'
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', None]
 
@@ -36,6 +37,8 @@ class CommandLineTool(object):
     '''
     Contain all informations to describe a CWL command line tool.
     '''
+
+    __CLASS__ = 'CommandLineTool'
 
     def __init__(self, tool_id=None, base_command=None, label=None, doc=None,
                  cwl_version=None, stdin=None, stderr=None, stdout=None):
@@ -63,22 +66,22 @@ class CommandLineTool(object):
         and requirements (:class:`cwlgen.Requirement` objects)
         are stored in lists which are initialized empty.
         '''
-        self.id = tool_id
-        self.baseCommand = base_command
-        self.label = label
-        self.doc = doc
         if cwl_version not in CWL_VERSIONS:
             LOGGER.warning("CWL version is not recognized as a valid version.")
-            cwl_version = None
+            cwl_version = DEF_VERSION
         self.cwlVersion = cwl_version
+        self.id = tool_id
+        self.label = label
+        self.requirements = []  # List of Several object inhereting from [Requirement]
+        self.hints = []
+        self.inputs = []  # List of [CommandInputParameter] objects
+        self.outputs = []  # List of [CommandOutputParameter] objects
+        self.baseCommand = base_command
+        self.arguments = []  # List of [CommandLineBinding] objects
+        self.doc = doc
         self.stdin = stdin
         self.stderr = stderr
         self.stdout = stdout
-        self.inputs = []  # List of [CommandInputParameter] objects
-        self.outputs = []  # List of [CommandOutputParameter] objects
-        self.arguments = []  # List of [CommandLineBinding] objects
-        self.requirements = []  # List of Several object inhereting from [Requirement]
-        self.hints = []
         self.successCodes = []
         self.temporaryFailCodes = []
         self.permanentFailCodes = []
@@ -88,7 +91,7 @@ class CommandLineTool(object):
         Export the tool in CWL either on STDOUT or in outfile.
         '''
         cwl_tool = {k: v for k, v in vars(self).items() if v is not None and v != []}
-        cwl_tool['class'] = 'CommandLineTool'
+        cwl_tool['class'] = self.__CLASS__
         # Add Inputs
         if self.inputs:
             cwl_tool['inputs'] = {}
@@ -209,6 +212,7 @@ class CommandInputParameter(Parameter):
         :rtype: DICT
         '''
         dict_in = Parameter.get_dict(self)
+        del dict_in['id']
         if self.inputBinding:
             dict_in['inputBinding'] = self.inputBinding.get_dict()
         return dict_in
@@ -253,6 +257,7 @@ class CommandOutputParameter(Parameter):
         :rtype: DICT
         '''
         dict_out = Parameter.get_dict(self)
+        del dict_out['id']
         if self.outputBinding:
             dict_out['outputBinding'] = self.outputBinding.get_dict()
         return dict_out
