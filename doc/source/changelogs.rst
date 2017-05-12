@@ -11,6 +11,12 @@ Summary of developments of Python-cwlgen library.
 v0.2
 ====
 
+v0.2.1
+------
+
+* Change order of attribute for CommandLineTool
+* remove id field of input and output that appeared in v0.2.0
+
 v0.2.0
 ------
 
