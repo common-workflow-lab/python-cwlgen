@@ -11,6 +11,11 @@ Summary of developments of Python-cwlgen library.
 v0.2
 ====
 
+v0.2.2
+------
+
+* Add namespaces and possibility to add metadata described by schema.org
+
 v0.2.1
 ------
 
