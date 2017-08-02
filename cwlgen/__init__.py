@@ -85,12 +85,14 @@ class CommandLineTool(object):
         self.successCodes = []
         self.temporaryFailCodes = []
         self.permanentFailCodes = []
+        self.namespaces = Namespaces()
 
     def export(self, outfile=None):
         '''
         Export the tool in CWL either on STDOUT or in outfile.
         '''
-        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and v != []}
+        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and\
+                                                           type(v) is str}
         cwl_tool['class'] = self.__CLASS__
         # Add Inputs
         if self.inputs:
@@ -104,6 +106,16 @@ class CommandLineTool(object):
             for out_param in self.outputs:
                 cwl_tool['outputs'][out_param.id] = out_param.get_dict()
 
+        # If metadata are present in the description
+        if getattr(self, 'metadata', None):
+            for key, value in self.metadata.__dict__.items():
+                cwl_tool["s:" + key] = value
+            # - Add Namespaces
+            cwl_tool[self.namespaces.name] = {}
+            for k, v in self.namespaces.__dict__.items():
+                if '$' not in v:
+                    cwl_tool[self.namespaces.name][k] = v
+        
         # Write CWL file in YAML
         if outfile is None:
             six.print_(CWL_SHEBANG, "\n", sep='')
@@ -392,3 +404,25 @@ class DockerRequirement(Requirement):
         self.dockerImport = docker_import
         self.dockerImageId = docker_image_id
         self.dockerOutputDir = docker_output_dir
+
+
+class Namespaces(object):
+    """
+    Define different namespace for the description.
+    """
+
+    def __init__(self):
+        """
+        """
+        self.name = "$namespace"
+        self.s = "http://schema.org/"
+
+
+class Metadata(object):
+    """
+    Represent metadata described by http://schema.org.
+    """
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
