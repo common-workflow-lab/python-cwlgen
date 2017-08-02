@@ -43,6 +43,13 @@ if __name__ == "__main__":
                                             doc='magic results')
     cwl_tool.outputs.append(output_1)
 
+    # Add Metadata
+    metadata = {'name': 'my tool',
+                'about': 'I let you guess',
+                'publication': [{'id': 'one_doi'}, {'id': 'another_doi'}],
+                'license': ['MIT']}
+    cwl_tool.metadata = cwlgen.Metadata(**metadata)
+
     # Write in an output file
     #cwl_tool.export()
     cwl_tool.export("example.cwl")
