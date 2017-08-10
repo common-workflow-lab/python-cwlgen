@@ -11,6 +11,11 @@ Summary of developments of Python-cwlgen library.
 v0.2
 ====
 
+v0.2.3
+------
+
+* Handle multiline for doc in CWL tool
+
 v0.2.2
 ------
 

@@ -15,6 +15,8 @@ import ruamel.yaml
 import six
 from .version import __version__
 
+from .utils import *
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
@@ -78,7 +80,7 @@ class CommandLineTool(object):
         self.outputs = []  # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
         self.arguments = []  # List of [CommandLineBinding] objects
-        self.doc = doc
+        self.doc = literal(doc)
         self.stdin = stdin
         self.stderr = stderr
         self.stdout = stdout
@@ -88,12 +90,17 @@ class CommandLineTool(object):
         self.namespaces = Namespaces()
 
     def export(self, outfile=None):
-        '''
+        """
         Export the tool in CWL either on STDOUT or in outfile.
-        '''
+        """
+        # First add representer (see .utils.py) for multiline writting
+        ruamel.yaml.add_representer(literal, literal_presenter)
         cwl_tool = {k: v for k, v in vars(self).items() if v is not None and\
                                                            type(v) is str}
         cwl_tool['class'] = self.__CLASS__
+        # Add doc
+        if self.doc:
+            cwl_tool['doc'] = self.doc
         # Add Inputs
         if self.inputs:
             cwl_tool['inputs'] = {}
@@ -119,7 +126,7 @@ class CommandLineTool(object):
         # Write CWL file in YAML
         if outfile is None:
             six.print_(CWL_SHEBANG, "\n", sep='')
-            six.print_(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
+            six.print_(ruamel.yaml.dump(cwl_tool))
         else:
             out_write = open(outfile, 'w')
             out_write.write(CWL_SHEBANG + '\n\n')
