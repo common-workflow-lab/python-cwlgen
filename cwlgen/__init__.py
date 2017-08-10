@@ -80,7 +80,7 @@ class CommandLineTool(object):
         self.outputs = []  # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
         self.arguments = []  # List of [CommandLineBinding] objects
-        self.doc = literal(doc)
+        self.doc = doc
         self.stdin = stdin
         self.stderr = stderr
         self.stdout = stdout
@@ -98,9 +98,9 @@ class CommandLineTool(object):
         cwl_tool = {k: v for k, v in vars(self).items() if v is not None and\
                                                            type(v) is str}
         cwl_tool['class'] = self.__CLASS__
-        # Add doc
+        # Treat doc for multiline writting
         if self.doc:
-            cwl_tool['doc'] = self.doc
+            cwl_tool['doc'] = literal(self.doc)
         # Add Inputs
         if self.inputs:
             cwl_tool['inputs'] = {}

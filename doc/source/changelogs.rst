@@ -11,14 +11,10 @@ Summary of developments of Python-cwlgen library.
 v0.2
 ====
 
-v0.2.4
-------
-
-* Bug fix: fix dumping in out_file
-
 v0.2.3
 ------
 
+* Bug fix: fix dumping in out_file
 * Handle multiline for doc in CWL tool
 
 v0.2.2
