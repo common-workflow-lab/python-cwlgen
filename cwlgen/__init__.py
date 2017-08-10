@@ -130,7 +130,7 @@ class CommandLineTool(object):
         else:
             out_write = open(outfile, 'w')
             out_write.write(CWL_SHEBANG + '\n\n')
-            out_write.write(ruamel.yaml.dump(cwl_tool, Dumper=ruamel.yaml.RoundTripDumper))
+            out_write.write(ruamel.yaml.dump(cwl_tool))
             out_write.close()
 
 
