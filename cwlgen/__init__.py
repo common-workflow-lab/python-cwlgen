@@ -421,7 +421,7 @@ class Namespaces(object):
     def __init__(self):
         """
         """
-        self.name = "$namespace"
+        self.name = "$namespaces"
         self.s = "http://schema.org/"
 
 
