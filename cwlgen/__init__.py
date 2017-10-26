@@ -43,7 +43,7 @@ class CommandLineTool(object):
     __CLASS__ = 'CommandLineTool'
 
     def __init__(self, tool_id=None, base_command=None, label=None, doc=None,
-                 cwl_version=None, stdin=None, stderr=None, stdout=None, edam=None):
+                 cwl_version=None, stdin=None, stderr=None, stdout=None):
         '''
         :param tool_id: unique identifier for this tool
         :type tool_id: STRING
@@ -80,7 +80,6 @@ class CommandLineTool(object):
         self.outputs = []  # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
         self.arguments = []  # List of [CommandLineBinding] objects
-        self.edam = None
         self.doc = doc
         self.stdin = stdin
         self.stderr = stderr
@@ -99,9 +98,6 @@ class CommandLineTool(object):
         cwl_tool = {k: v for k, v in vars(self).items() if v is not None and\
                                                            type(v) is str}
         cwl_tool['class'] = self.__CLASS__
-        # EDAM ?
-        if self.edam:
-            cwl_tool['edam'] = self.edam.get_dict()
         # Treat doc for multiline writting
         if self.doc:
             cwl_tool['doc'] = literal(self.doc)
@@ -437,18 +433,3 @@ class Metadata(object):
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-class Edam(object):
-    """
-    Represent edam terms
-    """
-
-    def __init__(self):
-        """
-        """
-        self.name = "edam"
-        self.topics = []
-        self.operations = []
-
-    def get_dict(self):
-        return {'topics': self.topics, 'operations': self.operations}
