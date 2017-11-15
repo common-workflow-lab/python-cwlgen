@@ -120,6 +120,14 @@ class CommandLineTool(object):
             for k, v in self.namespaces.__dict__.items():
                 if '$' not in v:
                     cwl_tool[self.namespaces.name][k] = v
+
+        # Add requirements.
+        requirements = {}
+        for requirement in self.requirements:
+            requirement.add(requirements)
+
+        if requirements:
+            cwl_tool['requirements'] = requirements
         
         # Write CWL file in YAML
         if outfile is None:
@@ -365,6 +373,13 @@ class Requirement(object):
         '''
         self.req_class = req_class
 
+    def add(self, tool):
+        tool[self.req_class] = self._to_dict()
+
+    def _to_dict(self):
+        raise NotImplementedError("Requirement subclass {} not fully implemented".format(
+            self.req_class))
+
 
 class InlineJavascriptReq(Requirement):
     '''
@@ -409,6 +424,16 @@ class DockerRequirement(Requirement):
         self.dockerImport = docker_import
         self.dockerImageId = docker_image_id
         self.dockerOutputDir = docker_output_dir
+
+    def _to_dict(self):
+        """
+        Add this requirement to a dictionary description of a 
+        tool generated in an export method.
+
+        """
+        return {p:v for p,v in vars(self).items() if p.startswith('docker') and v is not None}
+
+
 
 
 class Namespaces(object):
