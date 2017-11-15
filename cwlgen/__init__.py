@@ -102,16 +102,14 @@ class CommandLineTool(object):
         if self.doc:
             cwl_tool['doc'] = literal(self.doc)
         # Add Inputs
-        if self.inputs:
-            cwl_tool['inputs'] = {}
-            for in_param in self.inputs:
-                cwl_tool['inputs'][in_param.id] = in_param.get_dict()
+        cwl_tool['inputs'] = {}
+        for in_param in self.inputs:
+            cwl_tool['inputs'][in_param.id] = in_param.get_dict()
 
         # Add Outputs
-        if self.outputs:
-            cwl_tool['outputs'] = {}
-            for out_param in self.outputs:
-                cwl_tool['outputs'][out_param.id] = out_param.get_dict()
+        cwl_tool['outputs'] = {}
+        for out_param in self.outputs:
+            cwl_tool['outputs'][out_param.id] = out_param.get_dict()
 
         # If metadata are present in the description
         if getattr(self, 'metadata', None):
