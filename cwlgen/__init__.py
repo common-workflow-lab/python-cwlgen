@@ -101,6 +101,10 @@ class CommandLineTool(object):
         # Treat doc for multiline writting
         if self.doc:
             cwl_tool['doc'] = literal(self.doc)
+
+        # Add Arguments
+        cwl_tool['arguments'] = [in_arg.get_dict() for in_arg in self.arguments]
+
         # Add Inputs
         cwl_tool['inputs'] = {}
         for in_param in self.inputs:
@@ -128,7 +132,7 @@ class CommandLineTool(object):
 
         if requirements:
             cwl_tool['requirements'] = requirements
-        
+
         # Write CWL file in YAML
         if outfile is None:
             six.print_(CWL_SHEBANG, "\n", sep='')
@@ -427,7 +431,7 @@ class DockerRequirement(Requirement):
 
     def _to_dict(self):
         """
-        Add this requirement to a dictionary description of a 
+        Add this requirement to a dictionary description of a
         tool generated in an export method.
 
         """
