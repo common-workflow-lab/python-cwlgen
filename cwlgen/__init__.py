@@ -297,8 +297,8 @@ class CommandLineBinding(object):
     Describes how the handle an input or an argument.
     '''
 
-    def __init__(self, load_contents=False, position=None, prefix=None, separate=False,
-                 item_separator=None, value_from=None, shell_quote=False):
+    def __init__(self, load_contents=False, position=None, prefix=None, separate=True,
+                 item_separator=None, value_from=None, shell_quote=True):
         '''
         :param load_contents: Read up to the fist 64 KiB of text from the file and
                               place it in the "contents" field of the file object
@@ -331,7 +331,7 @@ class CommandLineBinding(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_binding = {k: v for k, v in vars(self).items() if v is not None and v is not False}
+        dict_binding = {k: v for k, v in vars(self).items() if v is not None}
         return dict_binding
 
 
