@@ -1,3 +1,7 @@
 test/__pycache__
 cwlgen/__pycache__
 doc/build/
+.ropeproject/
+build/
+cwlgen.egg*
+dist/
