@@ -98,7 +98,10 @@ class WorkflowStep(object):
         if self.outputs:
             dict_param['out'] = []
             for i in self.outputs:
-                dict_param['out'].append(i)
+                if isinstance(i, WorkflowStepOutput):
+                    dict_param['out'].append(i.id)
+                else:
+                    dict_param['out'].append(i)
 
         return dict_param
 
