@@ -595,7 +595,7 @@ class StepsParser(object):
     """
     Class to parse content of steps of workflow from existing CWL Workflow.
     """
-    def __init__(self, basedir=None, expand_run=False):
+    def __init__(self, basedir=None, expand_run=True):
         self.basedir = basedir
         self.expand_run = expand_run
 
