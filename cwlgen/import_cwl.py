@@ -30,7 +30,7 @@ def parse_cwl(cwl_path):
         p = CWLToolParser()
         return p.import_cwl(cwl_path)
     if cl == "Workflow":
-        p = CWLToolParser()
+        p = CWLWorkflowParser()
         return p.import_cwl(cwl_path)
     return None
 
@@ -595,8 +595,9 @@ class StepsParser(object):
     """
     Class to parse content of steps of workflow from existing CWL Workflow.
     """
-    def __init__(self, basedir=None):
+    def __init__(self, basedir=None, expand_run=True):
         self.basedir = basedir
+        self.expand_run = expand_run
 
     def _load_in(self, step_obj, in_el):
         for key, val in in_el.items():
@@ -613,10 +614,12 @@ class StepsParser(object):
             step_obj.outputs.append(o)
 
     def _load_run(self, step_obj, in_el):
-        if isinstance(in_el, basestring):
+        if isinstance(in_el, basestring) and self.expand_run:
             path = os.path.join(self.basedir, in_el)
             #logger.info("Parsing: %s", path)
             step_obj.run = parse_cwl(path)
+        else:
+            step_obj.run = in_el
 
 
     def load_steps(self, steps_obj, steps_elm):
@@ -640,8 +643,9 @@ class StepsParser(object):
 
 class CWLWorkflowParser(object):
 
-    def __init__(self, basedir=None):
+    def __init__(self, basedir=None, expand_run=True):
         self.basedir = basedir
+        self.expand_run = expand_run
 
     def _init_workflow(self, cwl_dict):
         """
@@ -744,5 +748,5 @@ class CWLWorkflowParser(object):
         :param outputs_el: Content of outputs
         :type outputs_el: LIST or DICT
         """
-        inp_parser = StepsParser(self.basedir)
+        inp_parser = StepsParser(self.basedir, self.expand_run)
         inp_parser.load_steps(tool.steps, outputs_el)
