@@ -195,6 +195,7 @@ class CWLToolParser(object):
                 getattr(self, '_load_{}'.format(key))(tool, element)
             except AttributeError:
                 logger.warning(key + " content is not processed (yet).")
+        tool._path = cwl_path
         return tool
 
 def dict_or_idlist_items(v):
@@ -674,6 +675,7 @@ class CWLWorkflowParser(object):
                 getattr(self, '_load_{}'.format(key))(tool, element)
             except AttributeError:
                 logger.warning(key + " workflow content is not processed (yet).")
+        tool._path = cwl_path
         return tool
 
     def _load_id(self, tool, id_el):

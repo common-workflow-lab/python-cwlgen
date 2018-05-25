@@ -3,9 +3,8 @@
 import ruamel.yaml
 import six
 
-from . import CWL_SHEBANG, Parameter
+from .elements import CWL_SHEBANG, Parameter
 from .utils import *
-
 
 class Workflow(object):
     '''
@@ -17,6 +16,7 @@ class Workflow(object):
         self.steps = []
         self.inputs = []
         self.outputs = []
+        self._path = None
 
     def export(self, outfile=None):
         """
@@ -56,6 +56,10 @@ class Workflow(object):
             out_write.write(CWL_SHEBANG + '\n\n')
             out_write.write(ruamel.yaml.dump(cwl_workflow))
             out_write.close()
+
+    def add(self, step_id, tool, params):
+        return StepRun(self, step_id, tool, params)
+
 
 class InputParameter(Parameter):
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
@@ -138,3 +142,64 @@ class WorkflowOutputParameter(Parameter):
                            secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
         self.outputSource = outputSource
+
+############################
+# Workflow contruction classes
+
+class File:
+    """
+    An abstract file reference used for generating workflows
+    """
+    def __init__(self, path):
+        self.path = path
+
+class Variable:
+    """
+    An output variable from a workflow step
+    """
+    def __init__(self, workflow, step, name):
+        self.step = step
+        self.name = name
+        self.workflow = workflow
+
+    def path(self):
+        return "%s/%s" % (self.step, self.name)
+
+    def store(self):
+        self.workflow.outputs.append(WorkflowOutputParameter(self.path().replace("/", "_"), outputSource=self.path(), param_type="File"))
+        return
+
+
+class StepRun:
+    """
+    Result of adding a step into a workflow
+    """
+    def __init__(self, workflow, id, tool, params):
+        self.tool = tool
+        self.workflow = workflow
+        self.id = id
+
+        step = WorkflowStep(id=id, run=tool._path)
+        workflow.steps.append(step)
+
+        for i, j in params.items():
+            if isinstance(j, basestring):
+                step.inputs.append(WorkflowStepInput(i, default=j))
+            elif isinstance(j, Variable):
+                step.inputs.append(WorkflowStepInput(i, src=j.path()))
+            elif isinstance(j, File):
+                self.workflow.inputs.append( InputParameter(i, param_type="File") )
+                step.inputs.append(WorkflowStepInput(i, src=i))
+
+        for o in tool.outputs:
+            step.outputs.append(o.id)
+
+    def store_all(self):
+        for i in self.tool.outputs:
+            Variable(self.workflow, self.id, i.id).store()
+
+    def __getitem__(self, key):
+        for i in self.tool.outputs:
+            if i.id == key:
+                return Variable(self.workflow, self.id, key)
+        raise KeyError
