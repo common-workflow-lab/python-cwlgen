@@ -183,7 +183,7 @@ class StepRun:
         workflow.steps.append(step)
 
         for i, j in params.items():
-            if isinstance(j, basestring):
+            if isinstance(j, six.string_types):
                 step.inputs.append(WorkflowStepInput(i, default=j))
             elif isinstance(j, Variable):
                 step.inputs.append(WorkflowStepInput(i, src=j.path()))
