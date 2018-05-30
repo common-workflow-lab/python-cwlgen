@@ -5,3 +5,4 @@ doc/build/
 build/
 cwlgen.egg*
 dist/
+*.pyc
