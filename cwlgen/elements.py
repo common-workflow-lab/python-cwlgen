@@ -1,4 +1,7 @@
+import logging
 
+logging.basicConfig(level=logging.INFO)
+_LOGGER = logging.getLogger(__name__)
 
 #  Constant(s)  ------------------------------
 
@@ -9,7 +12,6 @@ CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
 DEF_VERSION = 'v1.0'
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', None]
-
 
 
 class Parameter(object):
@@ -38,7 +40,7 @@ class Parameter(object):
         :type param_type: STRING corresponding to CWLType
         '''
         if param_type not in CWL_TYPE:
-            LOGGER.warning("The type is incorrect for the parameter.")
+            _LOGGER.warning("The type is incorrect for the parameter.")
             param_type = None
         self.id = param_id
         self.label = label
@@ -59,8 +61,8 @@ class Parameter(object):
         if dict_param['type'] != 'File':
             # Remove what is only for File
             for key in ['format', 'secondaryFiles', 'streamable']:
-               try:
-                   del(dict_param[key])
-               except KeyError:
-                   pass
+                try:
+                    del(dict_param[key])
+                except KeyError:
+                    pass
         return dict_param

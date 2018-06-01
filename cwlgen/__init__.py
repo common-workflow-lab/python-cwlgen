@@ -5,9 +5,6 @@ Library to handle the manipulation and generation of CWL tool
 #  Import  ------------------------------
 
 # General libraries
-import os
-import argparse
-import sys
 import logging
 
 # External libraries
@@ -15,8 +12,8 @@ import ruamel.yaml
 import six
 from .version import __version__
 
-from .utils import *
-from .elements import Parameter, CWL_VERSIONS
+from .utils import literal, literal_presenter
+from .elements import Parameter, CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG
 from .workflow import Workflow, File
 from .import_cwl import parse_cwl
 
@@ -90,8 +87,8 @@ class CommandLineTool(object):
         """
         # First add representer (see .utils.py) for multiline writting
         ruamel.yaml.add_representer(literal, literal_presenter)
-        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and\
-                                                           type(v) is str}
+        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and
+                    type(v) is str}
         cwl_tool['class'] = self.__CLASS__
         # Treat doc for multiline writting
         if self.doc:
@@ -137,8 +134,6 @@ class CommandLineTool(object):
             out_write.write(CWL_SHEBANG + '\n\n')
             out_write.write(ruamel.yaml.dump(cwl_tool))
             out_write.close()
-
-
 
 
 class CommandInputParameter(Parameter):
@@ -378,9 +373,7 @@ class DockerRequirement(Requirement):
         tool generated in an export method.
 
         """
-        return {p:v for p,v in vars(self).items() if p.startswith('docker') and v is not None}
-
-
+        return {p: v for p, v in vars(self).items() if p.startswith('docker') and v is not None}
 
 
 class Namespaces(object):

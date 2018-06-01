@@ -6,22 +6,27 @@ Library to handle the manipulation and generation of CWL tool
 
 # General libraries
 import os
-import argparse
-import sys
+import six
 import logging
 
 # External libraries
 import ruamel.yaml as ryaml
-import six
 import cwlgen
 import cwlgen.workflow
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 #  Class(es)  ------------------------------
 
+
 def parse_cwl(cwl_path):
+    """
+    Method that parse a CWL file.
+
+    :param cwl_path: PATH to the CWL file
+    :type cwl_path: STRING
+    """
     with open(cwl_path) as yaml_file:
         cwl_dict = ryaml.load(yaml_file, Loader=ryaml.Loader)
         cl = cwl_dict['class']
@@ -33,6 +38,7 @@ def parse_cwl(cwl_path):
         p = CWLWorkflowParser()
         return p.import_cwl(cwl_path)
     return None
+
 
 class CWLToolParser(object):
     """
@@ -152,7 +158,7 @@ class CWLToolParser(object):
         :type class_el: STRING
         """
         if class_el != 'CommandLineTool':
-            logger.warning('cwlgen library only handle CommandLineTool for the moment')
+            _LOGGER.warning('cwlgen library only handle CommandLineTool for the moment')
 
     def _load_inputs(self, tool, inputs_el):
         """
@@ -194,19 +200,25 @@ class CWLToolParser(object):
             try:
                 getattr(self, '_load_{}'.format(key))(tool, element)
             except AttributeError:
-                logger.warning(key + " content is not processed (yet).")
+                _LOGGER.warning(key + " content is not processed (yet).")
         tool._path = cwl_path
         return tool
 
+
 def dict_or_idlist_items(v):
+    """
+    :param v:
+    :type v: DICT of [DICT]
+    """
     if isinstance(v, dict):
         return v.items()
     o = []
     for i in v:
         e = dict(i)
         del e['id']
-        o.append( (i['id'], e) )
+        o.append((i['id'], e))
     return o
+
 
 class InputsParser(object):
     """
@@ -318,7 +330,7 @@ class InputsParser(object):
                 try:
                     getattr(self, '_load_{}'.format(key))(input_obj, element)
                 except AttributeError:
-                    logger.warning(key + " content for input is not processed (yet).")
+                    _LOGGER.warning(key + " content for input is not processed (yet).")
             inputs.append(input_obj)
 
 
@@ -418,7 +430,7 @@ class InputBindingParser(object):
             try:
                 getattr(self, '_load_{}'.format(key))(inbinding_obj, value)
             except AttributeError:
-                logger.warning(key + " content for inputBinding is not processed (yet).")
+                _LOGGER.warning(key + " content for inputBinding is not processed (yet).")
             input_obj.inputBinding = inbinding_obj
 
 
@@ -532,7 +544,7 @@ class OutputsParser(object):
                 try:
                     getattr(self, '_load_{}'.format(key))(output_obj, element)
                 except AttributeError:
-                    logger.warning(key + " content for output is not processed (yet).")
+                    _LOGGER.warning(key + " content for output is not processed (yet).")
             outputs.append(output_obj)
 
 
@@ -588,7 +600,7 @@ class OutputBindingParser(object):
             try:
                 getattr(self, '_load_{}'.format(key))(outbinding_obj, value)
             except AttributeError:
-                logger.warning(key + " content for outputBinding is not processed (yet).")
+                _LOGGER.warning(key + " content for outputBinding is not processed (yet).")
             output_obj.outputBinding = outbinding_obj
 
 
@@ -597,10 +609,22 @@ class StepsParser(object):
     Class to parse content of steps of workflow from existing CWL Workflow.
     """
     def __init__(self, basedir=None, expand_run=True):
+        """
+        :param basedir:
+        :type basedir:
+        :param expand_run:
+        :type: expand_run:
+        """
         self.basedir = basedir
         self.expand_run = expand_run
 
     def _load_in(self, step_obj, in_el):
+        """
+        :param step_obj:
+        :type step_obj:
+        :param in_el:
+        :type in_el:
+        """
         for key, val in in_el.items():
             o = cwlgen.workflow.WorkflowStepInput(key)
             if isinstance(val, dict) and 'default' in val:
@@ -615,13 +639,12 @@ class StepsParser(object):
             step_obj.outputs.append(o)
 
     def _load_run(self, step_obj, in_el):
-        if isinstance(in_el, basestring) and self.expand_run:
+        if isinstance(in_el, six.string_types) and self.expand_run:
             path = os.path.join(self.basedir, in_el)
-            #logger.info("Parsing: %s", path)
+            # logger.info("Parsing: %s", path)
             step_obj.run = parse_cwl(path)
         else:
             step_obj.run = in_el
-
 
     def load_steps(self, steps_obj, steps_elm):
         """
@@ -638,7 +661,7 @@ class StepsParser(object):
                 try:
                     getattr(self, '_load_{}'.format(key))(step_obj, element)
                 except AttributeError:
-                    logger.warning(key + " content for input is not processed (yet).")
+                    _LOGGER.warning(key + " content for input is not processed (yet).")
             steps_obj.append(step_obj)
 
 
@@ -674,7 +697,7 @@ class CWLWorkflowParser(object):
             try:
                 getattr(self, '_load_{}'.format(key))(tool, element)
             except AttributeError:
-                logger.warning(key + " workflow content is not processed (yet).")
+                _LOGGER.warning(key + " workflow content is not processed (yet).")
         tool._path = cwl_path
         return tool
 
@@ -700,7 +723,6 @@ class CWLWorkflowParser(object):
         """
         tool.cwlVersion = cwl_version_el
 
-
     def _load_class(self, tool, class_el):
         """
         Display message to inform that cwlgen only deal with Workflow for the moment.
@@ -711,7 +733,7 @@ class CWLWorkflowParser(object):
         :type class_el: STRING
         """
         if class_el != 'Workflow':
-            logger.warning('cwlgen library only handle Workflow for the moment')
+            _LOGGER.warning('cwlgen library only handle Workflow for the moment')
 
     def _load_requirements(self, tool, req_el):
         pass
@@ -739,7 +761,6 @@ class CWLWorkflowParser(object):
         """
         inp_parser = OutputsParser()
         inp_parser.load_outputs(tool.outputs, outputs_el)
-
 
     def _load_steps(self, tool, outputs_el):
         """

@@ -4,7 +4,8 @@ import ruamel.yaml
 import six
 
 from .elements import CWL_SHEBANG, Parameter
-from .utils import *
+from .utils import literal, literal_presenter
+
 
 class Workflow(object):
     '''
@@ -24,8 +25,8 @@ class Workflow(object):
         """
         # First add representer (see .utils.py) for multiline writting
         ruamel.yaml.add_representer(literal, literal_presenter)
-        cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and\
-                                                           type(v) is str}
+        cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and
+                        type(v) is str}
         cwl_workflow['class'] = self.__CLASS__
         cwl_workflow['cwlVersion'] = 'v1.0'
 
@@ -89,7 +90,8 @@ class WorkflowStep(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_param = {'id' : self.id, "run" : self.run} #{k: v for k, v in vars(self).items() if v is not None and v is not False}
+        # {k: v for k, v in vars(self).items() if v is not None and v is not False}
+        dict_param = {'id': self.id, "run": self.run}
 
         if self.inputs:
             dict_param['in'] = {}
@@ -97,7 +99,7 @@ class WorkflowStep(object):
                 if i.src:
                     dict_param['in'][i.id] = i.src
                 elif i.default:
-                    dict_param['in'][i.id] = {"default" : i.default}
+                    dict_param['in'][i.id] = {"default": i.default}
 
         if self.outputs:
             dict_param['out'] = []
@@ -109,6 +111,7 @@ class WorkflowStep(object):
 
         return dict_param
 
+
 class WorkflowStepInput(object):
     def __init__(self, id, src=None, default=None):
         self.id = id
@@ -116,23 +119,23 @@ class WorkflowStepInput(object):
         self.default = default
 
     def get_dict(self):
-        '''
+        """
         Transform the object to a [DICT] to write CWL.
 
         :return: dictionnary of the object
         :rtype: DICT
-        '''
-        dict_param = {} #{k: v for k, v in vars(self).items() if v is not None and v is not False}
+        """
+        dict_param = {}  # {k: v for k, v in vars(self).items() if v is not None and v is not False}
         if self.src:
             dict_param["src"] = self.src
         if self.default:
             dict_param["default"] = self.default
         return dict_param
 
+
 class WorkflowStepOutput(object):
     def __init__(self, id):
         self.id = id
-
 
 
 class WorkflowOutputParameter(Parameter):
@@ -146,12 +149,14 @@ class WorkflowOutputParameter(Parameter):
 ############################
 # Workflow contruction classes
 
+
 class File:
     """
     An abstract file reference used for generating workflows
     """
     def __init__(self, path):
         self.path = path
+
 
 class Variable:
     """
@@ -166,7 +171,10 @@ class Variable:
         return "%s/%s" % (self.step, self.name)
 
     def store(self):
-        self.workflow.outputs.append(WorkflowOutputParameter(self.path().replace("/", "_"), outputSource=self.path(), param_type="File"))
+        self.workflow.outputs.append(
+            WorkflowOutputParameter(self.path().replace("/", "_"),
+                                    outputSource=self.path(),
+                                    param_type="File"))
         return
 
 
@@ -188,7 +196,7 @@ class StepRun:
             elif isinstance(j, Variable):
                 step.inputs.append(WorkflowStepInput(i, src=j.path()))
             elif isinstance(j, File):
-                self.workflow.inputs.append( InputParameter(i, param_type="File") )
+                self.workflow.inputs.append(InputParameter(i, param_type="File"))
                 step.inputs.append(WorkflowStepInput(i, src=i))
 
         for o in tool.outputs:
