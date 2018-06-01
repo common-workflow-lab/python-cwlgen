@@ -6,6 +6,13 @@
 Installation
 ************
 
+.. Note::
+    We highly recommend the use of a virtual environment with Python 3.6.0
+    using `virtualenv`_ or `conda`_.
+
+.. _virtualenv: https://virtualenv.pypa.io/en/latest/
+.. _conda: http://docs.readthedocs.io/en/latest/conda.html
+
 .. _dependencies:
 
 python-cwlgen dependencies

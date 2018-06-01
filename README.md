@@ -6,7 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/cwlgen.svg)](https://badge.fury.io/py/cwlgen)
 
 Python-cwlgen is a python library for the generation of CWL programmatically.
-It supports the generation of CommandLineTool and DockerRequirement.
+It supports the generation of CommandLineTool, Workflow and DockerRequirement.
 The library works for both Python 2.7.12+ and 3.6.0.
 
 ------------------------
@@ -23,7 +23,7 @@ pip install cwlgen
 
 ## How it works ?
 
-An example of usage is available in the `example/` folder of the repository.
+An example of usage is available in the `example/` folder of the repository (more details [here](http://python-cwlgen.readthedocs.io/en/latest/user_guide.html))
 
 ## References
 

@@ -1,5 +1,3 @@
-
-
 import ruamel.yaml
 import six
 
@@ -8,9 +6,9 @@ from .utils import literal, literal_presenter
 
 
 class Workflow(object):
-    '''
+    """
     Contain all informations to describe a CWL workflow.
-    '''
+    """
     __CLASS__ = 'Workflow'
 
     def __init__(self):
@@ -65,6 +63,24 @@ class Workflow(object):
 class InputParameter(Parameter):
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, input_binding=None, default=None, param_type=None):
+        """
+        :param param_id: unique identifier for this parameter
+        :type param_id: STRING
+        :param label: short, human-readable label
+        :type label: STRING
+        :param secondary_files: If type is a file, describes files that must be
+                                included alongside the primary file(s)
+        :type secondary_files: STRING
+        :param param_format: If type is a file, uri to ontology of the format or exact format
+        :type param_format: STRING
+        :param streamable: If type is a file, true indicates that the file is read or written
+                           sequentially without seeking
+        :type streamable: BOOLEAN
+        :param doc: documentation
+        :type doc: STRING
+        :param param_type: type of data assigned to the parameter
+        :type param_type: STRING corresponding to CWLType
+        """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
@@ -72,6 +88,16 @@ class InputParameter(Parameter):
 
 class WorkflowStep(object):
     def __init__(self, id, inputs=None, outputs=None, run=None):
+        """
+        :param id: ID of the step
+        :type id: STRING
+        :param inputs:
+        :type inputs:
+        :param outputs:
+        :type outputs:
+        :param run:
+        :type run:
+        """
         self.id = id
         if inputs:
             self.inputs = inputs
@@ -114,6 +140,14 @@ class WorkflowStep(object):
 
 class WorkflowStepInput(object):
     def __init__(self, id, src=None, default=None):
+        """
+        :param id: ID of the step input
+        :type id: STRING
+        :param src:
+        :type src:
+        :param default:
+        :type default:
+        """
         self.id = id
         self.src = src
         self.default = default
@@ -135,6 +169,10 @@ class WorkflowStepInput(object):
 
 class WorkflowStepOutput(object):
     def __init__(self, id):
+        """
+        :param id:
+        :type id:
+        """
         self.id = id
 
 
