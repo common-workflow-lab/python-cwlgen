@@ -8,10 +8,11 @@ _LOGGER = logging.getLogger(__name__)
 CWL_SHEBANG = "#!/usr/bin/env cwl-runner"
 CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
                 'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
-                'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0', None]
+                'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0']
 DEF_VERSION = 'v1.0'
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
-            'Directory', None]
+            'Directory', 'stdout', None]
+DEF_TYPE = 'null'
 
 
 class Parameter(object):
@@ -40,8 +41,9 @@ class Parameter(object):
         :type param_type: STRING corresponding to CWLType
         '''
         if param_type not in CWL_TYPE:
-            _LOGGER.warning("The type is incorrect for the parameter.")
-            param_type = None
+            _LOGGER.warning("The type {} is incorrect for the parameter.".format(param_type))
+            _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
+            param_type = DEF_TYPE
         self.id = param_id
         self.label = label
         self.secondaryFiles = secondary_files

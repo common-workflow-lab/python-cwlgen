@@ -18,7 +18,7 @@ from .workflow import Workflow, File
 from .import_cwl import parse_cwl
 
 logging.basicConfig(level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 
 #  Function(s)  ------------------------------
@@ -60,7 +60,8 @@ class CommandLineTool(object):
         are stored in lists which are initialized empty.
         '''
         if cwl_version not in CWL_VERSIONS:
-            LOGGER.warning("CWL version is not recognized as a valid version.")
+            _LOGGER.warning("CWL version {} is not recognized as a valid version.".format(cwl_version))
+            _LOGGER.warning("CWL version is set up to {}.".format(DEF_VERSION))
             cwl_version = DEF_VERSION
         self.cwlVersion = cwl_version
         self.id = tool_id
