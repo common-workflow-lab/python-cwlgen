@@ -215,6 +215,17 @@ class TestDockerRequirement(unittest.TestCase):
                          dockerImageId='id', dockerOutputDir='dir')
 
 
+class TestSubworkflowFeatureRequirement(unittest.TestCase):
+
+    def setUp(self):
+        self.req = cwlgen.SubworkflowFeatureRequirement()
+
+    def test_add(self):
+        tool = {}
+        self.req.add(tool)
+        self.assertEqual(tool, {'SubworkflowFeatureRequirement': {}})
+
+
 ###########  Main  ###########
 
 if __name__ == "__main__":
