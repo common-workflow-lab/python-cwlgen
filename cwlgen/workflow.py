@@ -17,6 +17,7 @@ class Workflow(object):
         self.outputs = []
         self._path = None
 
+
     def export(self, outfile=None):
         """
         Export the workflow in CWL either on STDOUT or in outfile.
