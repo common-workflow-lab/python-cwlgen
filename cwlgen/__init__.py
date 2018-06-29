@@ -338,7 +338,10 @@ class InlineJavascriptReq(Requirement):
         self.expressionLib = expression_lib
 
     def _to_dict(self):
-        return {'expressionLib': [self.expressionLib]}
+        if self.expressionLib:
+            return {'expressionLib': [self.expressionLib]}
+        else:
+            return {}
 
 
 class DockerRequirement(Requirement):
