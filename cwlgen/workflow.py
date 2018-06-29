@@ -15,6 +15,7 @@ class Workflow(object):
         self.steps = []
         self.inputs = []
         self.outputs = []
+        self.requirements = []
         self._path = None
 
 
@@ -46,6 +47,14 @@ class Workflow(object):
             cwl_workflow['outputs'] = {}
             for out in self.outputs:
                 cwl_workflow['outputs'][out.id] = out.get_dict()
+
+        # Add requirements.
+        requirements = {}
+        for requirement in self.requirements:
+            requirement.add(requirements)
+
+        if requirements:
+            cwl_workflow['requirements'] = requirements
 
         # Write CWL file in YAML
         if outfile is None:

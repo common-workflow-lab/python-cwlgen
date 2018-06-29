@@ -86,5 +86,19 @@ steps:
         self.assertEqual(expected, generated)
 
 
+    def test_add_requirements(self):
+        w = cwlgen.Workflow()
+        req = cwlgen.InlineJavascriptReq()
+        w.requirements.append(req)
+        generated = self.capture_tempfile(w.export)
+        expected = b"""#!/usr/bin/env cwl-runner
 
+class: Workflow
+cwlVersion: v1.0
+inputs: {}
+outputs: {}
+requirements:
+  InlineJavascriptRequirement: {}
+"""
+        self.assertEqual(expected, generated)
 
