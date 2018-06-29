@@ -193,6 +193,12 @@ class TestInlineJavascriptReq(unittest.TestCase):
         self.assertEqual(self.js_req.req_class, 'InlineJavascriptRequirement')
         self.assertEqual(self.js_req.expressionLib, 'expression')
 
+    def test_add(self):
+        tool = {}
+        self.js_req.add(tool)
+        self.assertEqual(tool, {'InlineJavascriptRequirement': {'expressionLib': ['expression']}})
+
+
 class TestDockerRequirement(unittest.TestCase):
 
     def setUp(self):

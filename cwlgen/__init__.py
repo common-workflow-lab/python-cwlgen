@@ -337,6 +337,9 @@ class InlineJavascriptReq(Requirement):
         Requirement.__init__(self, 'InlineJavascriptRequirement')
         self.expressionLib = expression_lib
 
+    def _to_dict(self):
+        return {'expressionLib': [self.expressionLib]}
+    
 
 class DockerRequirement(Requirement):
     '''
