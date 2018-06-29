@@ -198,6 +198,12 @@ class TestInlineJavascriptReq(unittest.TestCase):
         self.js_req.add(tool)
         self.assertEqual(tool, {'InlineJavascriptRequirement': {'expressionLib': ['expression']}})
 
+    def test_add_without_lib(self):
+        tool = {}
+        req = cwlgen.InlineJavascriptReq()
+        req.add(tool)
+        self.assertEqual(tool, {'InlineJavascriptRequirement': {}})
+
 
 class TestDockerRequirement(unittest.TestCase):
 
