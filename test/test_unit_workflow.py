@@ -10,16 +10,22 @@ Unit tests for cwlgen library
 import os
 import filecmp
 import unittest
+from tempfile import NamedTemporaryFile
 
 # External libraries
 import cwlgen
 
 #  Class(es)  ------------------------------
 
-class TestCommandLineTool(unittest.TestCase):
 
+class TestWorkflow(unittest.TestCase):
 
-    def test_build(self):
+    def capture_tempfile(self, func):
+        with NamedTemporaryFile() as f:
+            func(f.name)
+            return f.read()
+
+    def test_generates_workflow_two_steps(self):
 
         w = cwlgen.Workflow()
         tool = cwlgen.parse_cwl("test/import_cwl.cwl")
@@ -29,4 +35,56 @@ class TestCommandLineTool(unittest.TestCase):
         o1 = w.add('step-a', tool, {"INPUT1" : f})
         o2 = w.add('step-b', tool, {"INPUT1" : o1['OUTPUT1']})
         o2['OUTPUT1'].store()
-        w.export("test.cwl")
+        generated = self.capture_tempfile(w.export)
+        expected = b"""#!/usr/bin/env cwl-runner
+
+class: Workflow
+cwlVersion: v1.0
+inputs:
+  INPUT1: {id: INPUT1, type: File}
+outputs:
+  step-b_OUTPUT1: {id: step-b_OUTPUT1, outputSource: step-b/OUTPUT1, type: File}
+steps:
+  step-a:
+    id: step-a
+    in: {INPUT1: INPUT1}
+    out: [OUTPUT1]
+    run: test/import_cwl.cwl
+  step-b:
+    id: step-b
+    in: {INPUT1: step-a/OUTPUT1}
+    out: [OUTPUT1]
+    run: test/import_cwl.cwl
+"""
+        self.assertEqual(expected, generated)
+
+    def test_generates_workflow_int_inputs(self):
+
+        w = cwlgen.Workflow()
+        tool = cwlgen.parse_cwl("test/int_tool.cwl")
+
+        i = cwlgen.workflow.InputParameter('INTEGER', param_type='int')
+        o1 = w.add('step', tool, {"INTEGER": i})
+        o1['OUTPUT1'].store()
+
+        expected = b"""#!/usr/bin/env cwl-runner
+
+class: Workflow
+cwlVersion: v1.0
+inputs:
+  INTEGER: {id: INTEGER, type: int}
+outputs:
+  step_OUTPUT1: {id: step_OUTPUT1, outputSource: step/OUTPUT1, type: File}
+steps:
+  step:
+    id: step
+    in: {INTEGER: INTEGER}
+    out: [OUTPUT1]
+    run: test/int_tool.cwl
+"""
+        generated = self.capture_tempfile(w.export)
+        self.assertEqual(expected, generated)
+
+
+
+
