@@ -339,7 +339,7 @@ class InlineJavascriptReq(Requirement):
 
     def _to_dict(self):
         return {'expressionLib': [self.expressionLib]}
-    
+
 
 class DockerRequirement(Requirement):
     '''
