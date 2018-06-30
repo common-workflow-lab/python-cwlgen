@@ -337,6 +337,12 @@ class InlineJavascriptReq(Requirement):
         Requirement.__init__(self, 'InlineJavascriptRequirement')
         self.expressionLib = expression_lib
 
+    def _to_dict(self):
+        if self.expressionLib:
+            return {'expressionLib': [self.expressionLib]}
+        else:
+            return {}
+
 
 class DockerRequirement(Requirement):
     '''
@@ -375,6 +381,15 @@ class DockerRequirement(Requirement):
 
         """
         return {p: v for p, v in vars(self).items() if p.startswith('docker') and v is not None}
+
+
+class SubworkflowFeatureRequirement(Requirement):
+
+    def __init__(self):
+        Requirement.__init__(self, 'SubworkflowFeatureRequirement')
+
+    def _to_dict(self):
+        return dict()
 
 
 class Namespaces(object):

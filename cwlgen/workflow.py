@@ -15,7 +15,9 @@ class Workflow(object):
         self.steps = []
         self.inputs = []
         self.outputs = []
+        self.requirements = []
         self._path = None
+
 
     def export(self, outfile=None):
         """
@@ -45,6 +47,14 @@ class Workflow(object):
             cwl_workflow['outputs'] = {}
             for out in self.outputs:
                 cwl_workflow['outputs'][out.id] = out.get_dict()
+
+        # Add requirements.
+        requirements = {}
+        for requirement in self.requirements:
+            requirement.add(requirements)
+
+        if requirements:
+            cwl_workflow['requirements'] = requirements
 
         # Write CWL file in YAML
         if outfile is None:
@@ -185,7 +195,7 @@ class WorkflowOutputParameter(Parameter):
         self.outputSource = outputSource
 
 ############################
-# Workflow contruction classes
+# Workflow construction classes
 
 
 class File:
@@ -194,6 +204,8 @@ class File:
     """
     def __init__(self, path):
         self.path = path
+
+
 
 
 class Variable:
@@ -216,6 +228,8 @@ class Variable:
         return
 
 
+
+
 class StepRun:
     """
     Result of adding a step into a workflow
@@ -233,10 +247,13 @@ class StepRun:
                 step.inputs.append(WorkflowStepInput(i, default=j))
             elif isinstance(j, Variable):
                 step.inputs.append(WorkflowStepInput(i, src=j.path()))
+            elif isinstance(j, InputParameter):
+                self.workflow.inputs.append(j),
+                step.inputs.append(WorkflowStepInput(j.id, src=j.id))
             elif isinstance(j, File):
+                # This is just used as a stub, the 'path' inside the file doesn't do anything
                 self.workflow.inputs.append(InputParameter(i, param_type="File"))
                 step.inputs.append(WorkflowStepInput(i, src=i))
-
         for o in tool.outputs:
             step.outputs.append(o.id)
 

@@ -193,6 +193,18 @@ class TestInlineJavascriptReq(unittest.TestCase):
         self.assertEqual(self.js_req.req_class, 'InlineJavascriptRequirement')
         self.assertEqual(self.js_req.expressionLib, 'expression')
 
+    def test_add(self):
+        tool = {}
+        self.js_req.add(tool)
+        self.assertEqual(tool, {'InlineJavascriptRequirement': {'expressionLib': ['expression']}})
+
+    def test_add_without_lib(self):
+        tool = {}
+        req = cwlgen.InlineJavascriptReq()
+        req.add(tool)
+        self.assertEqual(tool, {'InlineJavascriptRequirement': {}})
+
+
 class TestDockerRequirement(unittest.TestCase):
 
     def setUp(self):
@@ -213,6 +225,17 @@ class TestDockerRequirement(unittest.TestCase):
         assert d == dict(dockerPull='pull', dockerLoad='load',\
                          dockerFile='file', dockerImport='import',\
                          dockerImageId='id', dockerOutputDir='dir')
+
+
+class TestSubworkflowFeatureRequirement(unittest.TestCase):
+
+    def setUp(self):
+        self.req = cwlgen.SubworkflowFeatureRequirement()
+
+    def test_add(self):
+        tool = {}
+        self.req.add(tool)
+        self.assertEqual(tool, {'SubworkflowFeatureRequirement': {}})
 
 
 ###########  Main  ###########
