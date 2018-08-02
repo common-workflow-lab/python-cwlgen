@@ -279,7 +279,7 @@ class CommandOutputBinding(object):
     Describes how to generate an output parameter based on the files produced.
     '''
 
-    def __init__(self, glob=False, load_contents=False, output_eval=None):
+    def __init__(self, glob=None, load_contents=False, output_eval=None):
         '''
         :param glob: Find corresponding file(s)
         :type glob: STRING
