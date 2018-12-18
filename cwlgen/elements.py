@@ -10,9 +10,39 @@ CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
                 'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
                 'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0']
 DEF_VERSION = 'v1.0'
+NON_NONE_CWL_TYPE = ['boolean', 'int', 'long', 'float', 'double', 'string', 'File',
+                     'Directory', 'stdout']
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', 'stdout', None]
 DEF_TYPE = 'null'
+
+
+def parse_param_type(param_type):
+    """
+    Parses the parameter type as one of the required types:
+    :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
+
+
+    :param param_type:
+    :return: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
+       array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
+    """
+
+    if isinstance(param_type, str) and len(param_type) > 0:
+        # Must be CWLType
+        optional = param_type[-1] == "?"
+        if optional:
+            _LOGGER.debug("Detected {param_type} to be optional".format(param_type=param_type))
+        cwltype = param_type[:-1] if optional else param_type
+        if cwltype not in CWL_TYPE:
+            _LOGGER.warning("The type '{param_type}' is not a valid CWLType, expected one of: {types}"
+                            .format(param_type=param_type, types=", ".join(str(x) for x in CWL_TYPE)))
+            _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
+            return DEF_TYPE
+        return param_type
+    else:
+        _LOGGER.warning("Unable to detect type of param '{param_type}", param_type)
+        return DEF_TYPE
 
 
 class Parameter(object):
@@ -40,17 +70,13 @@ class Parameter(object):
         :param param_type: type of data assigned to the parameter
         :type param_type: STRING corresponding to CWLType
         '''
-        if param_type not in CWL_TYPE:
-            _LOGGER.warning("The type {} is incorrect for the parameter.".format(param_type))
-            _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
-            param_type = DEF_TYPE
         self.id = param_id
         self.label = label
         self.secondaryFiles = secondary_files
         self.format = param_format
         self.streamable = streamable
         self.doc = doc
-        self.type = param_type
+        self.type = parse_param_type(param_type)
 
     def get_dict(self):
         '''
@@ -64,7 +90,7 @@ class Parameter(object):
             # Remove what is only for File
             for key in ['format', 'secondaryFiles', 'streamable']:
                 try:
-                    del(dict_param[key])
+                    del (dict_param[key])
                 except KeyError:
                     pass
         return dict_param
