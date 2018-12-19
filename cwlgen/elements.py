@@ -10,7 +10,7 @@ CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
                 'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
                 'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0']
 DEF_VERSION = 'v1.0'
-NON_NONE_CWL_TYPE = ['boolean', 'int', 'long', 'float', 'double', 'string', 'File',
+NON_NULL_CWL_TYPE = ['boolean', 'int', 'long', 'float', 'double', 'string', 'File',
                      'Directory', 'stdout']
 CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
             'Directory', 'stdout', None]
@@ -90,7 +90,7 @@ class Parameter(object):
             # Remove what is only for File
             for key in ['format', 'secondaryFiles', 'streamable']:
                 try:
-                    del (dict_param[key])
+                    del(dict_param[key])
                 except KeyError:
                     pass
         return dict_param
