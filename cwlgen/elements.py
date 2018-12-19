@@ -22,8 +22,9 @@ def parse_param_type(param_type):
     Parses the parameter type as one of the required types:
     :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
 
-
-    :param param_type:
+    :param param_type: a CWL type that is _validated_
+    :type param_type: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
+       array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     :return: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
        array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     """
@@ -117,10 +118,13 @@ class CommandInputArraySchema(object):
 
     def __init__(self, items=None, label=None, input_binding=None):
         '''
-
-        :param items:
-        :param label:
+        :param items: Defines the type of the array elements.
+        :type: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
+       array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
+        :param label: A short, human-readable label of this object.
+        :type label: STRING
         :param input_binding:
+        :type input_binding: CommandLineBinding
         '''
         self.type = "array"
         self.items = parse_param_type(items)
