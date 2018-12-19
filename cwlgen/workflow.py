@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
 
 SCATTER_METHODS = ["dotproduct", "nested_crossproduct", "flat_crossproduct"]
+LINK_MERGE_METHODS = ["merge_nested", "merge_flattened"]
 
 
 #  Function(s)  ------------------------------
@@ -28,6 +29,15 @@ def parse_scatter_method(scatter_method):
         raise ValueError("The scatter method '{method}' is not a valid ScatterMethod, expected one of: {expected}"
                          .format(method=scatter_method, expected=" ,".join(SCATTER_METHODS)))
     return scatter_method
+
+
+def parse_link_merge_method(link_merge):
+    if link_merge not in LINK_MERGE_METHODS:
+        _LOGGER.warning("The link merge method '{method}' is not a valid LinkMergeMethod, expected one of: {expected}. "
+                        "This value will be null which CWL defaults to 'merge_nested'"
+                         .format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
+        return None
+    return link_merge
 
 
 #  Class(es)  ------------------------------
@@ -216,44 +226,84 @@ class WorkflowStep(object):
 
 
 class WorkflowStepInput(object):
-    def __init__(self, id, src=None, default=None):
+    def __init__(self, input_id, source=None, link_merge=None, default=None, value_from=None):
         """
-        :param id: ID of the step input
-        :type id: STRING
-        :param src:
-        :type src:
-        :param default:
-        :type default:
+        The input of a workflow step connects an upstream parameter (from the workflow inputs, or the outputs of
+        other workflows steps) with the input parameters of the underlying step.
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepInput
+        :param input_id: A unique identifier for this workflow input parameter.
+        :type input_id: STRING
+        :param source: Specifies one or more workflow parameters that will provide input to the underlying step parameter.
+        :type source: STRING | list[STRING]
+        :param link_merge: The method to use to merge multiple inbound links into a single array.
+                           If not specified, the default method is "merge_nested".
+        :type link_merge: LinkMergeMethod
+        :param default: The default value for this parameter to use if either there is no source field,
+                        or the value produced by the source is null
+        :type default: Any | DictRepresentible
+        :param value_from: If valueFrom is a constant string value, use this as the value for this input parameter.
+                           If valueFrom is a parameter reference or expression,
+                           it must be evaluated to yield the actual value to be assiged to the input field.
+        :type value_from: STRING
         """
-        self.id = id
-        self.src = src
+
+        self.id = input_id
+        self.source = source
+        self.linkMerge = parse_link_merge_method(link_merge)
         self.default = default
+        self.valueFrom = self.valueFrom
+
 
     def get_dict(self):
         """
         Transform the object to a [DICT] to write CWL.
-
-        :return: dictionnary of the object
+        :return: dictionary of the object
         :rtype: DICT
         """
-        dict_param = {}  # {k: v for k, v in vars(self).items() if v is not None and v is not False}
-        if self.src:
-            dict_param["src"] = self.src
+        dict_param = {
+            'id': self.id,
+            'source': self.source
+        }
+
+        if self.linkMerge:
+            dict_param['linkMerge'] = self.linkMerge
+
         if self.default:
-            dict_param["default"] = self.default
+            dict_param['default'] = self.default
+
+        if self.valueFrom:
+            dict_param['valueFrom'] = self.valueFrom
+
         return dict_param
 
 
 class WorkflowStepOutput(object):
-    def __init__(self, id):
+    """
+    Associate an output parameter of the underlying process with a workflow parameter.
+    The workflow parameter (given in the id field) be may be used as a source to connect with
+    input parameters of other workflow steps, or with an output parameter of the process.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepOutput
+    """
+    def __init__(self, output_id):
         """
-        :param id:
-        :type id:
+        :param output_id: A unique identifier for this workflow output parameter. This is the identifier to use in
+        the source field of WorkflowStepInput to connect the output value to downstream parameters.
+        :type output_id: STRING
         """
-        self.id = id
+        self.id = output_id
+
+    def get_dict(self):
+        return self.id
 
 
 class WorkflowOutputParameter(Parameter):
+    """
+    Describe an output parameter of a workflow. The parameter must be connected to one or more parameters
+    defined in the workflow that will provide the value of the output parameter.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
+    """
     def __init__(self, param_id, outputSource=None, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, param_type=None, output_binding=None, linkMerge=None):
         """
@@ -301,9 +351,9 @@ class WorkflowOutputParameter(Parameter):
 
         return output_dict
 
+
 ############################
 # Workflow construction classes
-
 
 class File:
     """
@@ -333,39 +383,39 @@ class Variable:
         return
 
 
-class StepRun:
-    """
-    Result of adding a step into a workflow
-    """
-    def __init__(self, workflow, id, tool, params):
-        self.tool = tool
-        self.workflow = workflow
-        self.id = id
-
-        step = WorkflowStep(id=id, run=tool._path)
-        workflow.steps.append(step)
-
-        for i, j in params.items():
-            if isinstance(j, six.string_types):
-                step.inputs.append(WorkflowStepInput(i, default=j))
-            elif isinstance(j, Variable):
-                step.inputs.append(WorkflowStepInput(i, src=j.path()))
-            elif isinstance(j, InputParameter):
-                self.workflow.inputs.append(j),
-                step.inputs.append(WorkflowStepInput(j.id, src=j.id))
-            elif isinstance(j, File):
-                # This is just used as a stub, the 'path' inside the file doesn't do anything
-                self.workflow.inputs.append(InputParameter(i, param_type="File"))
-                step.inputs.append(WorkflowStepInput(i, src=i))
-        for o in tool.outputs:
-            step.outputs.append(o.id)
-
-    def store_all(self):
-        for i in self.tool.outputs:
-            Variable(self.workflow, self.id, i.id).store()
-
-    def __getitem__(self, key):
-        for i in self.tool.outputs:
-            if i.id == key:
-                return Variable(self.workflow, self.id, key)
-        raise KeyError
+# class StepRun:
+#     """
+#     Result of adding a step into a workflow
+#     """
+#     def __init__(self, workflow, id, tool, params):
+#         self.tool = tool
+#         self.workflow = workflow
+#         self.id = id
+#
+#         step = WorkflowStep(id=id, run=tool._path)
+#         workflow.steps.append(step)
+#
+#         for i, j in params.items():
+#             if isinstance(j, six.string_types):
+#                 step.inputs.append(WorkflowStepInput(i, default=j))
+#             elif isinstance(j, Variable):
+#                 step.inputs.append(WorkflowStepInput(i, src=j.path()))
+#             elif isinstance(j, InputParameter):
+#                 self.workflow.inputs.append(j),
+#                 step.inputs.append(WorkflowStepInput(j.id, src=j.id))
+#             elif isinstance(j, File):
+#                 # This is just used as a stub, the 'path' inside the file doesn't do anything
+#                 self.workflow.inputs.append(InputParameter(i, param_type="File"))
+#                 step.inputs.append(WorkflowStepInput(i, src=i))
+#         for o in tool.outputs:
+#             step.outputs.append(o.id)
+#
+#     def store_all(self):
+#         for i in self.tool.outputs:
+#             Variable(self.workflow, self.id, i.id).store()
+#
+#     def __getitem__(self, key):
+#         for i in self.tool.outputs:
+#             if i.id == key:
+#                 return Variable(self.workflow, self.id, key)
+#         raise KeyError
