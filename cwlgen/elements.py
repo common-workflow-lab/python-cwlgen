@@ -41,7 +41,7 @@ def parse_param_type(param_type):
             return DEF_TYPE
         return param_type
     else:
-        _LOGGER.warning("Unable to detect type of param '{param_type}", param_type)
+        _LOGGER.warning("Unable to detect type of param '{param_type}".format(param_type=param_type))
         return DEF_TYPE
 
 
