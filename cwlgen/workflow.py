@@ -3,6 +3,7 @@ import six
 
 from .elements import CWL_SHEBANG, Parameter
 from .utils import literal, literal_presenter
+from .commandlinebinding import CommandLineBinding
 
 
 class Workflow(object):
@@ -11,42 +12,39 @@ class Workflow(object):
     """
     __CLASS__ = 'Workflow'
 
-    def __init__(self):
+    def __init__(self, workflow_id, label=None, doc=None, cwl_version='v1.0'):
+        """
+        Build a workflow: https://www.commonwl.org/v1.0/Workflow.html
+        :param workflow_id:
+        :param label:
+        :param doc:
+        :param cwl_version:
+        """
+        self.id = workflow_id
+        self.label = label
+        self.doc = doc
+        self.cwlVersion = cwl_version
+
         self.steps = []
         self.inputs = []
         self.outputs = []
         self.requirements = []
+        self.hints = None
         self._path = None
 
-
-    def export(self, outfile=None):
-        """
-        Export the workflow in CWL either on STDOUT or in outfile.
-        """
-        # First add representer (see .utils.py) for multiline writting
-        ruamel.yaml.add_representer(literal, literal_presenter)
+    def get_dict(self):
         cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and
                         type(v) is str}
         cwl_workflow['class'] = self.__CLASS__
-        cwl_workflow['cwlVersion'] = 'v1.0'
+        cwl_workflow['cwlVersion'] = self.cwlVersion
 
         cwl_workflow['inputs'] = {}
         cwl_workflow['outputs'] = {}
 
-        if self.steps:
-            cwl_workflow['steps'] = {}
-            for step in self.steps:
-                cwl_workflow['steps'][step.id] = step.get_dict()
-
-        if self.inputs:
-            cwl_workflow['inputs'] = {}
-            for i in self.inputs:
-                cwl_workflow['inputs'][i.id] = i.get_dict()
-
-        if self.outputs:
-            cwl_workflow['outputs'] = {}
-            for out in self.outputs:
-                cwl_workflow['outputs'][out.id] = out.get_dict()
+        # steps, inputs, outputs are requied properties, so it should fail if we can't place it
+        cwl_workflow['steps'] = {step.id: step.get_dict() for step in self.steps}
+        cwl_workflow['inputs'] = {i.id: i.get_dict() for i in self.inputs}
+        cwl_workflow['outputs'] = {o.id: o.get_dict() for o in self.outputs}
 
         # Add requirements.
         requirements = {}
@@ -55,6 +53,21 @@ class Workflow(object):
 
         if requirements:
             cwl_workflow['requirements'] = requirements
+
+        if self.hints:
+            # can be array<Any> | dict<class, Any>
+            cwl_workflow['hints'] = self.hints
+
+        return cwl_workflow
+
+    def export(self, outfile=None):
+        """
+        Export the workflow in CWL either on STDOUT or in outfile.
+        """
+        # First add representer (see .utils.py) for multiline writting
+        ruamel.yaml.add_representer(literal, literal_presenter)
+
+        cwl_workflow = self.get_dict()
 
         # Write CWL file in YAML
         if outfile is None:
@@ -94,6 +107,20 @@ class InputParameter(Parameter):
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
+        self.inputBinding = input_binding
+        self.default = default
+
+    def get_dict(self):
+        input_dict = Parameter.get_dict(self)
+
+        if self.inputBinding:
+            # CommandLineBinding
+            input_dict["inputBinding"] = self.inputBinding.get_dict()
+
+        if self.default:
+            input_dict["default"] = self.default
+
+        return input_dict
 
 
 class WorkflowStep(object):
@@ -187,12 +214,42 @@ class WorkflowStepOutput(object):
 
 
 class WorkflowOutputParameter(Parameter):
-    def __init__(self, param_id, outputSource, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, param_type=None):
+    def __init__(self, param_id, outputSource=None, label=None, secondary_files=None, param_format=None,
+                 streamable=False, doc=None, param_type=None, output_binding=None, format=None, linkMerge=None):
+        """
+        :param param_id:
+        :param outputSource:
+        :param label:
+        :param secondary_files:
+        :param param_format:
+        :param streamable:
+        :param doc:
+        :param param_type:
+        :param output_binding:
+        :param format:
+        :param linkMerge:
+        """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
         self.outputSource = outputSource
+        self.outputBinding = output_binding     # CommandOutputBinding
+        self.format = format
+        self.linkMerge = linkMerge
+
+    def get_dict(self):
+        output_dict = Parameter.get_dict(self)
+
+        if self.outputSource:
+            output_dict["outputSource"] = self.outputSource
+        if self.outputBinding:
+            output_dict["outputBinding"] = self.outputBinding.get_dict()
+        if self.format:
+            output_dict["format"] = self.format
+        if self.linkMerge:
+            output_dict["linkMerge"] = self.linkMerge
+
+        return output_dict
 
 ############################
 # Workflow construction classes
