@@ -22,6 +22,8 @@ class TestCommandLineTool(unittest.TestCase):
         self.cwl = cwlgen.CommandLineTool(tool_id='an_id', label='a description '+\
                                          'with spaces.', base_command='a_command')
 
+        self.array_basecommand = cwlgen.CommandLineTool(tool_id="base-command-array", base_command=["base", "command"])
+
     def test_init(self):
         self.assertEqual(self.cwl.id, 'an_id')
         self.assertEqual(self.cwl.label, 'a description with spaces.')
@@ -29,6 +31,23 @@ class TestCommandLineTool(unittest.TestCase):
         self.assertListEqual(self.cwl.inputs, [])
         self.assertListEqual(self.cwl.outputs, [])
         self.assertIsNone(self.cwl.doc)
+
+    def test_array_basecommand(self):
+        dict_test = self.array_basecommand.get_dict()
+        self.assertIn('baseCommand', dict_test)
+
+    def test_codes(self):
+        code_tool = cwlgen.CommandLineTool()
+        code_tool.permanentFailCodes.extend([400, 401, 500])
+        code_tool.temporaryFailCodes.append(408)
+        code_tool.successCodes = []     # empty (falsy)
+
+        dict_test = code_tool.get_dict()
+        self.assertIn('permanentFailCodes', dict_test)
+        self.assertEqual(len(dict_test['permanentFailCodes']), 3)
+        self.assertIn('temporaryFailCodes', dict_test)
+        self.assertEqual(len(dict_test['temporaryFailCodes']), 1)
+        self.assertNotIn('successCodes', dict_test)
 
     """
     def test_export(self):

@@ -39,7 +39,7 @@ class CommandLineTool(object):
         :param tool_id: unique identifier for this tool
         :type tool_id: STRING
         :param base_command: command line for the tool
-        :type base_command: STRING
+        :type base_command: STRING | list[STRING]
         :param label: label of this tool
         :type label: STRING
         :param doc: documentation for the tool, usually longer than the label
@@ -82,18 +82,16 @@ class CommandLineTool(object):
         self._path = path
         self.namespaces = Namespaces()
 
-    def export(self, outfile=None):
-        """
-        Export the tool in CWL either on STDOUT or in outfile.
-        """
-        # First add representer (see .utils.py) for multiline writting
-        ruamel.yaml.add_representer(literal, literal_presenter)
+    def get_dict(self):
         cwl_tool = {k: v for k, v in vars(self).items() if v is not None and
                     type(v) is str}
         cwl_tool['class'] = self.__CLASS__
         # Treat doc for multiline writting
         if self.doc:
             cwl_tool['doc'] = literal(self.doc)
+
+        if self.baseCommand:
+            cwl_tool['baseCommand'] = self.baseCommand
 
         # Add Arguments
         cwl_tool['arguments'] = [in_arg.get_dict() for in_arg in self.arguments]
@@ -107,6 +105,13 @@ class CommandLineTool(object):
         cwl_tool['outputs'] = {}
         for out_param in self.outputs:
             cwl_tool['outputs'][out_param.id] = out_param.get_dict()
+
+        if self.successCodes:
+            cwl_tool['successCodes'] = self.successCodes
+        if self.temporaryFailCodes:
+            cwl_tool['temporaryFailCodes'] = self.temporaryFailCodes
+        if self.permanentFailCodes:
+            cwl_tool['permanentFailCodes'] = self.permanentFailCodes
 
         # If metadata are present in the description
         if getattr(self, 'metadata', None):
@@ -125,6 +130,15 @@ class CommandLineTool(object):
 
         if requirements:
             cwl_tool['requirements'] = requirements
+        return cwl_tool
+
+    def export(self, outfile=None):
+        """
+        Export the tool in CWL either on STDOUT or in outfile.
+        """
+        # First add representer (see .utils.py) for multiline writting
+        ruamel.yaml.add_representer(literal, literal_presenter)
+        cwl_tool = self.get_dict()
 
         # Write CWL file in YAML
         if outfile is None:
