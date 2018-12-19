@@ -1,10 +1,36 @@
+#  Import  ------------------------------
+
+# General libraries
+import logging
+
+# External libraries
 import ruamel.yaml
 import six
+from .version import __version__
 
-from .elements import CWL_SHEBANG, Parameter
+# Internal libraries
+
 from .utils import literal, literal_presenter
-from .commandlinebinding import CommandLineBinding
+from .elements import Parameter, CWL_SHEBANG
 
+# Logging setup
+
+logging.basicConfig(level=logging.INFO)
+_LOGGER = logging.getLogger(__name__)
+
+SCATTER_METHODS = ["dotproduct", "nested_crossproduct", "flat_crossproduct"]
+
+
+#  Function(s)  ------------------------------
+
+def parse_scatter_method(scatter_method):
+    if scatter_method not in SCATTER_METHODS:
+        raise ValueError("The scatter method '{method}' is not a valid ScatterMethod, expected one of: {expected}"
+                         .format(method=scatter_method, expected=" ,".join(SCATTER_METHODS)))
+    return scatter_method
+
+
+#  Class(es)  ------------------------------
 
 class Workflow(object):
     """
@@ -33,8 +59,8 @@ class Workflow(object):
         self._path = None
 
     def get_dict(self):
-        cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and
-                        type(v) is str}
+        cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
+
         cwl_workflow['class'] = self.__CLASS__
         cwl_workflow['cwlVersion'] = self.cwlVersion
 
@@ -124,27 +150,33 @@ class InputParameter(Parameter):
 
 
 class WorkflowStep(object):
-    def __init__(self, id, inputs=None, outputs=None, run=None):
+    def __init__(self, step_id, run, label=None, doc=None, scatter=None, scatter_method=None):
         """
-        :param id: ID of the step
-        :type id: STRING
-        :param inputs:
-        :type inputs:
-        :param outputs:
-        :type outputs:
-        :param run:
-        :type run:
+        :param step_id: The unique identifier for this workflow step.
+        :type step_id: STRING
+        :param run: Specifies the process to run.
+        :type run: STRING | CommandLineTool | ExpressionTool | Workflow
+        :param label: A short, human-readable label of this process object.
+        :type label: STRING
+        :param doc: A long, human-readable description of this process object.
+        :type doc: STRING | list[STRING]
+        :param scatter: Field to scatter on, see: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStep
+        :type scatter: STRING | list[STRING]
+        :param scatter_method: Required if scatter is an array of more than one element.
+        :type scatter_method: STRING | list[STRING] in [dotproduct, nested_crossproduct, flat_crossproduct]
         """
-        self.id = id
-        if inputs:
-            self.inputs = inputs
-        else:
-            self.inputs = []
-        if outputs:
-            self.outputs = outputs
-        else:
-            self.outputs = []
+        self.id = step_id
         self.run = run
+        self.label = label
+        self.doc = doc
+        self.scatter = scatter
+        self.scatterMethod = parse_scatter_method(scatter_method)
+
+        # in is a reserved keywork
+        self.inputs = []
+        self.out = []
+        self.requirements = []
+        self.hints = []
 
     def get_dict(self):
         '''
@@ -153,26 +185,34 @@ class WorkflowStep(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        # {k: v for k, v in vars(self).items() if v is not None and v is not False}
-        dict_param = {'id': self.id, "run": self.run}
+        workflow_step = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
 
-        if self.inputs:
-            dict_param['in'] = {}
-            for i in self.inputs:
-                if i.src:
-                    dict_param['in'][i.id] = i.src
-                elif i.default:
-                    dict_param['in'][i.id] = {"default": i.default}
+        workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
+        workflow_step['out'] = {o.id: o.get_dict() for o in self.out}
 
-        if self.outputs:
-            dict_param['out'] = []
-            for i in self.outputs:
-                if isinstance(i, WorkflowStepOutput):
-                    dict_param['out'].append(i.id)
-                else:
-                    dict_param['out'].append(i)
+        if isinstance(self.run, str):
+            workflow_step['run'] = self.run
+        else:
+            # CommandLineTool | ExpressionTool | Workflow
+            workflow_step['run'] = self.run.get_dict()
 
-        return dict_param
+        if self.requirements:
+            workflow_step['requirements'] = [r.get_dict() for r in self.requirements]
+
+        if self.hints:
+            workflow_step['hints'] = self.hints
+
+        # label | doc is covered by first line
+
+        if self.scatter:
+            workflow_step['scatter'] = self.scatter
+
+            if isinstance(self.scatter, list) and len(self.scatter) > 1:
+                workflow_step['scatterMethod'] = self.scatterMethod
+            elif self.scatterMethod:
+                _LOGGER.info("Skipping adding scatterMethod because scatter was not a list or length was less than 2")
+
+        return workflow_step
 
 
 class WorkflowStepInput(object):
@@ -215,26 +255,36 @@ class WorkflowStepOutput(object):
 
 class WorkflowOutputParameter(Parameter):
     def __init__(self, param_id, outputSource=None, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, param_type=None, output_binding=None, format=None, linkMerge=None):
+                 streamable=False, doc=None, param_type=None, output_binding=None, linkMerge=None):
         """
-        :param param_id:
-        :param outputSource:
-        :param label:
-        :param secondary_files:
-        :param param_format:
-        :param streamable:
-        :param doc:
-        :param param_type:
-        :param output_binding:
-        :param format:
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
+        :param param_id: The unique identifier for this parameter object.
+        :type param_id: STRING
+        :param outputSource: Specifies one or more workflow parameters that supply the value of to the output parameter.
+        :type outputSource: STRING | list[STRING]
+        :param label: A short, human-readable label of this object.
+        :type label: STRING
+        :param secondary_files: Provides a pattern or expression specifying files or directories that must be
+                                included alongside the primary file.
+        :type secondary_files: STRING \ list[STRING]
+        :param param_format: This is the file format that will be assigned to the output paramete
+        :type param_format: STRING
+        :param streamable: A value of true indicates that the file is read or written sequentially without seeking
+        :type streamable: BOOLEAN
+        :param doc: A documentation string for this type, or an array of strings which should be concatenated.
+        :type doc: STRING | list[STRING]
+        :param param_type: Specify valid types of data that may be assigned to this parameter.
+        :type param_type: CWLType | OutputRecordSchema | OutputEnumSchema | OutputArraySchema | string | Array<type>
+        :param output_binding: Describes how to handle the outputs of a process.
+        :type output_binding: CommandOutputBinding
         :param linkMerge:
+        :type linkMerge: STRING
         """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
                            streamable=streamable, doc=doc, param_type=param_type)
         self.outputSource = outputSource
         self.outputBinding = output_binding     # CommandOutputBinding
-        self.format = format
         self.linkMerge = linkMerge
 
     def get_dict(self):
@@ -263,8 +313,6 @@ class File:
         self.path = path
 
 
-
-
 class Variable:
     """
     An output variable from a workflow step
@@ -283,8 +331,6 @@ class Variable:
                                     outputSource=self.path(),
                                     param_type="File"))
         return
-
-
 
 
 class StepRun:
