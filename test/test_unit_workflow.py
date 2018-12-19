@@ -85,6 +85,33 @@ steps:
         generated = self.capture_tempfile(w.export)
         self.assertEqual(expected, generated)
 
+    def test_generates_workflow_optional_int_inputs(self):
+        w = cwlgen.Workflow()
+        # Use the same tool as the previous similar int_inputs
+        tool = cwlgen.parse_cwl("test/int_tool.cwl")
+
+        i = cwlgen.workflow.InputParameter('INTEGER', param_type='int?')
+        o1 = w.add('step', tool, {"INTEGER": i})
+        o1['OUTPUT1'].store()
+
+        expected = b"""#!/usr/bin/env cwl-runner
+
+class: Workflow
+cwlVersion: v1.0
+inputs:
+  INTEGER: {id: INTEGER, type: int?}
+outputs:
+  step_OUTPUT1: {id: step_OUTPUT1, outputSource: step/OUTPUT1, type: File}
+steps:
+  step:
+    id: step
+    in: {INTEGER: INTEGER}
+    out: [OUTPUT1]
+    run: test/int_tool.cwl
+"""
+        generated = self.capture_tempfile(w.export)
+        self.assertEqual(expected, generated)
+
 
     def test_add_requirements(self):
         w = cwlgen.Workflow()
