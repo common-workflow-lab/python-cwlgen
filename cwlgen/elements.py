@@ -17,7 +17,7 @@ CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File
 DEF_TYPE = 'null'
 
 
-def parse_param_type(param_type):
+def parse_param_type(param_type, requires_type=False):
     """
     Parses the parameter type as one of the required types:
     :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
@@ -28,6 +28,9 @@ def parse_param_type(param_type):
     :return: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
        array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     """
+
+    if not requires_type and param_type is None:
+        return None
 
     if isinstance(param_type, str) and len(param_type) > 0:
         # Must be CWLType
@@ -55,7 +58,7 @@ def parse_param_type(param_type):
     elif isinstance(param_type, CommandInputArraySchema):
         return param_type   # validate if required
     else:
-        _LOGGER.warning("Unable to detect type of param '{param_type}".format(param_type=param_type))
+        _LOGGER.warning("Unable to detect type of param '{param_type}'".format(param_type=param_type))
         return DEF_TYPE
 
 
@@ -65,7 +68,7 @@ class Parameter(object):
     '''
 
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, param_type=None):
+                 streamable=False, doc=None, param_type=None, requires_type=False):
         '''
         :param param_id: unique identifier for this parameter
         :type param_id: STRING
@@ -90,7 +93,7 @@ class Parameter(object):
         self.format = param_format
         self.streamable = streamable
         self.doc = doc
-        self.type = parse_param_type(param_type)
+        self.type = parse_param_type(param_type, requires_type)
 
     def get_dict(self):
         '''
@@ -137,7 +140,7 @@ class CommandInputArraySchema(object):
         :type input_binding: CommandLineBinding
         '''
         self.type = "array"
-        self.items = parse_param_type(items)
+        self.items = parse_param_type(items, requires_type=True)
         self.label = label
         self.inputBinding = input_binding
 

@@ -14,7 +14,9 @@ from .version import __version__
 
 from .utils import literal, literal_presenter
 from .elements import Parameter, CommandInputArraySchema, CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG
-from .workflow import Workflow, File
+from .commandlinebinding import CommandLineBinding
+from .workflow import Workflow, InputParameter, WorkflowOutputParameter, WorkflowStep, WorkflowStepInput, \
+    WorkflowStepOutput
 from .import_cwl import parse_cwl
 
 logging.basicConfig(level=logging.INFO)

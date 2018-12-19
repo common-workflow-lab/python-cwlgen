@@ -74,6 +74,36 @@ class TestCommandLineTool(unittest.TestCase):
             os.remove(tmp_file)
     """
 
+
+class TestWorkflow(unittest.TestCase):
+
+    def setUp(self):
+        self.workflow = cwlgen.Workflow("test-workflow", label="testing-workflow", doc="A method for testing "
+                                                                                       "the features of a workflow.")
+        self.workflow.inputs.append(cwlgen.InputParameter("inputParam1", "input-parameter"))
+        self.workflow.steps.append(cwlgen.WorkflowStep("step1", run="mytool.cwl"))
+        self.workflow.outputs.append(cwlgen.WorkflowOutputParameter("outputFile", output_source="step/output"))
+
+    def test_init(self):
+        self.assertEqual(self.workflow.id, "test-workflow")
+        self.assertEqual(self.workflow.label, "testing-workflow")
+        self.assertEqual(self.workflow.doc, "A method for testing the features of a workflow.")
+
+    def test_added_inputs(self):
+        self.assertEqual(len(self.workflow.inputs), 1)
+        self.assertEqual(self.workflow.inputs[0].id, "inputParam1")
+
+    def test_added_outputs(self):
+        self.assertEqual(len(self.workflow.outputs), 1)
+        self.assertEqual(self.workflow.outputs[0].id, "outputFile")
+
+    def test_added_steps(self):
+        self.assertEqual(len(self.workflow.steps), 1)
+        step = self.workflow.steps[0]
+        self.assertEqual(step.id, "step1")
+        self.assertEqual(step.run, "mytool.cwl")
+
+
 class TestParameter(unittest.TestCase):
 
     def setUp(self):

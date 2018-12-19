@@ -26,7 +26,7 @@ LINK_MERGE_METHODS = ["merge_nested", "merge_flattened"]
 #  Function(s)  ------------------------------
 
 def parse_scatter_method(scatter_method):
-    if scatter_method not in SCATTER_METHODS:
+    if scatter_method is not None and scatter_method not in SCATTER_METHODS:
         raise ValueError("The scatter method '{method}' is not a valid ScatterMethod, expected one of: {expected}"
                          .format(method=scatter_method, expected=" ,".join(SCATTER_METHODS)))
     return scatter_method
@@ -53,22 +53,25 @@ class Workflow(object):
     """
     __CLASS__ = 'Workflow'
 
-    def __init__(self, workflow_id, label=None, doc=None, cwl_version='v1.0'):
+    def __init__(self, workflow_id=None, label=None, doc=None, cwl_version='v1.0'):
         """
-        Build a workflow: https://www.commonwl.org/v1.0/Workflow.html
-        :param workflow_id:
-        :param label:
-        :param doc:
-        :param cwl_version:
+        :param workflow_id: The unique identifier for this process object.
+        :type workflow_id: STRING
+        :param label: A short, human-readable label of this process object.
+        :type label: STRING
+        :param doc: A long, human-readable description of this process object.
+        :type doc: STRING
+        :param cwl_version: CWL document version. Always required at the document root. Default: 'v1.0'
+        :type cwl_version: CWLVersion
         """
         self.id = workflow_id
         self.label = label
         self.doc = doc
         self.cwlVersion = cwl_version
 
-        self.steps = []
-        self.inputs = []
-        self.outputs = []
+        self.inputs = []            # list[InputParameter]
+        self.outputs = []           # list[WorkflowOutputParameter]
+        self.steps = []             # list[WorkflowStep]
         self.requirements = []
         self.hints = None
         self._path = None
@@ -82,7 +85,7 @@ class Workflow(object):
         cwl_workflow['inputs'] = {}
         cwl_workflow['outputs'] = {}
 
-        # steps, inputs, outputs are requied properties, so it should fail if we can't place it
+        # steps, inputs, outputs are required properties, so it should fail if we can't place it
         cwl_workflow['steps'] = {step.id: step.get_dict() for step in self.steps}
         cwl_workflow['inputs'] = {i.id: i.get_dict() for i in self.inputs}
         cwl_workflow['outputs'] = {o.id: o.get_dict() for o in self.outputs}
@@ -150,7 +153,7 @@ class InputParameter(Parameter):
         """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
-                           streamable=streamable, doc=doc, param_type=param_type)
+                           streamable=streamable, doc=doc, param_type=param_type, requires_type=False)
         self.inputBinding = input_binding
         self.default = default
 
@@ -215,7 +218,7 @@ class WorkflowStep(object):
         workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
         workflow_step['out'] = {o.id: o.get_dict() for o in self.out}
 
-        if isinstance(self.run, str):
+        if isinstance(self.run, six.string_types):
             workflow_step['run'] = self.run
         else:
             # CommandLineTool | ExpressionTool | Workflow
@@ -322,14 +325,14 @@ class WorkflowOutputParameter(Parameter):
 
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
     """
-    def __init__(self, param_id, outputSource=None, label=None, secondary_files=None, param_format=None,
+    def __init__(self, param_id, output_source=None, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, param_type=None, output_binding=None, linkMerge=None):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
         :param param_id: The unique identifier for this parameter object.
         :type param_id: STRING
-        :param outputSource: Specifies one or more workflow parameters that supply the value of to the output parameter.
-        :type outputSource: STRING | list[STRING]
+        :param output_source: Specifies one or more workflow parameters that supply the value of to the output parameter
+        :type output_source: STRING | list[STRING]
         :param label: A short, human-readable label of this object.
         :type label: STRING
         :param secondary_files: Provides a pattern or expression specifying files or directories that must be
@@ -350,8 +353,8 @@ class WorkflowOutputParameter(Parameter):
         """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
-                           streamable=streamable, doc=doc, param_type=param_type)
-        self.outputSource = outputSource
+                           streamable=streamable, doc=doc, param_type=param_type, requires_type=False)
+        self.outputSource = output_source
         self.outputBinding = output_binding     # CommandOutputBinding
         self.linkMerge = linkMerge
 
@@ -373,32 +376,32 @@ class WorkflowOutputParameter(Parameter):
 ############################
 # Workflow construction classes
 
-class File:
-    """
-    An abstract file reference used for generating workflows
-    """
-    def __init__(self, path):
-        self.path = path
-
-
-class Variable:
-    """
-    An output variable from a workflow step
-    """
-    def __init__(self, workflow, step, name):
-        self.step = step
-        self.name = name
-        self.workflow = workflow
-
-    def path(self):
-        return "%s/%s" % (self.step, self.name)
-
-    def store(self):
-        self.workflow.outputs.append(
-            WorkflowOutputParameter(self.path().replace("/", "_"),
-                                    outputSource=self.path(),
-                                    param_type="File"))
-        return
+# class File:
+#     """
+#     An abstract file reference used for generating workflows
+#     """
+#     def __init__(self, path):
+#         self.path = path
+#
+#
+# class Variable:
+#     """
+#     An output variable from a workflow step
+#     """
+#     def __init__(self, workflow, step, name):
+#         self.step = step
+#         self.name = name
+#         self.workflow = workflow
+#
+#     def path(self):
+#         return "%s/%s" % (self.step, self.name)
+#
+#     def store(self):
+#         self.workflow.outputs.append(
+#             WorkflowOutputParameter(self.path().replace("/", "_"),
+#                                     outputSource=self.path(),
+#                                     param_type="File"))
+#         return
 
 
 # class StepRun:
