@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
 
+import six
+
+from .elements import parse_type, get_type_dict
+
 
 class Requirement(ABC):
     '''
@@ -65,30 +69,128 @@ class SchemaDefRequirement(Requirement):
         base = Requirement.get_dict(self)
         base['types'] = [t.get_dict() for t in self.types]
 
-    # class InputRecordSchema(object):
-    #     """
-    #     Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordSchema
-    #     """
-    #     def __init__(self, label=None, name=None):
-    #         """
-    #         :param fields: Defines the fields of the record.
-    #         :type fields: array<InputRecordField>
-    #         :param label: A short, human-readable label of this object.
-    #         :param name: NF (Name of the InputRecord)
-    #         """
-    #         self.fields = []
-    #         self.label = label
-    #         self.name = name
-    #
-    #     def get_dict(self):
-    #         schema = {"type": "record"}
-    #         if self.fields:
-    #             schema["fields"] = {f.name: f.get_dict() for f in self.fields}
-    #         if self.label:
-    #             schema["label"] = self.label
-    #         if self.name:
-    #             schema["name"] = self.name
-    #         return schema
+    class InputRecordSchema(object):
+        """
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordSchema
+        """
+        def __init__(self, label=None, name=None):
+            """
+            :param fields: Defines the fields of the record.
+            :type fields: array<InputRecordField>
+            :param label: A short, human-readable label of this object.
+            :param name: NF (Name of the InputRecord)
+            """
+            self.fields = []
+            self.label = label
+            self.name = name
+
+        def get_dict(self):
+            schema = {"type": "record"}
+            if self.fields:
+                schema["fields"] = {f.name: f.get_dict() for f in self.fields}
+            if self.label:
+                schema["label"] = self.label
+            if self.name:
+                schema["name"] = self.name
+            return schema
+
+    class InputRecordField(object):
+        """
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordField
+        """
+        def __init__(self, name, input_type, doc=None, input_binding=None, label=None):
+            """
+            :param name:
+            :param input_type:
+            :type input_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                        array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+            :param doc: A documentation string for this field
+            :param input_binding:
+            :type input_binding: CommandLineBinding
+            :param label:
+            """
+            self.name = name
+            self.type = parse_type(input_type, requires_type=True)
+            self.doc = doc
+            self.inputBinding = input_binding
+            self.label = label
+
+        def get_dict(self):
+            base = {
+                'name': self.name,
+                "type": get_type_dict(self.type)
+            }
+
+            if self.doc:
+                base["doc"] = self.doc
+            if self.inputBinding:
+                base["inputBinding"] = self.inputBinding.get_dict()
+            if self.label:
+                base["label"] = self.label
+            return base
+
+        class InputEnumSchema(object):
+            """
+            Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputEnumSchema
+            """
+            def __init__(self, symbols, label=None, name=None, input_binding=None):
+                """
+                :param symbols: Defines the set of valid symbols.
+                :type symbols: list[STRING]
+                :param label: A short, human-readable label of this object.
+                :type label: STRING
+                :param name:
+                :type name: STRING
+                :param input_binding:
+                :type input_binding: CommandLineBinding
+                """
+                self.symbols = symbols
+                self.label = label
+                self.name = name
+                self.inputBinding = input_binding
+
+            def get_dict(self):
+                base = {
+                    'symbols': self.symbols,
+                    'type': 'enum'
+                }
+                if self.label:
+                    base["label"] = self.label
+                if self.name:
+                    base["name"] = self.name
+                if self.inputBinding:
+                    base["inputBinding"] = self.inputBinding
+                return base
+
+        class InputArraySchema(object):
+            """
+            Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputArraySchema
+            """
+
+            def __init__(self, items, label, input_binding):
+                """
+                :param items: Defines the type of the array elements.
+                :type items: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                        array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+                :param label: A short, human-readable label of this object.
+                :type label: STRING
+                :param input_binding:
+                :type input_binding: CommandLineBinding
+                """
+                self.items = items
+                self.label = label
+                self.inputBinding = input_binding
+
+            def get_dict(self):
+                base = {
+                    'items': get_type_dict(self.items),
+                    'type': 'enum'
+                }
+                if self.label:
+                    base["label"] = self.label
+                if self.inputBinding:
+                    base["inputBinding"] = self.inputBinding
+                return base
 
 
 class SoftwareRequirement(Requirement):

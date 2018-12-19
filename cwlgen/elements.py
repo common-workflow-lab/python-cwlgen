@@ -17,7 +17,7 @@ CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File
 DEF_TYPE = 'null'
 
 
-def parse_param_type(param_type, requires_type=False):
+def parse_type(param_type, requires_type=False):
     """
     Parses the parameter type as one of the required types:
     :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
@@ -53,13 +53,34 @@ def parse_param_type(param_type, requires_type=False):
         return param_type
 
     elif isinstance(param_type, list):
-        return [parse_param_type(p) for p in param_type]
+        return [parse_type(p) for p in param_type]
 
     elif isinstance(param_type, CommandInputArraySchema):
         return param_type   # validate if required
     else:
         _LOGGER.warning("Unable to detect type of param '{param_type}'".format(param_type=param_type))
         return DEF_TYPE
+
+
+def get_type_dict(param_type):
+    """
+    Convets
+    :param param_type:
+    :type param_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+    :return: str | dict
+    """
+    if isinstance(param_type, str):
+        return param_type
+    elif isinstance(param_type, list):
+        return [get_type_dict(p) for p in param_type]
+    elif isinstance(param_type, dict):
+        return param_type
+    elif getattr(param_type, 'get_dict', None) and callable(getattr(param_type, 'get_dict', None)):
+        return param_type.get_dict()
+    else:
+        raise Exception("Could not convert '{param_type}' to dictionary as it was unrecognised"
+                        .format(param_type=type(param_type)))
 
 
 class Parameter(object):
@@ -93,7 +114,7 @@ class Parameter(object):
         self.format = param_format
         self.streamable = streamable
         self.doc = doc
-        self.type = parse_param_type(param_type, requires_type)
+        self.type = parse_type(param_type, requires_type)
 
     def get_dict(self):
         '''
@@ -140,7 +161,7 @@ class CommandInputArraySchema(object):
         :type input_binding: CommandLineBinding
         '''
         self.type = "array"
-        self.items = parse_param_type(items, requires_type=True)
+        self.items = parse_type(items, requires_type=True)
         self.label = label
         self.inputBinding = input_binding
 
