@@ -99,14 +99,24 @@ class Parameter(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False}
-        if dict_param['type'] != 'File':
-            # Remove what is only for File
-            for key in ['format', 'secondaryFiles', 'streamable']:
-                try:
-                    del(dict_param[key])
-                except KeyError:
-                    pass
+        manual = ["type"]
+        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False and k not in manual}
+
+        should_have_file_related_keys = False
+
+        if isinstance(self.type, str):
+            dict_param["type"] = self.type
+            should_have_file_related_keys = self.type == "File"
+
+        elif isinstance(self.type, CommandInputArraySchema):
+            dict_param["type"] = self.type.get_dict()
+            should_have_file_related_keys = self.type.type == "File"
+
+        keys_to_remove = [k for k in ['format', 'secondaryFiles', 'streamable'] if k in dict_param]
+
+        if not should_have_file_related_keys:
+            for key in keys_to_remove:
+                del(dict_param[key])
         return dict_param
 
 
@@ -129,4 +139,15 @@ class CommandInputArraySchema(object):
         self.type = "array"
         self.items = parse_param_type(items)
         self.label = label
-        self.input_binding = input_binding
+        self.inputBinding = input_binding
+
+    def get_dict(self):
+        '''
+        Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
+        '''
+        dict_binding = {k: v for k, v in vars(self).items() if v is not None}
+        return dict_binding
+
