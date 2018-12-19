@@ -13,6 +13,7 @@ from .version import __version__
 from .utils import literal, literal_presenter
 from .elements import Parameter, CWL_SHEBANG
 
+
 # Logging setup
 
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ def parse_link_merge_method(link_merge):
     if link_merge not in LINK_MERGE_METHODS:
         _LOGGER.warning("The link merge method '{method}' is not a valid LinkMergeMethod, expected one of: {expected}. "
                         "This value will be null which CWL defaults to 'merge_nested'"
-                         .format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
+                        .format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
         return None
     return link_merge
 
@@ -44,7 +45,11 @@ def parse_link_merge_method(link_merge):
 
 class Workflow(object):
     """
-    Contain all informations to describe a CWL workflow.
+    A workflow describes a set of steps and the dependencies between those steps.
+    When a step produces output that will be consumed by a second step,
+    the first step is a dependency of the second step.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
 
@@ -115,11 +120,14 @@ class Workflow(object):
             out_write.write(ruamel.yaml.dump(cwl_workflow))
             out_write.close()
 
-    def add(self, step_id, tool, params):
-        return StepRun(self, step_id, tool, params)
+    # def add(self, step_id, tool, params):
+    #     return StepRun(self, step_id, tool, params)
 
 
 class InputParameter(Parameter):
+    """
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputParameter
+    """
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
                  streamable=False, doc=None, input_binding=None, default=None, param_type=None):
         """
@@ -160,6 +168,13 @@ class InputParameter(Parameter):
 
 
 class WorkflowStep(object):
+    """
+    A workflow step is an executable element of a workflow. It specifies the underlying process implementation
+    (such as CommandLineTool or another Workflow) in the run field and connects the input and output parameters
+    of the underlying process to workflow parameters.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStep
+    """
     def __init__(self, step_id, run, label=None, doc=None, scatter=None, scatter_method=None):
         """
         :param step_id: The unique identifier for this workflow step.
@@ -226,11 +241,14 @@ class WorkflowStep(object):
 
 
 class WorkflowStepInput(object):
+    """
+    The input of a workflow step connects an upstream parameter (from the workflow inputs, or the outputs of
+    other workflows steps) with the input parameters of the underlying step.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepInput
+    """
     def __init__(self, input_id, source=None, link_merge=None, default=None, value_from=None):
         """
-        The input of a workflow step connects an upstream parameter (from the workflow inputs, or the outputs of
-        other workflows steps) with the input parameters of the underlying step.
-        Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepInput
         :param input_id: A unique identifier for this workflow input parameter.
         :type input_id: STRING
         :param source: Specifies one or more workflow parameters that will provide input to the underlying step parameter.
