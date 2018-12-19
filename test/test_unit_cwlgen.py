@@ -61,6 +61,10 @@ class TestParameter(unittest.TestCase):
         self.param = cwlgen.Parameter('an_id', param_type='File', label='a_label',\
                                      doc='a_doc', param_format='a_format',\
                                      streamable=True, secondary_files='sec_files')
+        self.nonfile_param = cwlgen.Parameter('non-file', param_type="string", label="a string",
+                                              streamable=True, secondary_files=[".txt"], doc="documentation here")
+
+        self.array_param = cwlgen.Parameter('an array', param_type='string[]', label="an array of strings")
 
     def test_init(self):
         self.assertEqual(self.param.id, 'an_id')
@@ -79,6 +83,21 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(dict_test['label'], 'a_label')
         self.assertEqual(dict_test['secondaryFiles'], 'sec_files')
         self.assertTrue(dict_test['streamable'])
+
+    def test_nonfile_get_dict(self):
+        dict_test = self.nonfile_param.get_dict()
+        self.assertEqual(dict_test['type'], 'string')
+        self.assertEqual(dict_test['doc'], self.nonfile_param.doc)
+        self.assertNotIn('secondaryFiles', dict_test)
+        self.assertNotIn('streamable', dict_test)
+        self.assertNotIn('format', dict_test)
+
+    def test_array(self):
+        dict_test = self.array_param.get_dict()
+        td = dict_test['type']
+        self.assertIsInstance(td, dict)
+        self.assertEqual(td['type'], 'array')
+        self.assertEqual(td['items'], self.array_param.type.items)
 
 
 class TestCommandInputParameter(unittest.TestCase):
