@@ -34,12 +34,25 @@ def parse_param_type(param_type):
         if optional:
             _LOGGER.debug("Detected {param_type} to be optional".format(param_type=param_type))
         cwltype = param_type[:-1] if optional else param_type
+
+        # check for arrays
+        if len(cwltype) > 2 and cwltype[-2:] == "[]":
+            array_type = CommandInputArraySchema(items=cwltype[:-2])
+            # How to make arrays optional input: https://www.biostars.org/p/233562/#234089
+            return [DEF_TYPE, array_type] if optional else array_type
+
         if cwltype not in CWL_TYPE:
             _LOGGER.warning("The type '{param_type}' is not a valid CWLType, expected one of: {types}"
                             .format(param_type=param_type, types=", ".join(str(x) for x in CWL_TYPE)))
             _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
             return DEF_TYPE
         return param_type
+
+    elif isinstance(param_type, list):
+        return [parse_param_type(p) for p in param_type]
+
+    elif isinstance(param_type, CommandInputArraySchema):
+        return param_type   # validate if required
     else:
         _LOGGER.warning("Unable to detect type of param '{param_type}".format(param_type=param_type))
         return DEF_TYPE
@@ -94,3 +107,22 @@ class Parameter(object):
                 except KeyError:
                     pass
         return dict_param
+
+
+class CommandInputArraySchema(object):
+    '''
+    Based on the parameter set out in the CWL spec:
+    https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputArraySchema
+    '''
+
+    def __init__(self, items=None, label=None, input_binding=None):
+        '''
+
+        :param items:
+        :param label:
+        :param input_binding:
+        '''
+        self.type = "array"
+        self.items = parse_param_type(items)
+        self.label = label
+        self.input_binding = input_binding
