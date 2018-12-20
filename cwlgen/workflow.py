@@ -25,19 +25,32 @@ LINK_MERGE_METHODS = ["merge_nested", "merge_flattened"]
 
 #  Function(s)  ------------------------------
 
-def parse_scatter_method(scatter_method):
-    if scatter_method is not None and scatter_method not in SCATTER_METHODS:
-        raise ValueError("The scatter method '{method}' is not a valid ScatterMethod, expected one of: {expected}"
+def parse_scatter_method(scatter_method, required=False):
+    if scatter_method is None and not required:
+        return None
+    elif scatter_method not in SCATTER_METHODS:
+        if required:
+            raise Exception("The scatter method '{method}' is not a valid ScatterMethod and requires one of: {expected}"
+                            .format(method=scatter_method, expected=" ,".join(SCATTER_METHODS)))
+        elif scatter_method is not None:
+            _LOGGER.info("The scatter method '{method}' is not a valid ScatterMethod, expected one of: {expected}"
                          .format(method=scatter_method, expected=" ,".join(SCATTER_METHODS)))
+            return None
     return scatter_method
 
 
-def parse_link_merge_method(link_merge):
-    if link_merge not in LINK_MERGE_METHODS:
-        _LOGGER.warning("The link merge method '{method}' is not a valid LinkMergeMethod, expected one of: {expected}. "
-                        "This value will be null which CWL defaults to 'merge_nested'"
-                        .format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
+def parse_link_merge_method(link_merge, required=False):
+    if link_merge is None and not required:
         return None
+    elif link_merge not in LINK_MERGE_METHODS:
+        if required:
+            raise Exception("The link merge method '{method}' is not a valid LinkMergeMethod and requires one of:"
+                            " {expected}. ".format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
+        elif link_merge is not None:
+            _LOGGER.info("The link merge method '{method}' is not a valid LinkMergeMethod, expected one of:"
+                            " {expected}. This value will be null which CWL defaults to 'merge_nested'"
+                            .format(method=link_merge, expected=" ,".join(LINK_MERGE_METHODS)))
+            return None
     return link_merge
 
 
@@ -90,13 +103,8 @@ class Workflow(object):
         cwl_workflow['inputs'] = {i.id: i.get_dict() for i in self.inputs}
         cwl_workflow['outputs'] = {o.id: o.get_dict() for o in self.outputs}
 
-        # Add requirements.
-        requirements = {}
-        for requirement in self.requirements:
-            requirement.add(requirements)
-
-        if requirements:
-            cwl_workflow['requirements'] = requirements
+        if self.requirements:
+            cwl_workflow['requirements'] = {r.req_class: r.get_dict() for r in self.requirements}
 
         if self.hints:
             # can be array<Any> | dict<class, Any>
@@ -219,7 +227,7 @@ class WorkflowStep(object):
         workflow_step = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
 
         workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
-        workflow_step['out'] = {o.id: o.get_dict() for o in self.out}
+        workflow_step['out'] = [o.id for o in self.out]
 
         if isinstance(self.run, six.string_types):
             workflow_step['run'] = self.run
