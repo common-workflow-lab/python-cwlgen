@@ -17,6 +17,7 @@ from .elements import Parameter, CommandInputArraySchema, CWL_VERSIONS, DEF_VERS
 from .commandlinebinding import CommandLineBinding
 from .workflow import Workflow, InputParameter, WorkflowOutputParameter, WorkflowStep, WorkflowStepInput, \
     WorkflowStepOutput
+from .requirements import *
 from .import_cwl import parse_cwl
 
 logging.basicConfig(level=logging.INFO)
