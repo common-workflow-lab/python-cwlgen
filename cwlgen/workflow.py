@@ -150,6 +150,9 @@ class InputParameter(Parameter):
         :type doc: STRING
         :param param_type: type of data assigned to the parameter
         :type param_type: STRING corresponding to CWLType
+        :param input_binding:
+        :type input_binding: CommandLineBinding
+
         """
         Parameter.__init__(self, param_id=param_id, label=label,
                            secondary_files=secondary_files, param_format=param_format,
@@ -272,8 +275,7 @@ class WorkflowStepInput(object):
         self.source = source
         self.linkMerge = parse_link_merge_method(link_merge)
         self.default = default
-        self.valueFrom = self.valueFrom
-
+        self.valueFrom = value_from
 
     def get_dict(self):
         """
