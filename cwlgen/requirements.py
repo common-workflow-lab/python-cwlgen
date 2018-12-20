@@ -34,10 +34,10 @@ class InlineJavascriptReq(Requirement):
     def __init__(self, expression_lib=None):
         '''
         :param expression_lib: List of Strings
-        :type expression_lib: STRING | list[STRING]
+        :type expression_lib: list[STRING]
         '''
         Requirement.__init__(self, 'InlineJavascriptRequirement')
-        self.expressionLib = expression_lib
+        self.expressionLib = [expression_lib] if isinstance(expression_lib, six.string_types) else expression_lib
 
     def get_dict(self):
         base = Requirement.get_dict(self)
