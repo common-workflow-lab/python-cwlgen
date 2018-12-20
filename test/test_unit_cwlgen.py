@@ -103,6 +103,37 @@ class TestWorkflow(unittest.TestCase):
         self.assertEqual(step.id, "step1")
         self.assertEqual(step.run, "mytool.cwl")
 
+    def test_serialization(self):
+        d = self.workflow.get_dict()
+        self.assertIsInstance(d, dict)
+
+
+class TestSubworkflow(unittest.TestCase):
+    def setUp(self):
+        self.subworkflow = cwlgen.Workflow("subworkflow", doc="This is the subworkflow")
+        self.workflow = cwlgen.Workflow("workflow", doc="this will embed this subworkflow")
+
+        self.workflow.steps.append(cwlgen.WorkflowStep("subworkflow-step", run=self.subworkflow))
+
+    def test_subworkflow(self):
+        sw = self.workflow.steps[0].run
+        self.assertIsInstance(sw, cwlgen.Workflow)
+        self.assertEqual(sw.id, self.subworkflow.id)
+
+    def test_serialization(self):
+        d = self.workflow.get_dict()
+        self.assertIn("steps", d)
+        steps = d["steps"]              # this should be a dictionary, so we look at 'key in dict'
+        step_id = self.workflow.steps[0].id
+        self.assertIn(step_id, steps)
+        sw_step = steps[step_id]
+        self.assertIsInstance(sw_step, dict)
+        self.assertIn("run", sw_step)
+        sw = sw_step["run"]
+        self.assertIn("class", sw)
+        sw_class = sw["class"]
+        self.assertEqual(sw_class, "Workflow")
+
 
 class TestParameter(unittest.TestCase):
 
@@ -243,32 +274,25 @@ class TestCommandOutputBinding(unittest.TestCase):
         self.assertEqual(dict_test['outputEval'], 'eval')
 
 
-class TestRequirement(unittest.TestCase):
-    pass
-    # def setUp(self):
-    #     self.requirement = cwlgen.Requirement('a_class')
-    #
-    # def test_init(self):
-    #     self.assertEqual(self.requirement.req_class, 'a_class')
-
-
 class TestInlineJavascriptReq(unittest.TestCase):
 
     def setUp(self):
         self.js_req = cwlgen.InlineJavascriptReq(expression_lib='expression')
+        self.js_req_nolib = cwlgen.InlineJavascriptReq()
 
     def test_init(self):
         self.assertEqual(self.js_req.req_class, 'InlineJavascriptRequirement')
         self.assertEqual(self.js_req.expressionLib, ['expression'])
+        self.assertEqual(self.js_req_nolib.req_class, 'InlineJavascriptRequirement')
+        self.assertIsNone(self.js_req_nolib.expressionLib)
 
-    def test_add(self):
+    def test_export(self):
         tool = self.js_req.get_dict()
-        self.assertEqual(tool, {'class': 'InlineJavascriptRequirement', 'expressionLib': ['expression']})
+        self.assertEqual(tool, {'expressionLib': ['expression']})
 
-    def test_add_without_lib(self):
-        req = cwlgen.InlineJavascriptReq()
-        tool = req.get_dict()
-        self.assertEqual(tool, {'class': 'InlineJavascriptRequirement'})
+    def test_export_without_lib(self):
+        tool = self.js_req_nolib.get_dict()
+        self.assertEqual(tool, {})
 
 
 class TestDockerRequirement(unittest.TestCase):
@@ -279,6 +303,7 @@ class TestDockerRequirement(unittest.TestCase):
                                                 docker_image_id='id', docker_output_dir='dir')
 
     def test_init(self):
+        self.assertEqual(self.dock_req.req_class, 'DockerRequirement')
         self.assertEqual(self.dock_req.dockerPull, 'pull')
         self.assertEqual(self.dock_req.dockerLoad, 'load')
         self.assertEqual(self.dock_req.dockerFile, 'file')
@@ -289,7 +314,6 @@ class TestDockerRequirement(unittest.TestCase):
     def test_export(self):
         d = self.dock_req.get_dict()
         comparison = {
-            'class': 'DockerRequirement',
             'dockerFile': 'file',
             'dockerImageId': 'id',
             'dockerImport': 'import',
@@ -305,9 +329,12 @@ class TestSubworkflowFeatureRequirement(unittest.TestCase):
     def setUp(self):
         self.req = cwlgen.SubworkflowFeatureRequirement()
 
+    def test_init(self):
+        self.assertEqual(self.req.req_class, 'SubworkflowFeatureRequirement')
+
     def test_add(self):
         tool = self.req.get_dict()
-        self.assertEqual(tool, {'class': 'SubworkflowFeatureRequirement'})
+        self.assertEqual(tool, {}) # {'class': ''})
 
 
 ###########  Main  ###########
