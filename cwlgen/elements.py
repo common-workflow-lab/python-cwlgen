@@ -37,7 +37,10 @@ def parse_type(param_type, requires_type=False):
         optional = param_type[-1] == "?"
         if optional:
             _LOGGER.debug("Detected {param_type} to be optional".format(param_type=param_type))
-        cwltype = param_type[:-1] if optional else param_type
+            cwltype = param_type[:-1]
+        else:
+            cwltype = param_type
+        # cwltype = param_type[:-1] if optional else param_type
 
         # check for arrays
         if len(cwltype) > 2 and cwltype[-2:] == "[]":
