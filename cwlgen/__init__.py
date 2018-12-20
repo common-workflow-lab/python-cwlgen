@@ -126,13 +126,9 @@ class CommandLineTool(object):
                 if '$' not in v:
                     cwl_tool[self.namespaces.name][k] = v
 
-        # Add requirements.
-        requirements = {}
-        for requirement in self.requirements:
-            requirement.add(requirements)
+        if self.requirements:
+            cwl_tool['requirements'] = {r.req_class: r.get_dict() for r in self.requirements}
 
-        if requirements:
-            cwl_tool['requirements'] = requirements
         return cwl_tool
 
     def export(self, outfile=None):

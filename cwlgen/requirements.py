@@ -20,7 +20,7 @@ class Requirement(ABC):
 
     @abstractmethod
     def get_dict(self):
-        return {"class": self.req_class}
+        return {} # {"class": self.req_class}
 
 
 class InlineJavascriptReq(Requirement):
