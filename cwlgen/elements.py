@@ -129,8 +129,7 @@ class CommandInputArraySchema(object):
     def __init__(self, items=None, label=None, input_binding=None):
         '''
         :param items: Defines the type of the array elements.
-        :type: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
-       array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
+        :type: `CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string | array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>`
         :param label: A short, human-readable label of this object.
         :type label: STRING
         :param input_binding:
