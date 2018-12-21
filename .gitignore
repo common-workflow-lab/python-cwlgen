@@ -6,3 +6,5 @@ build/
 cwlgen.egg*
 dist/
 *.pyc
+.DS_Store
+.idea/
