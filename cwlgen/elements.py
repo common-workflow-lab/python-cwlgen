@@ -25,6 +25,7 @@ class CwlTypes:
     FILE = "File"
     DIRECTORY = "Directory"
     STDOUT = "stdout"
+    ARRAY = "array"
 
     NON_NULL_TYPES = [BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
     TYPES = [NULL, None, BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
@@ -175,7 +176,7 @@ class CommandInputArraySchema(object):
         :param input_binding:
         :type input_binding: CommandLineBinding
         '''
-        self.type = "array"
+        self.type = CwlTypes.ARRAY
         self.items = parse_type(items, requires_type=True)
         self.label = label
         self.inputBinding = input_binding
