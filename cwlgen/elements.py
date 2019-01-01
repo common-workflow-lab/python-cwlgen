@@ -10,11 +10,24 @@ CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
                 'draft-3.dev4', 'draft-3.dev5', 'draft-3', 'draft-4.dev1',
                 'draft-4.dev2', 'draft-4.dev3', 'v1.0.dev4', 'v1.0']
 DEF_VERSION = 'v1.0'
-NON_NULL_CWL_TYPE = ['boolean', 'int', 'long', 'float', 'double', 'string', 'File',
-                     'Directory', 'stdout']
-CWL_TYPE = ['null', 'boolean', 'int', 'long', 'float', 'double', 'string', 'File',
-            'Directory', 'stdout', None]
-DEF_TYPE = 'null'
+
+
+class CwlTypes:
+    DEF_TYPE = "null"
+
+    NULL = "null"
+    BOOLEAN = "boolean"
+    INT = "integer"
+    LONG = "long"
+    FLOAT = "float"
+    DOUBLE = "double"
+    STRING = "string"
+    FILE = "File"
+    DIRECTORY = "Directory"
+    STDOUT = "stdout"
+
+    NON_NULL_TYPES = [BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
+    TYPES = [NULL, None, BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
 
 
 def parse_type(param_type, requires_type=False):
@@ -46,13 +59,13 @@ def parse_type(param_type, requires_type=False):
         if len(cwltype) > 2 and cwltype[-2:] == "[]":
             array_type = CommandInputArraySchema(items=cwltype[:-2])
             # How to make arrays optional input: https://www.biostars.org/p/233562/#234089
-            return [DEF_TYPE, array_type] if optional else array_type
+            return [CwlTypes.DEF_TYPE, array_type] if optional else array_type
 
-        if cwltype not in CWL_TYPE:
+        if cwltype not in CwlTypes.TYPES:
             _LOGGER.warning("The type '{param_type}' is not a valid CWLType, expected one of: {types}"
-                            .format(param_type=param_type, types=", ".join(str(x) for x in CWL_TYPE)))
-            _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
-            return DEF_TYPE
+                            .format(param_type=param_type, types=", ".join(str(x) for x in CwlTypes.TYPES)))
+            _LOGGER.warning("type is set to {}.".format(CwlTypes.DEF_TYPE))
+            return CwlTypes.DEF_TYPE
         return param_type
 
     elif isinstance(param_type, list):
@@ -62,7 +75,7 @@ def parse_type(param_type, requires_type=False):
         return param_type   # validate if required
     else:
         _LOGGER.warning("Unable to detect type of param '{param_type}'".format(param_type=param_type))
-        return DEF_TYPE
+        return CwlTypes.DEF_TYPE
 
 
 def get_type_dict(param_type):
