@@ -12,7 +12,6 @@ import logging
 # External libraries
 import ruamel.yaml as ryaml
 import cwlgen
-import cwlgen.workflow
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
@@ -626,7 +625,7 @@ class StepsParser(object):
         :type in_el:
         """
         for key, val in in_el.items():
-            o = cwlgen.workflow.WorkflowStepInput(key)
+            o = cwlgen.WorkflowStepInput(key)
             if isinstance(val, dict) and 'default' in val:
                 o.default = val['default']
             else:
@@ -635,7 +634,7 @@ class StepsParser(object):
 
     def _load_out(self, step_obj, in_el):
         for val in in_el:
-            o = cwlgen.workflow.WorkflowStepOutput(val)
+            o = cwlgen.WorkflowStepOutput(val)
             step_obj.outputs.append(o)
 
     def _load_run(self, step_obj, in_el):
@@ -656,7 +655,7 @@ class StepsParser(object):
         :type outbinding_el: DICT
         """
         for key, value in steps_elm.items():
-            step_obj = cwlgen.workflow.WorkflowStep(key)
+            step_obj = cwlgen.WorkflowStep(key)
             for key, element in value.items():
                 try:
                     getattr(self, '_load_{}'.format(key))(step_obj, element)
@@ -678,7 +677,7 @@ class CWLWorkflowParser(object):
         :param cwl_dict: Full content of CWL file
         :type cwl_dict: DICT
         """
-        return cwlgen.workflow.Workflow()
+        return cwlgen.Workflow()
 
     def import_cwl(self, cwl_path):
         """
@@ -687,7 +686,7 @@ class CWLWorkflowParser(object):
         :param cwl_path: Path of the CWL tool to be loaded.
         :type cwl_path: STRING
         :return: CWL tool content in cwlgen model.
-        :rtype: :class:`cwlgen.workflow.Workflow`
+        :rtype: :class:`cwlgen.Workflow`
         """
         with open(cwl_path) as yaml_file:
             cwl_dict = ryaml.load(yaml_file, Loader=ryaml.Loader)
@@ -717,7 +716,7 @@ class CWLWorkflowParser(object):
         Load the content of cwlVersion into the tool.
 
         :param tool: Tool object from cwlgen
-        :type tool: :class:`cwlgen.workflow.Workflow`
+        :type tool: :class:`cwlgen.Workflow`
         :param cwl_version_el: Content of cwlVersion
         :type cwl_version_el: STRING
         """
@@ -728,7 +727,7 @@ class CWLWorkflowParser(object):
         Display message to inform that cwlgen only deal with Workflow for the moment.
 
         :param tool: Workflow object from cwlgen
-        :type tool: :class:`cwlgen.workflow.Workflow`
+        :type tool: :class:`cwlgen.Workflow`
         :param class_el: Content of class
         :type class_el: STRING
         """
@@ -743,7 +742,7 @@ class CWLWorkflowParser(object):
         Load the content of inputs into the tool.
 
         :param tool: Tool object from cwlgen
-        :type tool: :class:`cwlgen.workflow.Workflow`
+        :type tool: :class:`cwlgen.Workflow`
         :param inputs_el: Content of inputs
         :type inputs_el: LIST or DICT
         """
@@ -755,7 +754,7 @@ class CWLWorkflowParser(object):
         Load the content of inputs into the tool.
 
         :param tool: Tool object from cwlgen
-        :type tool: :class:`cwlgen.workflow.Workflow`
+        :type tool: :class:`cwlgen.Workflow`
         :param outputs_el: Content of outputs
         :type outputs_el: LIST or DICT
         """
@@ -767,7 +766,7 @@ class CWLWorkflowParser(object):
         Load the content of inputs into the tool.
 
         :param tool: Tool object from cwlgen
-        :type tool: :class:`cwlgen.workflow.Workflow`
+        :type tool: :class:`cwlgen.Workflow`
         :param outputs_el: Content of outputs
         :type outputs_el: LIST or DICT
         """
