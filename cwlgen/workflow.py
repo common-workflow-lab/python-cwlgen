@@ -292,9 +292,11 @@ class WorkflowStepInput(object):
         :rtype: DICT
         """
         dict_param = {
-            'id': self.id,
-            'source': self.source
+            'id': self.id
         }
+
+        if self.source:
+            dict_param['source'] = self.source
 
         if self.linkMerge:
             dict_param['linkMerge'] = self.linkMerge

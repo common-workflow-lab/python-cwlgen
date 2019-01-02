@@ -108,6 +108,18 @@ class TestWorkflow(unittest.TestCase):
         self.assertIsInstance(d, dict)
 
 
+class TestWorkflowStepInput(unittest.TestCase):
+    def test_optional_source(self):
+        wsi = cwlgen.WorkflowStepInput("test", None).get_dict()
+        self.assertNotIn("source", wsi)
+
+    def test_required_source(self):
+        source = "step_id/source"
+        wsi = cwlgen.WorkflowStepInput("required-input", source=source).get_dict()
+        self.assertIn("source", wsi)
+        self.assertEqual(wsi["source"], source)
+
+
 class TestSubworkflow(unittest.TestCase):
     def setUp(self):
         self.subworkflow = cwlgen.Workflow("subworkflow", doc="This is the subworkflow")
