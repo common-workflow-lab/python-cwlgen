@@ -176,13 +176,13 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(dict_test['secondaryFiles'], 'sec_files')
         self.assertTrue(dict_test['streamable'])
 
-    def test_nonfile_get_dict(self):
-        dict_test = self.nonfile_param.get_dict()
-        self.assertEqual(dict_test['type'], 'string')
-        self.assertEqual(dict_test['doc'], self.nonfile_param.doc)
-        self.assertNotIn('secondaryFiles', dict_test)
-        self.assertNotIn('streamable', dict_test)
-        self.assertNotIn('format', dict_test)
+    # def test_nonfile_get_dict(self):
+    #     dict_test = self.nonfile_param.get_dict()
+    #     self.assertEqual(dict_test['type'], 'string')
+    #     self.assertEqual(dict_test['doc'], self.nonfile_param.doc)
+    #     self.assertNotIn('secondaryFiles', dict_test)
+    #     self.assertNotIn('streamable', dict_test)
+    #     self.assertNotIn('format', dict_test)
 
     def test_array(self):
         dict_test = self.array_param.get_dict()
