@@ -189,5 +189,11 @@ class CommandInputArraySchema(object):
         :rtype: DICT
         '''
         dict_binding = {k: v for k, v in vars(self).items() if v is not None}
+
+        if hasattr(self.items, "get_dict"):
+            dict_binding["items"] = self.items.get_dict()
+        else:
+            dict_binding["items"] = str(self.items)
+
         return dict_binding
 
