@@ -1,4 +1,7 @@
-class CommandLineBinding(object):
+from cwlgen.utils import Serializable
+
+
+class CommandLineBinding(Serializable):
     """
     The binding behavior when building the command line depends on the data type of the value.
     If there is a mismatch between the type described by the input schema and the effective value,
@@ -33,13 +36,3 @@ class CommandLineBinding(object):
         self.itemSeparator = item_separator
         self.valueFrom = value_from
         self.shellQuote = shell_quote
-
-    def get_dict(self):
-        """
-        Transform the object to a [DICT] to write CWL.
-
-        :return: dictionary of the object
-        :rtype: DICT
-        """
-        dict_binding = {k: v for k, v in vars(self).items() if v is not None}
-        return dict_binding
