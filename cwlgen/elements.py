@@ -1,5 +1,7 @@
 import logging
 
+from cwlgen.utils import Serializable
+
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
 
@@ -100,7 +102,7 @@ def get_type_dict(param_type):
                         .format(param_type=type(param_type)))
 
 
-class Parameter(object):
+class Parameter(Serializable):
     '''
     Based class for parameters (common field of Input and Output) for CommandLineTool and Workflow
     '''
@@ -125,6 +127,7 @@ class Parameter(object):
         :param param_type: type of data assigned to the parameter
         :type param_type: STRING corresponding to CWLType
         '''
+
         self.id = param_id
         self.label = label
         self.secondaryFiles = secondary_files
@@ -133,35 +136,39 @@ class Parameter(object):
         self.doc = doc
         self.type = parse_type(param_type, requires_type)
 
-    def get_dict(self):
-        '''
-        Transform the object to a [DICT] to write CWL.
+    #
+    # def get_dict(self):
+    #     '''
+    #     Transform the object to a [DICT] to write CWL.
+    #
+    #     :return: dictionnary of the object
+    #     :rtype: DICT
+    #     '''
+    #     manual = ["type"]
+    #     dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False and k not in manual}
+    #
+    #     should_have_file_related_keys = False
+    #
+    #     if isinstance(self.type, str):
+    #         dict_param["type"] = self.type
+    #         should_have_file_related_keys = self.type == "File"
+    #
+    #     elif isinstance(self.type, CommandInputArraySchema):
+    #         dict_param["type"] = self.type.get_dict()
+    #         should_have_file_related_keys = self.type.type == "File"
+    #
+    #     elif isinstance(self.type, list):
+    #         dict_param["type"] = [q.get_dict() if hasattr(q, "get_dict") else q for q in self.type]
+    #
+    #     keys_to_remove = [k for k in ['format', 'secondaryFiles', 'streamable'] if k in dict_param]
+    #
+    #     if not should_have_file_related_keys:
+    #         for key in keys_to_remove:
+    #             del(dict_param[key])
+    #     return dict_param
 
-        :return: dictionnary of the object
-        :rtype: DICT
-        '''
-        manual = ["type"]
-        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False and k not in manual}
 
-        should_have_file_related_keys = False
-
-        if isinstance(self.type, str):
-            dict_param["type"] = self.type
-            should_have_file_related_keys = self.type == "File"
-
-        elif isinstance(self.type, CommandInputArraySchema):
-            dict_param["type"] = self.type.get_dict()
-            should_have_file_related_keys = self.type.type == "File"
-
-        keys_to_remove = [k for k in ['format', 'secondaryFiles', 'streamable'] if k in dict_param]
-
-        if not should_have_file_related_keys:
-            for key in keys_to_remove:
-                del(dict_param[key])
-        return dict_param
-
-
-class CommandInputArraySchema(object):
+class CommandInputArraySchema(Serializable):
     '''
     Based on the parameter set out in the CWL spec:
     https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputArraySchema
@@ -180,21 +187,3 @@ class CommandInputArraySchema(object):
         self.items = parse_type(items, requires_type=True)
         self.label = label
         self.inputBinding = input_binding
-
-
-    def get_dict(self):
-        '''
-        Transform the object to a [DICT] to write CWL.
-
-        :return: dictionnary of the object
-        :rtype: DICT
-        '''
-        dict_binding = {k: v for k, v in vars(self).items() if v is not None}
-
-        if hasattr(self.items, "get_dict"):
-            dict_binding["items"] = self.items.get_dict()
-        else:
-            dict_binding["items"] = str(self.items)
-
-        return dict_binding
-
