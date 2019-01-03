@@ -17,7 +17,7 @@ class CwlTypes:
 
     NULL = "null"
     BOOLEAN = "boolean"
-    INT = "integer"
+    INT = "int"
     LONG = "long"
     FLOAT = "float"
     DOUBLE = "double"
@@ -180,6 +180,7 @@ class CommandInputArraySchema(object):
         self.items = parse_type(items, requires_type=True)
         self.label = label
         self.inputBinding = input_binding
+
 
     def get_dict(self):
         '''
