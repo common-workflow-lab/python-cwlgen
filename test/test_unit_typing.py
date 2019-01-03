@@ -60,3 +60,12 @@ class TestParamTyping(unittest.TestCase):
         self.assertIsInstance(ar, CommandInputArraySchema)
         self.assertEqual(parse_type(ar), ar)
         self.assertEqual(ar.items, "string?")
+
+    def test_array_of_array_of_strings(self):
+        arstr = CommandInputArraySchema(items="string")
+        ar = CommandInputArraySchema(items=arstr)
+        self.assertEqual(ar.get_dict(), {'type': 'array', 'items': {'type': 'array', 'items': 'string'}})
+
+    def test_parse_array_of_string_array(self):
+        ar = CommandInputArraySchema(items="string[]")
+        self.assertEqual(ar.get_dict(), {'type': 'array', 'items': {'type': 'array', 'items': 'string'}})
