@@ -240,6 +240,17 @@ class TestCommandOutputParameter(unittest.TestCase):
         dict_test = self.outp.get_dict()
         self.assertEqual(dict_test['type'], 'File')
 
+    def test_empty_outputbinding(self):
+        s = cwlgen.CommandOutputParameter("empty", output_binding=cwlgen.CommandOutputBinding()).get_dict()
+        self.assertNotIn('outputBinding', s)
+        self.assertEqual(s, {'id': 'empty'})
+
+    def test_nonempty_outputbinding(self):
+        s = cwlgen.CommandOutputParameter(
+            "nonempty",
+            output_binding=cwlgen.CommandOutputBinding(glob="$(inputs.test)")).get_dict()
+        self.assertEqual(s, {'id': 'nonempty', 'outputBinding': {'glob': '$(inputs.test)'}})
+
 
 class TestCommandLineBinding(unittest.TestCase):
 

@@ -156,7 +156,7 @@ class CommandInputParameter(Parameter):
     '''
 
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, input_binding=None, default=None, param_type=None):
+                 streamable=None, doc=None, input_binding=None, default=None, param_type=None):
         '''
         :param param_id: unique identifier for this parameter
         :type param_id: STRING
@@ -184,19 +184,6 @@ class CommandInputParameter(Parameter):
                            streamable=streamable, doc=doc, param_type=param_type)
         self.inputBinding = input_binding
         self.default = default
-
-    def get_dict(self):
-        '''
-        Transform the object to a [DICT] to write CWL.
-
-        :return: dictionnary of the object
-        :rtype: DICT
-        '''
-        dict_in = Parameter.get_dict(self)
-        del dict_in['id']
-        if self.inputBinding:
-            dict_in['inputBinding'] = self.inputBinding.get_dict()
-        return dict_in
 
 
 class CommandOutputParameter(Parameter):
@@ -230,18 +217,18 @@ class CommandOutputParameter(Parameter):
                            doc, param_type)
         self.outputBinding = output_binding
 
-    def get_dict(self):
-        '''
-        Transform the object to a [DICT] to write CWL.
-
-        :return: dictionnary of the object
-        :rtype: DICT
-        '''
-        dict_out = Parameter.get_dict(self)
-        del dict_out['id']
-        if self.outputBinding:
-            dict_out['outputBinding'] = self.outputBinding.get_dict()
-        return dict_out
+    # def get_dict(self):
+    #     '''
+    #     Transform the object to a [DICT] to write CWL.
+    #
+    #     :return: dictionnary of the object
+    #     :rtype: DICT
+    #     '''
+    #     dict_out = Parameter.get_dict(self)
+    #     del dict_out['id']
+    #     if self.outputBinding.get_dict():
+    #         dict_out['outputBinding'] = self.outputBinding.get_dict()
+    #     return dict_out
 
 
 class CommandOutputBinding(object):
@@ -249,7 +236,7 @@ class CommandOutputBinding(object):
     Describes how to generate an output parameter based on the files produced.
     '''
 
-    def __init__(self, glob=False, load_contents=False, output_eval=None):
+    def __init__(self, glob=None, load_contents=None, output_eval=None):
         '''
         :param glob: Find corresponding file(s)
         :type glob: STRING
