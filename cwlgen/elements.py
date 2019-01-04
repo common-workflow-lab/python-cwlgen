@@ -108,7 +108,7 @@ class Parameter(Serializable):
     '''
 
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, param_type=None, requires_type=False):
+                 streamable=None, doc=None, param_type=None, requires_type=False):
         '''
         :param param_id: unique identifier for this parameter
         :type param_id: STRING
