@@ -10,8 +10,8 @@ class CommandLineBinding(Serializable):
     Documentation: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandLineBinding
     """
 
-    def __init__(self, load_contents=False, position=None, prefix=None, separate=True,
-                 item_separator=None, value_from=None, shell_quote=True):
+    def __init__(self, load_contents=None, position=None, prefix=None, separate=None,
+                 item_separator=None, value_from=None, shell_quote=None):
         """
         :param load_contents: Read up to the fist 64 KiB of text from the file and
                               place it in the "contents" field of the file object
