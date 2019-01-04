@@ -25,4 +25,13 @@ class Serializable(object):
         raise Exception("Can't serialize '{unsupported_type}'".format(unsupported_type=type(obj)))
 
     def get_dict(self):
-        return {k: self.serialize(v) for k, v in vars(self).items() if v is not None}
+        d = {}
+        for k, v in vars(self).items():
+            if not v:
+                continue
+            s = self.serialize(v)
+            if not isinstance(s, bool) and not s:
+                continue
+            d[k] = s
+        return d
+        # return {k: self.serialize(v) for k, v in vars(self).items() if v is not None}
