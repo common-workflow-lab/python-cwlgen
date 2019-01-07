@@ -1,4 +1,4 @@
-from cwlgen.utils import Serializable
+from cwlgen.cwlgen.utils import Serializable
 
 
 class CommandLineBinding(Serializable):
