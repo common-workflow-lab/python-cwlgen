@@ -14,28 +14,12 @@ CWL_VERSIONS = ['draft-2', 'draft-3.dev1', 'draft-3.dev2', 'draft-3.dev3',
 DEF_VERSION = 'v1.0'
 
 
-class CwlTypes:
-    DEF_TYPE = "null"
-
-    NULL = "null"
-    BOOLEAN = "boolean"
-    INT = "int"
-    LONG = "long"
-    FLOAT = "float"
-    DOUBLE = "double"
-    STRING = "string"
-    FILE = "File"
-    DIRECTORY = "Directory"
-    STDOUT = "stdout"
-    ARRAY = "array"
-
-    NON_NULL_TYPES = [BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
-    TYPES = [NULL, None, BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
-
+#  Function(s)  ------------------------------
 
 def parse_type(param_type, requires_type=False):
     """
     Parses the parameter type as one of the required types:
+    :param requires_type:
     :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
 
     :param param_type: a CWL type that is _validated_
@@ -45,7 +29,7 @@ def parse_type(param_type, requires_type=False):
        array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     """
 
-    if not requires_type and param_type is None:
+    if requires_type is False and param_type is None:
         return None
 
     if isinstance(param_type, str) and len(param_type) > 0:
@@ -75,10 +59,13 @@ def parse_type(param_type, requires_type=False):
         return [parse_type(p) for p in param_type]
 
     elif isinstance(param_type, CommandInputArraySchema):
-        return param_type   # validate if required
-    else:
-        _LOGGER.warning("Unable to detect type of param '{param_type}'".format(param_type=param_type))
-        return CwlTypes.DEF_TYPE
+        return param_type  # validate if required
+
+    if requires_type is True:
+        raise Exception("'parse_type' was required but failed to parse '{ptype}', exiting")
+
+    _LOGGER.warning("Unable to detect type of param '{param_type}'".format(param_type=param_type))
+    return CwlTypes.DEF_TYPE
 
 
 def get_type_dict(param_type):
@@ -100,6 +87,51 @@ def get_type_dict(param_type):
     else:
         raise Exception("Could not convert '{param_type}' to dictionary as it was unrecognised"
                         .format(param_type=type(param_type)))
+
+
+#  Class(es)  ------------------------------
+
+class CwlTypes:
+    DEF_TYPE = "null"
+
+    NULL = "null"
+    BOOLEAN = "boolean"
+    INT = "int"
+    LONG = "long"
+    FLOAT = "float"
+    DOUBLE = "double"
+    STRING = "string"
+    FILE = "File"
+    DIRECTORY = "Directory"
+    STDOUT = "stdout"
+    ARRAY = "array"
+
+    NON_NULL_TYPES = [BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
+    TYPES = [NULL, None, BOOLEAN, INT, LONG, FLOAT, DOUBLE, STRING, FILE, DIRECTORY, STDOUT]
+
+
+# functions
+
+class Namespaces(object):
+    """
+    Define different namespace for the description.
+    """
+
+    def __init__(self):
+        """
+        """
+        self.name = "$namespaces"
+        self.s = "http://schema.org/"
+
+
+class Metadata(object):
+    """
+    Represent metadata described by http://schema.org.
+    """
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 
 class Parameter(Serializable):
@@ -135,37 +167,6 @@ class Parameter(Serializable):
         self.streamable = streamable
         self.doc = doc
         self.type = parse_type(param_type, requires_type)
-
-    #
-    # def get_dict(self):
-    #     '''
-    #     Transform the object to a [DICT] to write CWL.
-    #
-    #     :return: dictionnary of the object
-    #     :rtype: DICT
-    #     '''
-    #     manual = ["type"]
-    #     dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False and k not in manual}
-    #
-    #     should_have_file_related_keys = False
-    #
-    #     if isinstance(self.type, str):
-    #         dict_param["type"] = self.type
-    #         should_have_file_related_keys = self.type == "File"
-    #
-    #     elif isinstance(self.type, CommandInputArraySchema):
-    #         dict_param["type"] = self.type.get_dict()
-    #         should_have_file_related_keys = self.type.type == "File"
-    #
-    #     elif isinstance(self.type, list):
-    #         dict_param["type"] = [q.get_dict() if hasattr(q, "get_dict") else q for q in self.type]
-    #
-    #     keys_to_remove = [k for k in ['format', 'secondaryFiles', 'streamable'] if k in dict_param]
-    #
-    #     if not should_have_file_related_keys:
-    #         for key in keys_to_remove:
-    #             del(dict_param[key])
-    #     return dict_param
 
 
 class CommandInputArraySchema(Serializable):

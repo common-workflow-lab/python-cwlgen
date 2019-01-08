@@ -1,5 +1,5 @@
 import unittest
-from cwlgen.elements import parse_type, CwlTypes, CommandInputArraySchema
+from cwlgen.common import parse_type, CwlTypes, CommandInputArraySchema
 import logging
 
 

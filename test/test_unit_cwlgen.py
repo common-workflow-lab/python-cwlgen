@@ -226,6 +226,12 @@ class TestCommandInputParameter(unittest.TestCase):
         self.assertEqual(dict_scnd['inputBinding']['prefix'], '--prefix')
         self.assertEqual(dict_scnd['inputBinding']['position'], 2)
 
+    def test_default(self):
+        df = "DefaultParam"
+        t = cwlgen.CommandInputParameter("has-default", default=df)
+        d = t.get_dict()
+        print(d)
+
 
 class TestCommandOutputParameter(unittest.TestCase):
 

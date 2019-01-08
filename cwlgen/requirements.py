@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import six
 
-from .elements import parse_type, get_type_dict
+from .common import parse_type, get_type_dict
 
 
 class Requirement(ABC):
