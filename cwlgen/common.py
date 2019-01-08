@@ -1,6 +1,6 @@
 import logging
 
-from cwlgen.cwlgen.utils import Serializable
+from .utils import Serializable
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
