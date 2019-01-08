@@ -252,7 +252,7 @@ class InitialWorkDirRequirement(Requirement):
         if isinstance(self.listing, str):
             base["listing"] = self.listing
         elif isinstance(self.listing, list):
-            if len(self.listing) == 1:
+            if len(self.listing) == 0:
                 raise Exception("InitialWorkDirRequirement.listing must have at least one element")
             base["listing"] = [r if isinstance(r, str) else r.get_dict() for r in self.listing]
         else:
