@@ -11,7 +11,7 @@ from .version import __version__
 # Internal libraries
 
 from .utils import literal, literal_presenter
-from .elements import Parameter, CWL_SHEBANG
+from .common import Parameter, CWL_SHEBANG
 
 
 # Logging setup
