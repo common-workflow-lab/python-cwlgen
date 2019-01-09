@@ -184,7 +184,7 @@ class InitialWorkDirRequirement(Requirement):
         self.listing = listing
 
     def get_dict(self):
-        base = super(self, self).get_dict(self)
+        base = super(InitialWorkDirRequirement, self).get_dict()
 
         if isinstance(self.listing, str):
             base["listing"] = self.listing
@@ -302,7 +302,7 @@ class EnvVarRequirement(Requirement):
         :param env_def: The list of environment variables.
         :type env_def: list[EnvironmentDef]
         """
-        Requirement.__init__(self, 'ShellCommandRequirement')
+        Requirement.__init__(self, 'EnvVarRequirement')
         self.envDef = env_def
 
     class EnvironmentDef(Serializable):
@@ -346,21 +346,21 @@ class ResourceRequirement(Requirement):
                  outdir_min=None, outdir_max=None):
         """
         :param cores_min: Minimum reserved number of CPU cores
-        :type cores_min: string | float
+        :type cores_min: string | float | None
         :param cores_max: Maximum reserved number of CPU cores
-        :type cores_max: string | float
+        :type cores_max: string | float | None
         :param ram_min: Minimum reserved RAM in mebibytes (2**20)
-        :type ram_min: string | float
+        :type ram_min: string | float | None
         :param ram_max: Maximum reserved RAM in mebibytes (2**20)
-        :type ram_max: string | float
+        :type ram_max: string | float | None
         :param tmpdir_min: Minimum reserved filesystem based storage for the designated temporary directory, in mebibytes (2**20)
-        :type tmpdir_min: string | float
+        :type tmpdir_min: string | float | None
         :param tmpdir_max: Maximum reserved filesystem based storage for the designated temporary directory, in mebibytes (2**20)
-        :type tmpdir_max: string | float
+        :type tmpdir_max: string | float | None
         :param outdir_min: Minimum reserved filesystem based storage for the designated output directory, in mebibytes (2**20)
-        :type outdir_min: string | float
+        :type outdir_min: string | float | None
         :param outdir_max: Maximum reserved filesystem based storage for the designated output directory, in mebibytes (2**20)
-        :type outdir_max: string | float
+        :type outdir_max: string | float | None
         """
         Requirement.__init__(self, 'ResourceRequirement')
 
