@@ -3,10 +3,9 @@ import logging
 # External libraries
 import ruamel.yaml
 
-from cwlgen import Parameter, Serializable
-from .common import CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG, Namespaces
+from .common import CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG, Namespaces, Parameter
 from .requirements import *
-from .utils import literal, literal_presenter
+from .utils import literal, literal_presenter, Serializable
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
