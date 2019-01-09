@@ -13,9 +13,15 @@ The library works for both Python 2.7.12+ and 3.6.0.
 
 ------------------------
 
+
+
 I've forked this repository to try and get my use of this repository working quickly without 
 worrying too much about proper code etiquette. I have and will continue to submit merge requests 
 back to the [original repository](https://github.com/common-workflow-language/python-cwlgen).
+
+[![Build Status](https://travis-ci.org/illusional/python-cwlgen.svg?branch=master)](https://travis-ci.org/common-workflow-language/python-cwlgen)
+[![codecov](https://codecov.io/gh/illusional/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/illusional/python-cwlgen)
+
 
 # Common Workflow Language
 

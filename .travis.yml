@@ -8,12 +8,3 @@ install:
 script: nosetests --with-coverage --cover-package=cwlgen
 after_success:
 - codecov
-deploy:
-  provider: pypi
-  user: khillion
-  password:
-    secure: FcZL32itgRrdyeOC7mmCmqddE7Vise/UfpyJTcYkePkMAinhnq08dxBVn/AgYKmUg4/FqyM+mlQPQ3vo9EMMEbuUoTu6Pk8i3l2GUY1JuCXsN7BTfr0slC3ofpnWpruw85vzl8rU+YEy8bU7os65TapBKeGOihIx2Y+vBhaN6xdMzXnMGJS2PhXuPajMKafFyBBiaP/hNX9jcCDFBE9dD2FE5OjVMhpJRU2miqQuVgxmux4xkf00cSohPza+c7o3a82banitW3d8p25b1EWK+UxrauQy+FAPCw0WJ37K1Cd4BUjMMszSBS+kfOtmfIOuc5PWVJ+KGHPySRHLf+JSOnyvhhrijfkO7gE7N0608+7nX6DcIqbv47Kr9b/IMzm7nAhAhY3XkF1UV+wziFscEjV9suC1dSlI7J2IEolzu76XrTRCbSv/8vf9rNwCLhNEh0w81XomuUoGE/GW+ho0Evh/t66J+ICy+JagjQp6w2NiA6BqNOGXKAJzDshbmgp6J6WQ4KqfSmmsm8hQynIkpvXpeuLS811MmwEvjiZ+NlwyqT9MmC+91CEHW9hc8iJ6+Ug/yfjj5iYIJ8qxY9ksAZUGM63IYuz53muOwTm4FNrS8jmAqU4Wwzrx3pswkv7ffoDPgXssOIBuK+pzhHl0+HKMNcIj47k+FkqlIQbMDro=
-  on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: common-workflow-language/python-cwlgen
