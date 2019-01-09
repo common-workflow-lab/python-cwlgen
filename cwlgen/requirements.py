@@ -1,11 +1,10 @@
-from abc import ABC, abstractmethod
-
 import six
 
+from cwlgen import Serializable
 from .common import parse_type, get_type_dict
 
 
-class Requirement(ABC):
+class Requirement(Serializable):
     '''
     Requirement that must be met in order to execute the process.
     '''
@@ -16,11 +15,10 @@ class Requirement(ABC):
         :type req_class: STRING
         '''
         # class is protected keyword
-        self.req_class = req_class
+        self._req_class = req_class
 
-    @abstractmethod
-    def get_dict(self):
-        return {} # {"class": self.req_class}
+    def get_class(self):
+        return self._req_class
 
 
 class InlineJavascriptReq(Requirement):
@@ -38,12 +36,6 @@ class InlineJavascriptReq(Requirement):
         '''
         Requirement.__init__(self, 'InlineJavascriptRequirement')
         self.expressionLib = [expression_lib] if isinstance(expression_lib, six.string_types) else expression_lib
-
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        if self.expressionLib:
-            base["expressionLib"] = self.expressionLib
-        return base
 
 
 class SchemaDefRequirement(Requirement):
@@ -65,11 +57,7 @@ class SchemaDefRequirement(Requirement):
         Requirement.__init__(self, "SchemaDefRequirement")
         self.types = types
 
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        base['types'] = [t.get_dict() for t in self.types]
-
-    class InputRecordSchema(object):
+    class InputRecordSchema(Serializable):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordSchema
         """
@@ -83,18 +71,9 @@ class SchemaDefRequirement(Requirement):
             self.fields = []
             self.label = label
             self.name = name
+            self.type = "record"
 
-        def get_dict(self):
-            schema = {"type": "record"}
-            if self.fields:
-                schema["fields"] = {f.name: f.get_dict() for f in self.fields}
-            if self.label:
-                schema["label"] = self.label
-            if self.name:
-                schema["name"] = self.name
-            return schema
-
-    class InputRecordField(object):
+    class InputRecordField(Serializable):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordField
         """
@@ -116,20 +95,11 @@ class SchemaDefRequirement(Requirement):
             self.label = label
 
         def get_dict(self):
-            base = {
-                'name': self.name,
-                "type": get_type_dict(self.type)
-            }
+            d = super(self, self).get_dict()
+            d["type"] = get_type_dict(self.type)
+            return d
 
-            if self.doc:
-                base["doc"] = self.doc
-            if self.inputBinding:
-                base["inputBinding"] = self.inputBinding.get_dict()
-            if self.label:
-                base["label"] = self.label
-            return base
-
-        class InputEnumSchema(object):
+        class InputEnumSchema(Serializable):
             """
             Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputEnumSchema
             """
@@ -144,30 +114,18 @@ class SchemaDefRequirement(Requirement):
                 :param input_binding:
                 :type input_binding: CommandLineBinding
                 """
+                self.type = "enum"
                 self.symbols = symbols
                 self.label = label
                 self.name = name
                 self.inputBinding = input_binding
 
-            def get_dict(self):
-                base = {
-                    'symbols': self.symbols,
-                    'type': 'enum'
-                }
-                if self.label:
-                    base["label"] = self.label
-                if self.name:
-                    base["name"] = self.name
-                if self.inputBinding:
-                    base["inputBinding"] = self.inputBinding
-                return base
-
-        class InputArraySchema(object):
+        class InputArraySchema(Serializable):
             """
             Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputArraySchema
             """
 
-            def __init__(self, items, label, input_binding):
+            def __init__(self, items, label=None, input_binding=None):
                 """
                 :param items: Defines the type of the array elements.
                 :type items: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
@@ -177,20 +135,10 @@ class SchemaDefRequirement(Requirement):
                 :param input_binding:
                 :type input_binding: CommandLineBinding
                 """
+                self.type = "array"
                 self.items = items
                 self.label = label
                 self.inputBinding = input_binding
-
-            def get_dict(self):
-                base = {
-                    'items': get_type_dict(self.items),
-                    'type': 'enum'
-                }
-                if self.label:
-                    base["label"] = self.label
-                if self.inputBinding:
-                    base["inputBinding"] = self.inputBinding
-                return base
 
 
 class SoftwareRequirement(Requirement):
@@ -203,11 +151,7 @@ class SoftwareRequirement(Requirement):
         Requirement.__init__(self, "SoftwareRequirement")
         self.packages = []      # list[SoftwarePackage]
 
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        base["packages"] = [p.get_dict() for p in self.packages]
-
-    class SoftwarePackage(object):
+    class SoftwarePackage(Serializable):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#SoftwarePackage
         """
@@ -220,14 +164,7 @@ class SoftwareRequirement(Requirement):
             """
             self.package = package
             self.version = version
-            self.specs = version
-
-        def get_dict(self):
-            base = {"package": self.package}
-            if self.version:
-                base["version"] = self.version
-            if self.specs:
-                base["specs"] = self.specs
+            self.specs = specs
 
 
 class InitialWorkDirRequirement(Requirement):
@@ -247,7 +184,7 @@ class InitialWorkDirRequirement(Requirement):
         self.listing = listing
 
     def get_dict(self):
-        base = Requirement.get_dict(self)
+        base = super(self, self).get_dict(self)
 
         if isinstance(self.listing, str):
             base["listing"] = self.listing
@@ -261,7 +198,7 @@ class InitialWorkDirRequirement(Requirement):
 
         return base
 
-    class Dirent(object):
+    class Dirent(Serializable):
         """
         Define a file or subdirectory that must be placed in the designated output directory
         prior to executing the command line tool. May be the result of executing an expression,
@@ -274,9 +211,6 @@ class InitialWorkDirRequirement(Requirement):
             self.entryname = entryname
             self.writable = writable
 
-        def get_dict(self):
-            return {k: v for k, v in vars(self).items() if v is not None}
-
 
 class SubworkflowFeatureRequirement(Requirement):
     """
@@ -288,9 +222,6 @@ class SubworkflowFeatureRequirement(Requirement):
     def __init__(self):
         Requirement.__init__(self, 'SubworkflowFeatureRequirement')
 
-    def get_dict(self):
-        return Requirement.get_dict(self)
-
 
 class ScatterFeatureRequirement(Requirement):
     """
@@ -301,9 +232,6 @@ class ScatterFeatureRequirement(Requirement):
 
     def __init__(self):
         Requirement.__init__(self, 'ScatterFeatureRequirement')
-
-    def get_dict(self):
-        return Requirement.get_dict(self)
 
 
 class MultipleInputFeatureRequirement(Requirement):
@@ -317,9 +245,6 @@ class MultipleInputFeatureRequirement(Requirement):
     def __init__(self):
         Requirement.__init__(self, 'MultipleInputFeatureRequirement')
 
-    def get_dict(self):
-        return Requirement.get_dict(self)
-
 
 class StepInputExpressionRequirement(Requirement):
     """
@@ -330,9 +255,6 @@ class StepInputExpressionRequirement(Requirement):
 
     def __init__(self):
         Requirement.__init__(self, 'StepInputExpressionRequirement')
-
-    def get_dict(self):
-        return Requirement.get_dict(self)
 
 
 class DockerRequirement(Requirement):
@@ -367,11 +289,6 @@ class DockerRequirement(Requirement):
         self.dockerImageId = docker_image_id
         self.dockerOutputDir = docker_output_dir
 
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        base.update({p: v for p, v in vars(self).items() if p.startswith('docker') and v is not None})
-        return base
-
 
 class EnvVarRequirement(Requirement):
     """
@@ -388,11 +305,7 @@ class EnvVarRequirement(Requirement):
         Requirement.__init__(self, 'ShellCommandRequirement')
         self.envDef = env_def
 
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        base["envDef"] = [e.get_dict() for e in self.envDef]
-
-    class EnvironmentDef(object):
+    class EnvironmentDef(Serializable):
         """
         Define an environment variable that will be set in the runtime environment
         by the workflow platform when executing the command line tool.
@@ -410,9 +323,6 @@ class EnvVarRequirement(Requirement):
             self.envName = env_name
             self.envValue = env_value
 
-        def get_dict(self):
-            return {"envName": self.envName, "envValue": self.envValue}
-
 
 class ShellCommandRequirement(Requirement):
     """
@@ -423,9 +333,6 @@ class ShellCommandRequirement(Requirement):
 
     def __init__(self):
         Requirement.__init__(self, 'ShellCommandRequirement')
-
-    def get_dict(self):
-        return Requirement.get_dict(self)
 
 
 class ResourceRequirement(Requirement):
@@ -465,8 +372,3 @@ class ResourceRequirement(Requirement):
         self.tmpdirMax = tmpdir_max
         self.outdirMin = outdir_min
         self.outdirMax = outdir_max
-
-    def get_dict(self):
-        base = Requirement.get_dict(self)
-        base.update({p: v for p, v in vars(self).items() if v is not None})
-        return base
