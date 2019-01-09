@@ -27,7 +27,7 @@ class Serializable(object):
     def get_dict(self):
         d = {}
         for k, v in vars(self).items():
-            if not v:
+            if not v or k.startswith("_"):
                 continue
             s = self.serialize(v)
             if not isinstance(s, bool) and not s:
