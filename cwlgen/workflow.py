@@ -104,7 +104,7 @@ class Workflow(object):
         cwl_workflow['outputs'] = {o.id: o.get_dict() for o in self.outputs}
 
         if self.requirements:
-            cwl_workflow['requirements'] = {r.req_class: r.get_dict() for r in self.requirements}
+            cwl_workflow['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
 
         if self.hints:
             # can be array<Any> | dict<class, Any>
