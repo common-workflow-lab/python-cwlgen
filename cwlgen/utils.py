@@ -26,8 +26,12 @@ class Serializable(object):
 
     def get_dict(self):
         d = {}
+        ignore_attributes = set()
+        if getattr(self, "ignore_attributes", None):
+            ignore_attributes = set(self.ignore_attributes)
+
         for k, v in vars(self).items():
-            if not v or k.startswith("_"):
+            if not v or k.startswith("_") or k in ignore_attributes:
                 continue
             s = self.serialize(v)
             if not isinstance(s, bool) and not s:

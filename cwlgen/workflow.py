@@ -6,6 +6,8 @@ import logging
 # External libraries
 import ruamel.yaml
 import six
+
+from cwlgen import Serializable
 from .version import __version__
 
 # Internal libraries
@@ -181,7 +183,7 @@ class InputParameter(Parameter):
         return input_dict
 
 
-class WorkflowStep(object):
+class WorkflowStep(Serializable):
     """
     A workflow step is an executable element of a workflow. It specifies the underlying process implementation
     (such as CommandLineTool or another Workflow) in the run field and connects the input and output parameters
@@ -217,41 +219,43 @@ class WorkflowStep(object):
         self.requirements = []
         self.hints = []
 
-    def get_dict(self):
-        '''
-        Transform the object to a [DICT] to write CWL.
+        self.ignore_attributes = ["id"]
 
-        :return: dictionnary of the object
-        :rtype: DICT
-        '''
-        workflow_step = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
-
-        workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
-        workflow_step['out'] = [o.id for o in self.out]
-
-        if isinstance(self.run, six.string_types):
-            workflow_step['run'] = self.run
-        else:
-            # CommandLineTool | ExpressionTool | Workflow
-            workflow_step['run'] = self.run.get_dict()
-
-        if self.requirements:
-            workflow_step['requirements'] = [r.get_dict() for r in self.requirements]
-
-        if self.hints:
-            workflow_step['hints'] = self.hints
-
-        # label | doc is covered by first line
-
-        if self.scatter:
-            workflow_step['scatter'] = self.scatter
-
-            if isinstance(self.scatter, list) and len(self.scatter) > 1:
-                workflow_step['scatterMethod'] = self.scatterMethod
-            elif self.scatterMethod:
-                _LOGGER.info("Skipping adding scatterMethod because scatter was not a list or length was less than 2")
-
-        return workflow_step
+    # def get_dict(self):
+    #     '''
+    #     Transform the object to a [DICT] to write CWL.
+    #
+    #     :return: dictionnary of the object
+    #     :rtype: DICT
+    #     '''
+    #     workflow_step = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
+    #
+    #     workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
+    #     workflow_step['out'] = [o.id for o in self.out]
+    #
+    #     if isinstance(self.run, six.string_types):
+    #         workflow_step['run'] = self.run
+    #     else:
+    #         # CommandLineTool | ExpressionTool | Workflow
+    #         workflow_step['run'] = self.run.get_dict()
+    #
+    #     if self.requirements:
+    #         workflow_step['requirements'] = [r.get_dict() for r in self.requirements]
+    #
+    #     if self.hints:
+    #         workflow_step['hints'] = self.hints
+    #
+    #     # label | doc is covered by first line
+    #
+    #     if self.scatter:
+    #         workflow_step['scatter'] = self.scatter
+    #
+    #         if isinstance(self.scatter, list) and len(self.scatter) > 1:
+    #             workflow_step['scatterMethod'] = self.scatterMethod
+    #         elif self.scatterMethod:
+    #             _LOGGER.info("Skipping adding scatterMethod because scatter was not a list or length was less than 2")
+    #
+    #     return workflow_step
 
 
 class WorkflowStepInput(object):
