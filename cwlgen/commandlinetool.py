@@ -113,7 +113,7 @@ class CommandLineTool(object):
                     cwl_tool[self.namespaces.name][k] = v
 
         if self.requirements:
-            cwl_tool['requirements'] = {r.req_class: r.get_dict() for r in self.requirements}
+            cwl_tool['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
 
         return cwl_tool
 
