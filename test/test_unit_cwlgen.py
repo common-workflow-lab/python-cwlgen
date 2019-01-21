@@ -240,12 +240,14 @@ class TestStep(unittest.TestCase):
         step = cwlgen.WorkflowStep("identifier", "run")
         d = step.get_dict()
         self.assertNotIn("id", d)
+        self.assertNotIn("ignore_attributes", d)
 
     def test_include_id(self):
         step = cwlgen.WorkflowStep("identifier", "run")
         step.ignore_attributes = None
         d = step.get_dict()
         self.assertIn("id", d)
+        self.assertNotIn("ignore_attributes", d)
 
 
 class TestCommandOutputParameter(unittest.TestCase):

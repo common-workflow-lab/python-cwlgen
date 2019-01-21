@@ -31,7 +31,7 @@ class Serializable(object):
             ignore_attributes = set(self.ignore_attributes)
 
         for k, v in vars(self).items():
-            if not v or k.startswith("_") or k in ignore_attributes:
+            if not v or k.startswith("_") or k in ignore_attributes or k == "ignore_attributes":
                 continue
             s = self.serialize(v)
             if not isinstance(s, bool) and not s:
