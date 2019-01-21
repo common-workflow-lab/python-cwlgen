@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 #  Class(es)  ------------------------------
 
 
-class CommandLineTool(object):
+class CommandLineTool(Serializable):
     '''
     Contain all informations to describe a CWL command line tool.
     '''
@@ -70,52 +70,27 @@ class CommandLineTool(object):
         self.permanentFailCodes = []
         self._path = path
         self.namespaces = Namespaces()
+        self.metadata = {}
+        self.ignore_attributes = ["namespaces"]
 
     def get_dict(self):
-        cwl_tool = {k: v for k, v in vars(self).items() if v is not None and
-                    type(v) is str}
-        cwl_tool['class'] = self.__CLASS__
-        # Treat doc for multiline writting
-        if self.doc:
-            cwl_tool['doc'] = literal(self.doc)
 
-        if self.baseCommand:
-            cwl_tool['baseCommand'] = self.baseCommand
+        d = super(CommandLineTool, self).get_dict()
 
-        # Add Arguments
-        cwl_tool['arguments'] = [in_arg.get_dict() for in_arg in self.arguments]
+        d['class'] = self.__CLASS__
 
-        # Add Inputs
-        cwl_tool['inputs'] = {}
-        for in_param in self.inputs:
-            cwl_tool['inputs'][in_param.id] = in_param.get_dict()
-
-        # Add Outputs
-        cwl_tool['outputs'] = {}
-        for out_param in self.outputs:
-            cwl_tool['outputs'][out_param.id] = out_param.get_dict()
-
-        if self.successCodes:
-            cwl_tool['successCodes'] = self.successCodes
-        if self.temporaryFailCodes:
-            cwl_tool['temporaryFailCodes'] = self.temporaryFailCodes
-        if self.permanentFailCodes:
-            cwl_tool['permanentFailCodes'] = self.permanentFailCodes
-
-        # If metadata are present in the description
-        if getattr(self, 'metadata', None):
+        if self.metadata:
             for key, value in self.metadata.__dict__.items():
-                cwl_tool["s:" + key] = value
+                d["s:" + key] = value
             # - Add Namespaces
-            cwl_tool[self.namespaces.name] = {}
+            d[self.namespaces.name] = {}
             for k, v in self.namespaces.__dict__.items():
                 if '$' not in v:
-                    cwl_tool[self.namespaces.name][k] = v
+                    d[self.namespaces.name][k] = v
 
         if self.requirements:
-            cwl_tool['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
-
-        return cwl_tool
+            d['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
+        return d
 
     def export(self, outfile=None):
         """
@@ -134,6 +109,7 @@ class CommandLineTool(object):
             out_write.write(CWL_SHEBANG + '\n\n')
             out_write.write(ruamel.yaml.dump(cwl_tool))
             out_write.close()
+
 
 class CommandInputParameter(Parameter):
     '''
