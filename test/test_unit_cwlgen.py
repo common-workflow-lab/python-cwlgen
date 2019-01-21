@@ -14,13 +14,14 @@ import unittest
 # External libraries
 import cwlgen
 
-#  Class(es)  ------------------------------ 
+
+#  Class(es)  ------------------------------
 
 class TestCommandLineTool(unittest.TestCase):
 
     def setUp(self):
-        self.cwl = cwlgen.CommandLineTool(tool_id='an_id', label='a description '+\
-                                         'with spaces.', base_command='a_command')
+        self.cwl = cwlgen.CommandLineTool(tool_id='an_id', label='a description ' + \
+                                                                 'with spaces.', base_command='a_command')
 
         self.array_basecommand = cwlgen.CommandLineTool(tool_id="base-command-array", base_command=["base", "command"])
 
@@ -40,7 +41,7 @@ class TestCommandLineTool(unittest.TestCase):
         code_tool = cwlgen.CommandLineTool()
         code_tool.permanentFailCodes.extend([400, 401, 500])
         code_tool.temporaryFailCodes.append(408)
-        code_tool.successCodes = []     # empty (falsy)
+        code_tool.successCodes = []  # empty (falsy)
 
         dict_test = code_tool.get_dict()
         self.assertIn('permanentFailCodes', dict_test)
@@ -135,7 +136,7 @@ class TestSubworkflow(unittest.TestCase):
     def test_serialization(self):
         d = self.workflow.get_dict()
         self.assertIn("steps", d)
-        steps = d["steps"]              # this should be a dictionary, so we look at 'key in dict'
+        steps = d["steps"]  # this should be a dictionary, so we look at 'key in dict'
         step_id = self.workflow.steps[0].id
         self.assertIn(step_id, steps)
         sw_step = steps[step_id]
@@ -150,9 +151,9 @@ class TestSubworkflow(unittest.TestCase):
 class TestParameter(unittest.TestCase):
 
     def setUp(self):
-        self.param = cwlgen.Parameter('an_id', param_type='File', label='a_label',\
-                                     doc='a_doc', param_format='a_format',\
-                                     streamable=True, secondary_files='sec_files')
+        self.param = cwlgen.Parameter('an_id', param_type='File', label='a_label', \
+                                      doc='a_doc', param_format='a_format', \
+                                      streamable=True, secondary_files='sec_files')
         self.nonfile_param = cwlgen.Parameter('non-file', param_type="string", label="a string",
                                               streamable=True, secondary_files=[".txt"], doc="documentation here")
 
@@ -195,12 +196,12 @@ class TestParameter(unittest.TestCase):
 class TestCommandInputParameter(unittest.TestCase):
 
     def setUp(self):
-        self.frst_inp = cwlgen.CommandInputParameter('frst_id', param_type='File',\
-                                                    label='a_label', \
-                                                    default='def_value')
+        self.frst_inp = cwlgen.CommandInputParameter('frst_id', param_type='File', \
+                                                     label='a_label', \
+                                                     default='def_value')
         binding = cwlgen.CommandLineBinding(position=2, prefix='--prefix')
-        self.scnd_inp = cwlgen.CommandInputParameter('scnd_id', param_type='File',\
-                                                    input_binding=binding)
+        self.scnd_inp = cwlgen.CommandInputParameter('scnd_id', param_type='File', \
+                                                     input_binding=binding)
 
     def test_init(self):
         # Test first input
@@ -278,10 +279,10 @@ class TestCommandOutputParameter(unittest.TestCase):
 class TestCommandLineBinding(unittest.TestCase):
 
     def setUp(self):
-        self.line_binding = cwlgen.CommandLineBinding(load_contents=True, position=1, \
-                                                     prefix='--prefix', separate=True, \
-                                                     item_separator='-', shell_quote=True,\
-                                                     value_from='text.txt')
+        self.line_binding = cwlgen.CommandLineBinding(load_contents=True, position=1, prefix='--prefix', separate=True,
+                                                      item_separator='-', shell_quote=True, value_from='text.txt')
+        self.false_line_binding = cwlgen.CommandLineBinding(load_contents=False, position=0, prefix='', separate=False,
+                                                            item_separator='', shell_quote=False, value_from="")
 
     def test_init(self):
         self.assertTrue(self.line_binding.loadContents)
@@ -301,12 +302,22 @@ class TestCommandLineBinding(unittest.TestCase):
         self.assertTrue(dict_test['shellQuote'])
         self.assertEqual(dict_test['valueFrom'], 'text.txt')
 
+    def test_false_dict(self):
+        d = self.false_line_binding.get_dict()
+        self.assertIn("loadContents", d)
+        self.assertIn("position", d)
+        self.assertIn("prefix", d)
+        self.assertIn("separate", d)
+        self.assertIn("itemSeparator", d)
+        self.assertIn("shellQuote", d)
+        self.assertIn("valueFrom", d)
+
 
 class TestCommandOutputBinding(unittest.TestCase):
 
     def setUp(self):
-        self.out_binding = cwlgen.CommandOutputBinding(glob='file.txt', load_contents=True,\
-                                                      output_eval='eval')
+        self.out_binding = cwlgen.CommandOutputBinding(glob='file.txt', load_contents=True, \
+                                                       output_eval='eval')
 
     def test_init(self):
         self.assertEqual(self.out_binding.glob, 'file.txt')
