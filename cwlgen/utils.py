@@ -24,17 +24,21 @@ class Serializable(object):
             return obj.get_dict()
         raise Exception("Can't serialize '{unsupported_type}'".format(unsupported_type=type(obj)))
 
+    @staticmethod
+    def should_exclude_object(value):
+        return value is None or ((isinstance(value, list) or isinstance(value, dict)) and len(value) == 0)
+
     def get_dict(self):
         d = {}
         ignore_attributes = set()
-        if hasattr(self, "ignore_attributes"):
+        if hasattr(self, "ignore_attributes") and self.ignore_attributes:
             ignore_attributes = set(self.ignore_attributes)
 
         for k, v in vars(self).items():
-            if v is None or k.startswith("_") or k in ignore_attributes or k == "ignore_attributes":
+            if self.should_exclude_object(v) or k.startswith("_") or k in ignore_attributes or k == "ignore_attributes":
                 continue
             s = self.serialize(v)
-            if s is None:
+            if self.should_exclude_object(s):
                 continue
             d[k] = s
         return d

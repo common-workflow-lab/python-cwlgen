@@ -153,7 +153,7 @@ class CommandOutputParameter(Parameter):
     '''
 
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, output_binding=None, param_type=None):
+                 streamable=None, doc=None, output_binding=None, param_type=None):
         '''
         :param param_id: unique identifier for this parameter
         :type param_id: STRING
