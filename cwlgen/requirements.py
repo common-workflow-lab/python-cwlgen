@@ -1,7 +1,7 @@
 import six
 
-from cwlgen import Serializable
 from .common import parse_type, get_type_dict
+from .utils import Serializable
 
 
 class Requirement(Serializable):
