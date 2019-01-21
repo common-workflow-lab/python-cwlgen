@@ -218,43 +218,12 @@ class WorkflowStep(Serializable):
         self.requirements = []
         self.hints = []
 
-        self.ignore_attributes = ["id"]
+        self.ignore_attributes = ["id", "inputs"]
 
-    # def get_dict(self):
-    #     '''
-    #     Transform the object to a [DICT] to write CWL.
-    #
-    #     :return: dictionnary of the object
-    #     :rtype: DICT
-    #     '''
-    #     workflow_step = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
-    #
-    #     workflow_step['in'] = {i.id: i.get_dict() for i in self.inputs}
-    #     workflow_step['out'] = [o.id for o in self.out]
-    #
-    #     if isinstance(self.run, six.string_types):
-    #         workflow_step['run'] = self.run
-    #     else:
-    #         # CommandLineTool | ExpressionTool | Workflow
-    #         workflow_step['run'] = self.run.get_dict()
-    #
-    #     if self.requirements:
-    #         workflow_step['requirements'] = [r.get_dict() for r in self.requirements]
-    #
-    #     if self.hints:
-    #         workflow_step['hints'] = self.hints
-    #
-    #     # label | doc is covered by first line
-    #
-    #     if self.scatter:
-    #         workflow_step['scatter'] = self.scatter
-    #
-    #         if isinstance(self.scatter, list) and len(self.scatter) > 1:
-    #             workflow_step['scatterMethod'] = self.scatterMethod
-    #         elif self.scatterMethod:
-    #             _LOGGER.info("Skipping adding scatterMethod because scatter was not a list or length was less than 2")
-    #
-    #     return workflow_step
+    def get_dict(self):
+        d = super(WorkflowStep, self).get_dict()
+        d['in'] = {i.id: i.get_dict() for i in self.inputs}
+        return d
 
 
 class WorkflowStepInput(object):
