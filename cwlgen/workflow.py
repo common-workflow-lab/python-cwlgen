@@ -7,12 +7,11 @@ import logging
 import ruamel.yaml
 import six
 
-from cwlgen import Serializable
 from .version import __version__
 
 # Internal libraries
 
-from .utils import literal, literal_presenter
+from .utils import literal, literal_presenter, Serializable
 from .common import Parameter, CWL_SHEBANG
 
 
