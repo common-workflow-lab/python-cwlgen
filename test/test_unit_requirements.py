@@ -16,6 +16,15 @@ class TestAddRequirements(unittest.TestCase):
         self.assertIn("expressionLib", drr)
         self.assertEqual(drr["expressionLib"], ["expression"])
 
+    def test_commandtool(self):
+        c = cwlgen.CommandLineTool("reqs")
+        docker = cwlgen.DockerRequirement(docker_pull="ubuntu:latest")
+        c.requirements.append(docker)
+
+        d = c.get_dict()
+        self.assertIn("requirements", d)
+        self.assertIn(docker.get_class(), d["requirements"])
+
 
 class TestInlineJavascriptReq(unittest.TestCase):
 

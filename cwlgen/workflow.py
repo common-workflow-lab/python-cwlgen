@@ -57,7 +57,7 @@ def parse_link_merge_method(link_merge, required=False):
 
 #  Class(es)  ------------------------------
 
-class Workflow(object):
+class Workflow(Serializable):
     """
     A workflow describes a set of steps and the dependencies between those steps.
     When a step produces output that will be consumed by a second step,
@@ -90,11 +90,12 @@ class Workflow(object):
         self.hints = None
         self._path = None
 
+        self.ignore_attributes = ["inputs", "outputs"]
+
     def get_dict(self):
-        cwl_workflow = {k: v for k, v in vars(self).items() if v is not None and type(v) is str}
+        cwl_workflow = super(Workflow, self).get_dict()
 
         cwl_workflow['class'] = self.__CLASS__
-        cwl_workflow['cwlVersion'] = self.cwlVersion
 
         cwl_workflow['inputs'] = {}
         cwl_workflow['outputs'] = {}
@@ -106,10 +107,6 @@ class Workflow(object):
 
         if self.requirements:
             cwl_workflow['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
-
-        if self.hints:
-            # can be array<Any> | dict<class, Any>
-            cwl_workflow['hints'] = self.hints
 
         return cwl_workflow
 
@@ -169,18 +166,6 @@ class InputParameter(Parameter):
         self.inputBinding = input_binding
         self.default = default
 
-    def get_dict(self):
-        input_dict = Parameter.get_dict(self)
-
-        if self.inputBinding:
-            # CommandLineBinding
-            input_dict["inputBinding"] = self.inputBinding.get_dict()
-
-        if self.default:
-            input_dict["default"] = self.default
-
-        return input_dict
-
 
 class WorkflowStep(Serializable):
     """
@@ -226,7 +211,7 @@ class WorkflowStep(Serializable):
         return d
 
 
-class WorkflowStepInput(object):
+class WorkflowStepInput(Serializable):
     """
     The input of a workflow step connects an upstream parameter (from the workflow inputs, or the outputs of
     other workflows steps) with the input parameters of the underlying step.
@@ -257,32 +242,8 @@ class WorkflowStepInput(object):
         self.default = default
         self.valueFrom = value_from
 
-    def get_dict(self):
-        """
-        Transform the object to a [DICT] to write CWL.
-        :return: dictionary of the object
-        :rtype: DICT
-        """
-        dict_param = {
-            'id': self.id
-        }
 
-        if self.source:
-            dict_param['source'] = self.source
-
-        if self.linkMerge:
-            dict_param['linkMerge'] = self.linkMerge
-
-        if self.default:
-            dict_param['default'] = self.default
-
-        if self.valueFrom:
-            dict_param['valueFrom'] = self.valueFrom
-
-        return dict_param
-
-
-class WorkflowStepOutput(object):
+class WorkflowStepOutput(Serializable):
     """
     Associate an output parameter of the underlying process with a workflow parameter.
     The workflow parameter (given in the id field) be may be used as a source to connect with
@@ -341,20 +302,6 @@ class WorkflowOutputParameter(Parameter):
         self.outputSource = output_source
         self.outputBinding = output_binding     # CommandOutputBinding
         self.linkMerge = linkMerge
-
-    def get_dict(self):
-        output_dict = Parameter.get_dict(self)
-
-        if self.outputSource:
-            output_dict["outputSource"] = self.outputSource
-        if self.outputBinding:
-            output_dict["outputBinding"] = self.outputBinding.get_dict()
-        if self.format:
-            output_dict["format"] = self.format
-        if self.linkMerge:
-            output_dict["linkMerge"] = self.linkMerge
-
-        return output_dict
 
 
 ############################
