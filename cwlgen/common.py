@@ -58,7 +58,9 @@ def parse_type(param_type, requires_type=False):
     elif isinstance(param_type, list):
         return [parse_type(p) for p in param_type]
 
-    elif isinstance(param_type, CommandInputArraySchema):
+    elif isinstance(param_type, CommandInputArraySchema) \
+            or isinstance(param_type, CommandInputRecordSchema) \
+            or isinstance(param_type, CommandInputEnumSchema):
         return param_type  # validate if required
 
     if requires_type is True:
@@ -187,4 +189,72 @@ class CommandInputArraySchema(Serializable):
         self.type = CwlTypes.ARRAY
         self.items = parse_type(items, requires_type=True)
         self.label = label
+        self.inputBinding = input_binding
+
+
+class CommandInputRecordSchema(Serializable):
+    """
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#CommandInputRecordSchema
+    """
+
+    def __init__(self, label=None, name=None):
+        """
+        :param fields: Defines the fields of the record.
+        :type fields: array<InputRecordField>
+        :param label: A short, human-readable label of this object.
+        :param name: NF (Name of the InputRecord)
+        """
+        self.fields = []
+        self.label = label
+        self.name = name
+        self.type = "record"
+
+    class CommandInputRecordField(Serializable):
+        """
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#CommandInputRecordField
+        """
+
+        def __init__(self, name, input_type, doc=None, input_binding=None, label=None):
+            """
+            :param name:
+            :param input_type:
+            :type input_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                        array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+            :param doc: A documentation string for this field
+            :param input_binding:
+            :type input_binding: CommandLineBinding
+            :param label:
+            """
+            self.name = name
+            self.type = parse_type(input_type, requires_type=True)
+            self.doc = doc
+            self.inputBinding = input_binding
+            self.label = label
+
+        def get_dict(self):
+            d = super(type(self), self).get_dict()
+            d["type"] = get_type_dict(self.type)
+            return d
+
+
+class CommandInputEnumSchema(Serializable):
+    """
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#CommandInputEnumSchema
+    """
+
+    def __init__(self, symbols, label=None, name=None, input_binding=None):
+        """
+        :param symbols: Defines the set of valid symbols.
+        :type symbols: List[str]
+        :param label: A short, human-readable label of this object.
+        :type label: str
+        :param name:
+        :type name: str
+        :param input_binding:
+        :type input_binding: CommandLineBinding
+        """
+        self.type = "enum"
+        self.symbols = symbols
+        self.label = label
+        self.name = name
         self.inputBinding = input_binding
