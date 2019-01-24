@@ -98,6 +98,7 @@ class CommandLineTool(Serializable):
         """
         # First add representer (see .utils.py) for multiline writting
         ruamel.yaml.add_representer(literal, literal_presenter)
+
         cwl_tool = self.get_dict()
 
         # Write CWL file in YAML

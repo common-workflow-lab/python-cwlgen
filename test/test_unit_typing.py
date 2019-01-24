@@ -1,4 +1,6 @@
 import unittest
+
+from cwlgen import get_type_dict
 from cwlgen.common import parse_type, CwlTypes, CommandInputArraySchema
 import logging
 
@@ -69,3 +71,27 @@ class TestParamTyping(unittest.TestCase):
     def test_parse_array_of_string_array(self):
         ar = CommandInputArraySchema(items="string[]")
         self.assertEqual(ar.get_dict(), {'type': 'array', 'items': {'type': 'array', 'items': 'string'}})
+
+    def test_parse_list_of_items(self):
+        t = ["string", "int"]
+        types = parse_type(t)
+        self.assertListEqual(t, types)
+
+    def test_intentional_fail(self):
+        try:
+            parse_type("not_a_type", requires_type=True)
+            self.assertTrue(False, "Failed to throw exception")
+        except Exception as e:
+            self.assertTrue(True)
+
+    def test_get_type_dict(self):
+
+        self.assertEqual("any_string_input", get_type_dict("any_string_input"))
+        self.assertListEqual(["any", "list", "of", "strings"], get_type_dict(["any", "list", "of", "strings"]))
+        self.assertDictEqual({"any": "dict"}, get_type_dict({"any": "dict"}))
+
+        try:
+            get_type_dict(self)
+            self.assertTrue(False, "Failed to throw exception")
+        except Exception as e:
+            self.assertTrue(True)
