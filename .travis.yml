@@ -8,3 +8,12 @@ install:
 script: nosetests --with-coverage --cover-package=cwlgen
 after_success:
 - codecov
+deploy:
+  provider: pypi
+  user: illusional
+  password:
+    secure: BWX5fznaxdp4n39d6axM7lfX5SiNPzIU4LHISbp6l2wEO3cL4oJQOSS9lj6uGaIsKXCINVk/rU/MFEulx+DkltcwT0/Ej6gK9ooNjikV1noeNZ6kAPkVmo/R7Y6Ky00iK47TUTA5H1piW3sfl9G0ELmNKroqgHxuCGKxb2r+DEnnsiNfMQhS9EsxknrhM/vo6L+jGaUj8u/+r4kWQCVnGlwOkUGnh+cGihYlZLTCMgCUnYgDVZbC+WYKSHUurB4SZEwsGuE7sOLcNjNZdeuwS12xyn4ockXvuWnEddqB15SX1Fc3CS7W3ayjE0ZllS6Db24zgeeS9nBjt05lBOPUEOlRc8jzDHFerzqgcRyWRBwoxGMRLgTHWAMfXQeUdS5RRtMWIwZchZ1gyFsw64JdrSvu5n6hy4+4qc6Z14m0j/8kMMotUlGrSI7FBF+SZS4xOn12FXKTVprZ2594CFb18GzxMzerroI/FihfvN2b+VnG6gR8mbgRgtbWQ7mrn2FwkEf0o+RWQluvqFWFbcjHdCw4Dov1dNad+F3ph8YkRugJy42/5h1Z3meewyQOrVstWfY5kBjqvCiu7qOQlnlL2ps8PmSRZsnrCAyhnOajOQYq5+Fw4vB0t0MWSs08d/MAlRYWnCigQuVHrI2ZRPI10EwEWxRu9VGB7TCoFwB9SxI=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: illusional/python-cwlgen

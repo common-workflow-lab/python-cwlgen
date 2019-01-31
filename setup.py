@@ -1,11 +1,11 @@
 from setuptools import setup
 
-exec(open('cwlgen/version.py').read())
+__version__ = "v0.0.1"
 
-setup(name="cwlgen",
+setup(name="illusional.cwlgen",
         version=__version__,
-        description='Generation of CWL programmatically. Avaible types: CommandLineTool and DockerRequirement',
-        author='Kenzo-Hugo Hillion and Herve Menager',
+        description='Fork of python-cwlgen | Generation of CWL programmatically. Avaible types: CommandLineTool, Workflow and Requirements',
+        author='Michael Franklin | Kenzo-Hugo Hillion and Herve Menager',
         author_email='kehillio@pasteur.fr',
         license='MIT',
         keywords = ['cwl'],
@@ -13,7 +13,7 @@ setup(name="cwlgen",
         packages=["cwlgen"],
         classifiers=[
             'Development Status :: 4 - Beta',
-            'Topic :: Scientific/Engineering :: Bio-Informatics',
+            'Topic :: Scientific/Engineering',
             'Intended Audience :: Developers',
             'Intended Audience :: Science/Research',
             'Environment :: Console',
