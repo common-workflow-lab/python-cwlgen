@@ -73,72 +73,72 @@ class SchemaDefRequirement(Requirement):
             self.name = name
             self.type = "record"
 
-    class InputRecordField(Serializable):
-        """
-        Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordField
-        """
-        def __init__(self, name, input_type, doc=None, input_binding=None, label=None):
+        class InputRecordField(Serializable):
             """
+            Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordField
+            """
+            def __init__(self, name, input_type, doc=None, input_binding=None, label=None):
+                """
+                :param name:
+                :param input_type:
+                :type input_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                            array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+                :param doc: A documentation string for this field
+                :param input_binding:
+                :type input_binding: CommandLineBinding
+                :param label:
+                """
+                self.name = name
+                self.type = parse_type(input_type, requires_type=True)
+                self.doc = doc
+                self.inputBinding = input_binding
+                self.label = label
+
+            def get_dict(self):
+                d = super(self, self).get_dict()
+                d["type"] = get_type_dict(self.type)
+                return d
+
+    class InputEnumSchema(Serializable):
+        """
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputEnumSchema
+        """
+        def __init__(self, symbols, label=None, name=None, input_binding=None):
+            """
+            :param symbols: Defines the set of valid symbols.
+            :type symbols: list[STRING]
+            :param label: A short, human-readable label of this object.
+            :type label: STRING
             :param name:
-            :param input_type:
-            :type input_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
-                        array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
-            :param doc: A documentation string for this field
+            :type name: STRING
             :param input_binding:
             :type input_binding: CommandLineBinding
-            :param label:
             """
-            self.name = name
-            self.type = parse_type(input_type, requires_type=True)
-            self.doc = doc
-            self.inputBinding = input_binding
+            self.type = "enum"
+            self.symbols = symbols
             self.label = label
+            self.name = name
+            self.inputBinding = input_binding
 
-        def get_dict(self):
-            d = super(self, self).get_dict()
-            d["type"] = get_type_dict(self.type)
-            return d
+    class InputArraySchema(Serializable):
+        """
+        Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputArraySchema
+        """
 
-        class InputEnumSchema(Serializable):
+        def __init__(self, items, label=None, input_binding=None):
             """
-            Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputEnumSchema
+            :param items: Defines the type of the array elements.
+            :type items: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
+                    array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
+            :param label: A short, human-readable label of this object.
+            :type label: STRING
+            :param input_binding:
+            :type input_binding: CommandLineBinding
             """
-            def __init__(self, symbols, label=None, name=None, input_binding=None):
-                """
-                :param symbols: Defines the set of valid symbols.
-                :type symbols: list[STRING]
-                :param label: A short, human-readable label of this object.
-                :type label: STRING
-                :param name:
-                :type name: STRING
-                :param input_binding:
-                :type input_binding: CommandLineBinding
-                """
-                self.type = "enum"
-                self.symbols = symbols
-                self.label = label
-                self.name = name
-                self.inputBinding = input_binding
-
-        class InputArraySchema(Serializable):
-            """
-            Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputArraySchema
-            """
-
-            def __init__(self, items, label=None, input_binding=None):
-                """
-                :param items: Defines the type of the array elements.
-                :type items: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
-                        array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
-                :param label: A short, human-readable label of this object.
-                :type label: STRING
-                :param input_binding:
-                :type input_binding: CommandLineBinding
-                """
-                self.type = "array"
-                self.items = items
-                self.label = label
-                self.inputBinding = input_binding
+            self.type = "array"
+            self.items = items
+            self.label = label
+            self.inputBinding = input_binding
 
 
 class SoftwareRequirement(Requirement):

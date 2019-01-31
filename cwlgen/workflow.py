@@ -138,7 +138,7 @@ class InputParameter(Parameter):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputParameter
     """
     def __init__(self, param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, input_binding=None, default=None, param_type=None):
+                 streamable=None, doc=None, input_binding=None, default=None, param_type=None):
         """
         :param param_id: unique identifier for this parameter
         :type param_id: STRING
@@ -207,7 +207,7 @@ class WorkflowStep(Serializable):
 
     def get_dict(self):
         d = super(WorkflowStep, self).get_dict()
-        d['in'] = {i.id: i.get_dict() for i in self.inputs}
+        d['in'] = {i.id: self.serialize(i) for i in self.inputs}
         return d
 
 
@@ -271,7 +271,7 @@ class WorkflowOutputParameter(Parameter):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
     """
     def __init__(self, param_id, output_source=None, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, param_type=None, output_binding=None, linkMerge=None):
+                 streamable=None, doc=None, param_type=None, output_binding=None, linkMerge=None):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowOutputParameter
         :param param_id: The unique identifier for this parameter object.

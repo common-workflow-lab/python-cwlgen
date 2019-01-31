@@ -78,7 +78,7 @@ import cwlgen as cwl
 tool_object = cwl.CommandLineTool(cwltool_id="echo-tool", base_command=echo, label=None, doc=None,
                  cwl_version="v1.0", stdin=None, stderr=None, stdout=None, path=None)
 tool_object.inputs.append(cwl.CommandInputParameter(param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=False, doc=None, input_binding=None, default=None, param_type=None)
+                 streamable=None, doc=None, input_binding=None, default=None, param_type=None)
                  
 # fill in the fields as required
 
