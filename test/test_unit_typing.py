@@ -80,8 +80,15 @@ class TestParamTyping(unittest.TestCase):
     def test_intentional_fail(self):
         try:
             parse_type("not_a_type", requires_type=True)
-            self.assertTrue(False, "Failed to throw exception")
+            self.fail("Failed to throw exception")
         except Exception as e:
+            self.assertTrue(True)
+
+    def test_intentional_fail_not_string(self):
+        try:
+            parse_type({}, requires_type=True)
+            self.fail("Failed to throw exception")
+        except:
             self.assertTrue(True)
 
     def test_get_type_dict(self):
