@@ -21,7 +21,7 @@ back to the [original repository](https://github.com/common-workflow-language/py
 
 [![Build Status](https://travis-ci.org/illusional/python-cwlgen.svg?branch=master)](https://travis-ci.org/common-workflow-language/python-cwlgen)
 [![codecov](https://codecov.io/gh/illusional/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/illusional/python-cwlgen)
-
+[![PyPI version](https://badge.fury.io/py/illusional.cwlgen.svg)](https://badge.fury.io/py/illusional.cwlgen)
 
 # Common Workflow Language
 
@@ -39,25 +39,13 @@ allowing you to build the structure of the workflow in Python and have this modu
 **Nb:** This isn't going to sanity or quality check Workflows or CommandLineTools for you, use 
 [CWLTool](https://github.com/common-workflow-language/cwltool) or [WOMTool](https://cromwell.readthedocs.io/en/develop/WOMtool/) for that.
 
-# Quick-start guide
+## Quick-start guide
 
-## Installation
+This is available through PIP!
 
-This isn't available through _pip_ (the official repository is), however you can embed it using git submodules, 
-or just download the source code.
-
-### Git submodule installation
-
-You can use gitsubmodules to embed the repository into your project (in a folder called `cwlgen/`) with the following command.
-
-`git submodule add git@github.com:illusional/python-cwlgen.git cwlgen/`
-
-Then you can use it by `import cwlgen.cwlgen as cwl`.
-
-#### Updating the repository
-Just `cd` into the `cwlgen` folder (the submodule) inside your project, and then run `git pull origin master` 
-to update to the latest commit of master. Then change back into the root directory of your project and commit 
-the commit hash change.
+```
+pip install illusional.cwlgen
+```
 
 ## How it works ?
 
@@ -75,10 +63,10 @@ _Creating a CommandLineTool_
 # if using gitsubmodules, you can use the following import statement
 import cwlgen as cwl
 
-tool_object = cwl.CommandLineTool(cwltool_id="echo-tool", base_command=echo, label=None, doc=None,
+tool_object = cwl.CommandLineTool(cwltool_id="echo-tool", base_command="echo", label=None, doc=None,
                  cwl_version="v1.0", stdin=None, stderr=None, stdout=None, path=None)
-tool_object.inputs.append(cwl.CommandInputParameter(param_id, label=None, secondary_files=None, param_format=None,
-                 streamable=None, doc=None, input_binding=None, default=None, param_type=None)
+tool_object.inputs.append(cwl.CommandInputParameter("myParamId", label=None, secondary_files=None, param_format=None,
+                 streamable=None, doc=None, input_binding=None, default=None, param_type=None))
                  
 # fill in the fields as required
 
