@@ -9,7 +9,7 @@ setup(name="cwlgen",
         author_email='kehillio@pasteur.fr',
         license='MIT',
         keywords = ['cwl'],
-        install_requires=['six', 'ruamel.yaml==0.13.13'],
+        install_requires=['six', 'ruamel.yaml==0.15.87'],
         packages=["cwlgen"],
         classifiers=[
             'Development Status :: 4 - Beta',
