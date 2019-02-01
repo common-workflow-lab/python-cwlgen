@@ -1,6 +1,6 @@
 from setuptools import setup
 
-__version__ = "v0.0.4"
+__version__ = "v0.0.5"
 
 setup(name="illusional.cwlgen",
       version=__version__,
@@ -12,7 +12,7 @@ setup(name="illusional.cwlgen",
       author_email='michael.franklin@petermac.org',
       license='MIT',
       keywords=['cwl'],
-      install_requires=['six', 'ruamel.yaml>=0.15'],
+      install_requires=['six', 'ruamel.yaml >= 0.12.4, <= 0.15.77'],
       packages=["cwlgen"],
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -21,4 +21,4 @@ setup(name="illusional.cwlgen",
           'Intended Audience :: Science/Research',
           'Environment :: Console',
       ],
-      )
+)
