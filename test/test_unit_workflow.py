@@ -85,7 +85,6 @@ steps:
         generated = self.capture_tempfile(w.export)
         self.assertEqual(expected, generated)
 
-
     def test_add_requirements(self):
         w = cwlgen.Workflow()
         req = cwlgen.InlineJavascriptReq()
