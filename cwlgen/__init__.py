@@ -13,7 +13,7 @@ import six
 from .version import __version__
 
 from .utils import literal, literal_presenter
-from .elements import Parameter, CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG
+from .elements import Parameter, CommandInputArraySchema, CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG
 from .workflow import Workflow, File
 from .import_cwl import parse_cwl
 

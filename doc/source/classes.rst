@@ -94,6 +94,15 @@ CommandOutputBinding
     :special-members:
     :exclude-members: __weakref__
 
+CommandInputArraySchema
+"""""""""""""""""""""""
+
+.. autoclass:: cwlgen.CommandInputArraySchema
+    :members:
+    :private-members:
+    :special-members:
+    :exclude-members: __weakref__
+
 .. _requirements:
 
 Requirements
@@ -137,7 +146,7 @@ CWLToolParser
     :private-members:
     :special-members:
     :exclude-members: __weakref_
-_
+
 InputsParser
 """"""""""""
 

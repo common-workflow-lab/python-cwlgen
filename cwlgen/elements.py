@@ -22,8 +22,9 @@ def parse_param_type(param_type):
     Parses the parameter type as one of the required types:
     :: https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputParameter
 
-
-    :param param_type:
+    :param param_type: a CWL type that is _validated_
+    :type param_type: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
+       array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     :return: CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string |
        array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>
     """
@@ -34,12 +35,25 @@ def parse_param_type(param_type):
         if optional:
             _LOGGER.debug("Detected {param_type} to be optional".format(param_type=param_type))
         cwltype = param_type[:-1] if optional else param_type
+
+        # check for arrays
+        if len(cwltype) > 2 and cwltype[-2:] == "[]":
+            array_type = CommandInputArraySchema(items=cwltype[:-2])
+            # How to make arrays optional input: https://www.biostars.org/p/233562/#234089
+            return [DEF_TYPE, array_type] if optional else array_type
+
         if cwltype not in CWL_TYPE:
             _LOGGER.warning("The type '{param_type}' is not a valid CWLType, expected one of: {types}"
                             .format(param_type=param_type, types=", ".join(str(x) for x in CWL_TYPE)))
             _LOGGER.warning("type is set to {}.".format(DEF_TYPE))
             return DEF_TYPE
         return param_type
+
+    elif isinstance(param_type, list):
+        return [parse_param_type(p) for p in param_type]
+
+    elif isinstance(param_type, CommandInputArraySchema):
+        return param_type   # validate if required
     else:
         _LOGGER.warning("Unable to detect type of param '{param_type}".format(param_type=param_type))
         return DEF_TYPE
@@ -85,12 +99,54 @@ class Parameter(object):
         :return: dictionnary of the object
         :rtype: DICT
         '''
-        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False}
-        if dict_param['type'] != 'File':
-            # Remove what is only for File
-            for key in ['format', 'secondaryFiles', 'streamable']:
-                try:
-                    del(dict_param[key])
-                except KeyError:
-                    pass
+        manual = ["type"]
+        dict_param = {k: v for k, v in vars(self).items() if v is not None and v is not False and k not in manual}
+
+        should_have_file_related_keys = False
+
+        if isinstance(self.type, str):
+            dict_param["type"] = self.type
+            should_have_file_related_keys = self.type == "File"
+
+        elif isinstance(self.type, CommandInputArraySchema):
+            dict_param["type"] = self.type.get_dict()
+            should_have_file_related_keys = self.type.type == "File"
+
+        keys_to_remove = [k for k in ['format', 'secondaryFiles', 'streamable'] if k in dict_param]
+
+        if not should_have_file_related_keys:
+            for key in keys_to_remove:
+                del(dict_param[key])
         return dict_param
+
+
+class CommandInputArraySchema(object):
+    '''
+    Based on the parameter set out in the CWL spec:
+    https://www.commonwl.org/v1.0/CommandLineTool.html#CommandInputArraySchema
+    '''
+
+    def __init__(self, items=None, label=None, input_binding=None):
+        '''
+        :param items: Defines the type of the array elements.
+        :type: `CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string | array<CWLType | CommandInputRecordSchema | CommandInputEnumSchema | CommandInputArraySchema | string>`
+        :param label: A short, human-readable label of this object.
+        :type label: STRING
+        :param input_binding:
+        :type input_binding: CommandLineBinding
+        '''
+        self.type = "array"
+        self.items = parse_param_type(items)
+        self.label = label
+        self.inputBinding = input_binding
+
+    def get_dict(self):
+        '''
+        Transform the object to a [DICT] to write CWL.
+
+        :return: dictionnary of the object
+        :rtype: DICT
+        '''
+        dict_binding = {k: v for k, v in vars(self).items() if v is not None}
+        return dict_binding
+
