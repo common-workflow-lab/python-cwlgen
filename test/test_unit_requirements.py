@@ -44,7 +44,7 @@ class TestInlineJavascriptReq(unittest.TestCase):
 
     def test_export_without_lib(self):
         tool = self.js_req_nolib.get_dict()
-        self.assertEqual(tool, {})
+        self.assertDictEqual(tool, {})
 
 
 class TestDockerRequirement(unittest.TestCase):
@@ -82,7 +82,7 @@ class TestDockerRequirement(unittest.TestCase):
 
     def test_missing_export(self):
         dr = cwlgen.DockerRequirement()
-        self.assertEqual(dr.get_dict(), {})
+        self.assertDictEqual(dr.get_dict(), {})
 
 
 class TestSubworkflowFeatureRequirement(unittest.TestCase):
@@ -95,7 +95,7 @@ class TestSubworkflowFeatureRequirement(unittest.TestCase):
 
     def test_add(self):
         tool = self.req.get_dict()
-        self.assertEqual(tool, {})
+        self.assertDictEqual(tool, {})
 
 
 class TestSoftwareRequirement(unittest.TestCase):

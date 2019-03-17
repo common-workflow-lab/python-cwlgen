@@ -1,7 +1,5 @@
 # python-cwlgen
 
-(From original repository)
-
 [![Build Status](https://travis-ci.org/common-workflow-language/python-cwlgen.svg?branch=master)](https://travis-ci.org/common-workflow-language/python-cwlgen)
 [![codecov](https://codecov.io/gh/common-workflow-language/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/common-workflow-language/python-cwlgen)
 [![Documentation Status](https://readthedocs.org/projects/python-cwlgen/badge/?version=latest)](http://python-cwlgen.readthedocs.io/en/latest/?badge=latest)
@@ -27,20 +25,20 @@ The [user guide](http://www.commonwl.org/user_guide/01-introduction/index.html)
 This python repository is a python wrapper for _most_ of the classes (work in progress), 
 allowing you to build the structure of the workflow in Python and have this module generate and export CWL for you.
 
-**Nb:** This isn't going to sanity or quality check Workflows or CommandLineTools for you, use 
-[CWLTool](https://github.com/common-workflow-language/cwltool) or [WOMTool](https://cromwell.readthedocs.io/en/develop/WOMtool/) for that.
+**Nb:** This doesn't check the logic of Workflows or CommandLineTools for you.  
+[CWLTool](https://github.com/common-workflow-language/cwltool) has a `--validate` mode that you can use.
 
 ## Quick-start guide
 
 You can install python-cwlgen through pip with the following command:
 
-```
+```bash
 pip install cwlgen
 ```
 
-## How it works ?
+### How it works ?
 
-There's a pretty close copy of the cwl specifications ([Workflow](https://www.commonwl.org/v1.0/Workflow.html)| 
+There's a copy of the cwl specifications ([Workflow](https://www.commonwl.org/v1.0/Workflow.html)| 
 [CommandLineTool](https://www.commonwl.org/v1.0/CommandLineTool.html)), where the Python classes mirror the CWL spec. 
 This repository also includes docstrings to give you context of classes and their properties.
 
