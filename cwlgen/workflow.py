@@ -110,23 +110,25 @@ class Workflow(Serializable):
 
         return cwl_workflow
 
+    def export_string(self):
+        ruamel.yaml.add_representer(literal, literal_presenter)
+        cwl_tool = self.get_dict()
+        return ruamel.yaml.dump(cwl_tool, default_flow_style=False)
+
     def export(self, outfile=None):
         """
         Export the workflow in CWL either on STDOUT or in outfile.
         """
-        # First add representer (see .utils.py) for multiline writting
-        ruamel.yaml.add_representer(literal, literal_presenter)
-
-        cwl_workflow = self.get_dict()
+        rep = self.export_string()
 
         # Write CWL file in YAML
         if outfile is None:
             six.print_(CWL_SHEBANG, "\n", sep='')
-            six.print_(ruamel.yaml.dump(cwl_workflow))
+            six.print_(rep)
         else:
             out_write = open(outfile, 'w')
             out_write.write(CWL_SHEBANG + '\n\n')
-            out_write.write(ruamel.yaml.dump(cwl_workflow))
+            out_write.write(rep)
             out_write.close()
 
     # def add(self, step_id, tool, params):

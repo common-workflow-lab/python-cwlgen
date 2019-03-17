@@ -1,25 +1,31 @@
 #!/usr/bin/env cwl-runner
 
-$namespaces: {s: http://schema.org/}
-arguments: []
+$namespaces:
+  s: http://schema.org/
 baseCommand: grep
 class: CommandLineTool
 cwlVersion: v1.0
-doc: |-
-  grep searches for a pattern in a file.
+doc: grep searches for a pattern in a file.
 id: grep
 inputs:
-  input_file:
-    doc: input file from which you want to look for the pattern
-    inputBinding: {loadContents: false, position: 2, separate: true, shellQuote: true}
-    type: File
-  pattern:
-    doc: pattern to find in the input file
-    inputBinding: {loadContents: false, position: 1, separate: true, shellQuote: true}
-    type: string
+- doc: input file from which you want to look for the pattern
+  id: input_file
+  inputBinding:
+    position: 2
+  type: File
+- doc: pattern to find in the input file
+  id: pattern
+  inputBinding:
+    position: 1
+  type: string
 label: print lines matching a pattern
+metadata:
+  about: grep searches for a pattern in a file.
+  name: grep
 outputs:
-  output: {doc: lines found with the pattern, type: stdout}
+- doc: lines found with the pattern
+  id: output
+  type: stdout
 s:about: grep searches for a pattern in a file.
 s:name: grep
 stdout: grep.txt

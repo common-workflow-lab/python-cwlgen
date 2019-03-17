@@ -14,26 +14,17 @@ The library works for both Python 2.7.12+ and 3.6.0.
 ------------------------
 
 
-
-I've forked this repository to try and get my use of this repository working quickly without 
-worrying too much about proper code etiquette. I have and will continue to submit merge requests 
-back to the [original repository](https://github.com/common-workflow-language/python-cwlgen).
-
-[![Build Status](https://travis-ci.org/illusional/python-cwlgen.svg?branch=master)](https://travis-ci.org/common-workflow-language/python-cwlgen)
-[![codecov](https://codecov.io/gh/illusional/python-cwlgen/branch/master/graph/badge.svg)](https://codecov.io/gh/illusional/python-cwlgen)
-[![PyPI version](https://badge.fury.io/py/illusional.cwlgen.svg)](https://badge.fury.io/py/illusional.cwlgen)
-
 # Common Workflow Language
 
-[Common Workflow Language (CWL)](https://www.commonwl.org/v1.0/index.html) is a method to describe workflows,
- and any tools (software) that it may use. The [user guide](http://www.commonwl.org/user_guide/01-introduction/index.html)
- gives a gentle (and better) explanation of what its goals are, and how they are achieved, but broadly:
+[Common Workflow Language (CWL)](https://www.commonwl.org/v1.0/index.html) is a language to describe workflows. 
+The [user guide](http://www.commonwl.org/user_guide/01-introduction/index.html)
+ gives a gentle explanation of what its goals are, but broadly:
  
  1. Stop writing bash scripts for long complex jobs.
  2. Take pipelines anywhere (portability).
- 3. Try to enforce reproducibility guidelines.
+ 3. Enforce reproducibility guidelines.
  
-This python repository is simply a python wrapper for _most_ of the classes (work in progress), 
+This python repository is a python wrapper for _most_ of the classes (work in progress), 
 allowing you to build the structure of the workflow in Python and have this module generate and export CWL for you.
 
 **Nb:** This isn't going to sanity or quality check Workflows or CommandLineTools for you, use 
@@ -41,41 +32,42 @@ allowing you to build the structure of the workflow in Python and have this modu
 
 ## Quick-start guide
 
-This is available through PIP!
+You can install python-cwlgen through pip with the following command:
 
 ```
-pip install illusional.cwlgen
+pip install cwlgen
 ```
 
 ## How it works ?
 
 There's a pretty close copy of the cwl specifications ([Workflow](https://www.commonwl.org/v1.0/Workflow.html)| 
 [CommandLineTool](https://www.commonwl.org/v1.0/CommandLineTool.html)), where the Python classes mirror the CWL spec. 
-This repository also includes some of the docstrings to give you context of classes and their properties.
+This repository also includes docstrings to give you context of classes and their properties.
 
-I've tried to include direct links to a classes documentation, however this isn't always possible.
-
-There are some small examples in the `examples/` folder, however for whatever class you need, you simply just init 
-that class, for example:
+The `examples/` folder contains some simple examples, however , 
+you can simply initialise that class, for example:
 
 _Creating a CommandLineTool_
 ```python
-# if using gitsubmodules, you can use the following import statement
-import cwlgen as cwl
+import cwlgen
 
-tool_object = cwl.CommandLineTool(cwltool_id="echo-tool", base_command="echo", label=None, doc=None,
+tool_object = cwlgen.CommandLineTool(tool_id="echo-tool", base_command="echo", label=None, doc=None,
                  cwl_version="v1.0", stdin=None, stderr=None, stdout=None, path=None)
-tool_object.inputs.append(cwl.CommandInputParameter("myParamId", label=None, secondary_files=None, param_format=None,
-                 streamable=None, doc=None, input_binding=None, default=None, param_type=None))
-                 
-# fill in the fields as required
+tool_object.inputs.append(
+    cwlgen.CommandInputParameter("myParamId", param_type="string", label=None, secondary_files=None, param_format=None,
+                 streamable=None, doc=None, input_binding=None, default=None)
+)
 
 # to get the dictionary representation:
 dict_to_export = tool_object.get_dict()
 
-# dump using a yaml exporter
-yaml.dump(dict_to_export)
-```
+# to get the string representation (YAML)
+yaml_export = tool_object.export_string()
 
-All of the classes should work in a similar way. I've removed the `literal` representation from my fork as I 
-didn't want to use _ruamel_ at the moment. Otherwise file an issue and I'll have a look into it.
+# print to console
+tool_object.export()
+
+# print to file
+with open("echotool.cwl", "w") as f:
+    tool_object.export(f)
+```

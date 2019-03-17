@@ -126,7 +126,7 @@ class Namespaces(object):
         self.s = "http://schema.org/"
 
 
-class Metadata(object):
+class Metadata(Serializable):
     """
     Represent metadata described by http://schema.org.
     """
