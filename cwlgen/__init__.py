@@ -27,7 +27,3 @@ from .workflow import *
 from .commandlinebinding import CommandLineBinding
 from .requirements import *
 
-#  Function(s)  ------------------------------
-
-#  Class(es)  ------------------------------
-
