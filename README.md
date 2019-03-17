@@ -36,14 +36,16 @@ You can install python-cwlgen through pip with the following command:
 pip install cwlgen
 ```
 
-### How it works ?
+### How it works?
 
-There's a copy of the cwl specifications ([Workflow](https://www.commonwl.org/v1.0/Workflow.html)| 
-[CommandLineTool](https://www.commonwl.org/v1.0/CommandLineTool.html)), where the Python classes mirror the CWL spec. 
-This repository also includes docstrings to give you context of classes and their properties.
+This repository contains a number of python classes that mirror the CWL specifications ([Workflow](https://www.commonwl.org/v1.0/Workflow.html)| 
+[CommandLineTool](https://www.commonwl.org/v1.0/CommandLineTool.html)). In essence, each class's initializer has all 
+of the properties it expects, which may be another object. The classes include the relevant docstrings to give you 
+context of classes and their properties.
 
-The `examples/` folder contains some simple examples, however , 
-you can simply initialise that class, for example:
+The `examples/` folder contains some simple examples, however in essence you simply initialize the class you're 
+trying to build. An initializer for a class has all of the properties it expects which may be another object.
+
 
 _Creating a CommandLineTool_
 ```python
@@ -69,3 +71,9 @@ tool_object.export()
 with open("echotool.cwl", "w") as f:
     tool_object.export(f)
 ```
+
+## References
+
+CWL is developed by an informal, multi-vendor working group consisting of organizations and individuals 
+aiming to enable scientists to share data analysis workflows. 
+The [CWL project is on Github](https://github.com/common-workflow-language/common-workflow-language).
