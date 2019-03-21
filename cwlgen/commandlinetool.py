@@ -45,6 +45,7 @@ class CommandLineTool(Serializable):
         inputs (:class:`cwlgen.CommandInputParameter` objects),
         outputs (:class:`cwlgen.CommandOutputParameter` objects),
         arguments (:class:`cwlgen.CommandLineBinding` objects),
+        hints (any | :class:`cwlgen.Requirement` objects)
         and requirements (:class:`cwlgen.Requirement` objects)
         are stored in lists which are initialized empty.
         '''

@@ -72,7 +72,9 @@ def parse_type(param_type, requires_type=False):
 
 def get_type_dict(param_type):
     """
-    Convets
+    Generic method to the get dict for any of the valid param_type types,
+    ie:  CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string
+       | array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>
     :param param_type:
     :type param_type: CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string |
                 array<CWLType | InputRecordSchema | InputEnumSchema | InputArraySchema | string>

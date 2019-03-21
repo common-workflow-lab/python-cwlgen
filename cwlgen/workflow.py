@@ -86,8 +86,8 @@ class Workflow(Serializable):
         self.inputs = []            # list[InputParameter]
         self.outputs = []           # list[WorkflowOutputParameter]
         self.steps = []             # list[WorkflowStep]
-        self.requirements = []
-        self.hints = None
+        self.requirements = []      # list[Requirement]
+        self.hints = []             # list[Requirement]
         self._path = None
 
         self.ignore_attributes = ["inputs", "outputs"]
