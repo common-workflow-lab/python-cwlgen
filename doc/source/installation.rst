@@ -20,7 +20,7 @@ python-cwlgen dependencies
 
 python-cwlgen is initially built with Python3 and uses the following libraries:
 
-- ruamel.yaml (0.15.87)
+- ruamel.yaml (between 0.12.4 and 0.15.87)
 - six (1.10.0)
 
 .. _installation:

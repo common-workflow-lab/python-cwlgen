@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
     # Add Metadata
     metadata = {'name': 'grep',
-                'about' : 'grep searches for a pattern in a file.'}
+                'about': 'grep searches for a pattern in a file.'}
     cwl_tool.metadata = cwlgen.Metadata(**metadata)
     cwl_tool.metadata = cwlgen.Metadata(**metadata)
 
     # Write in an output file
-    #cwl_tool.export()
-    cwl_tool.export("grep.cwl")
+    cwl_tool.export()
+    # cwl_tool.export("grep.cwl")
