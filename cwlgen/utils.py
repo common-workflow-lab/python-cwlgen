@@ -1,7 +1,7 @@
 """
 Set of util functions and classes
 """
-
+import inspect
 
 class literal(str): pass
 
@@ -22,9 +22,9 @@ class Serializable(object):
     method on that type. It should return None if it can't parse that dictionary. This means
     the type will need to override the parse_dict method.
     """
-    parse_types = []        # type: List[Tuple[str, List[Type]]]
-    required_params = []    # type: str
-
+    parse_types = []        # type: [(str, [type])]
+    ignore_fields = []
+    required_fields = []    # type: str
 
     @staticmethod
     def serialize(obj):
@@ -59,3 +59,76 @@ class Serializable(object):
             d[k] = s
         return d
         # return {k: self.serialize(v) for k, v in vars(self).items() if v is not None}
+
+    @classmethod
+    def parse_dict(cls, d):
+        pts = {t[0]: t[1] for t in cls.parse_types}
+        req = {r: False for r in cls.required_fields}
+        ignore = set(cls.ignore_fields)
+
+        # may not be able to just initialise blank class
+        # but we can use inspect to get required params and init using **kwargs
+
+        params = dict(inspect.signature(cls.__init__).parameters)
+        inspect_ignore_keys = {"self", "args", "kwargs"}
+        required_param_keys = {k for k in params if params[k].default == inspect._empty}
+
+        # Params can't shadow the built in 'id', so we'll put in a little hack
+        # to guess the required param name that ends in
+
+        id_field_names = [k for k in required_param_keys if k == "id" or k.endswith("_id")]
+        id_field_name = None
+        id_field_value = d.get("id")
+
+        if len(id_field_names) == 1:
+            id_field_name = id_field_names[0]
+            inspect_ignore_keys.add(id_field_name)
+        elif len(id_field_names) > 1:
+            print("Warning, can't determine if there are multiple id fieldnames")
+
+        required_init_kwargs = { k: d[k] for k in required_param_keys if (k not in inspect_ignore_keys) }
+        if id_field_name:
+            required_init_kwargs[id_field_name] = id_field_value
+
+        self = cls(**required_init_kwargs)
+
+        for k, v in d.items():
+            val = None
+            if k in ignore: continue
+            types = pts.get(k)
+            if types:
+                idx = 0
+                while idx < len(types) and val is None:
+                    T = types[idx]
+                    if isinstance(T, list):
+                        T = T[0]
+                        if isinstance(v, list):
+                            val = [T[0].parse_dict(vv) for vv in v]
+                        elif isinstance(v, dict):
+                            val = []
+                            for nested_key in v:
+                                dd = v[nested_key]
+                                dd["id"] = nested_key
+                                parsed = T.parse_dict(dd)
+                                val.append(parsed)
+                    else:
+                        val = T.parse_dict(v) if not isinstance(v, list) else [T.parse_dict(vv) for vv in v]
+            else:
+                val = v
+
+            if val is not None:
+                req[k] = True
+
+            self.__setattr__(k, val)
+
+        if not all(req.values()):
+            # There was a required field that wasn't mapped
+            req_fields = ", ".join(r for r in req if not req[r])
+            clsname = cls.__name__
+
+            raise Exception("The fields %s were not found when parsing type '%",format(req_fields, clsname))
+
+        return self
+
+
+
