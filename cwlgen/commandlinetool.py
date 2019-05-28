@@ -116,7 +116,7 @@ class CommandLineTool(Serializable):
     __CLASS__ = 'CommandLineTool'
 
     parse_types = [('inputs', [[CommandInputParameter]]), ("outputs", [[CommandOutputParameter]])]
-    ignore_fields = ["namespaces"]
+    ignore_fields_on_parse = ["namespaces", "class"]
 
     def __init__(self, tool_id=None, base_command=None, label=None, doc=None,
                  cwl_version=None, stdin=None, stderr=None, stdout=None, path=None):

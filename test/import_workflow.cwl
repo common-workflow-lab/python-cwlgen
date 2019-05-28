@@ -9,11 +9,9 @@ inputs:
     default: def_in
     doc: documentation_in
     format: format_1930
-    id: test_input
     label: label_in
     secondaryFiles: sec_file_in
     streamable: true
-    type: File
   name_of_file_to_extract:
     id: name_of_file_to_extract
     type: string

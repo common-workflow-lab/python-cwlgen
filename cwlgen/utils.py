@@ -77,12 +77,13 @@ class Serializable(object):
         self = cls(**required_init_kwargs)
 
         for k, v in d.items():
-            val = cls.try_parse(k, v, pts.get(k), ignore)
-
-            if val is not None:
-                req[k] = True
-
+            if k in ignore: continue
+            val = cls.try_parse(v, pts.get(k))
+            if val is None: continue
+            if not hasattr(self, k):
+                raise KeyError("Key '%s' does not exist on type '%s'" % (k, type(self)))
             self.__setattr__(k, val)
+            req[k] = True
 
         if not all(req.values()):
             # There was a required field that wasn't mapped
@@ -132,9 +133,7 @@ class Serializable(object):
         return required_init_kwargs
 
     @staticmethod
-    def try_parse(key, value, types, ignore_params):
-
-        if key in ignore_params: return None
+    def try_parse(value, types):
         if not types: return value
 
         for T in types:

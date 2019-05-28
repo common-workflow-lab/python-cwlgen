@@ -36,6 +36,7 @@ class Workflow(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
+    ignore_fields_on_parse = ["class"]
     ignore_fields_on_convert = ["inputs", "outputs"]
     parse_types = [
         ("inputs", [[InputParameter]]),
