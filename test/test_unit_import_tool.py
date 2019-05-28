@@ -7,20 +7,29 @@ Unit tests for import feature of cwlgen library
 #  Import  ------------------------------ 
 
 # General libraries
-import os
+from os import path
 import filecmp
 import unittest
+import ruamel.yaml as ryaml
 
 # External libraries
-from cwlgen.import_cwl import CWLToolParser
+from cwlgen.import_cwl import parse_cwl
 
-#  Class(es)  ------------------------------ 
+#  Class(es)  ------------------------------
+
+test_dir = path.dirname(path.abspath(__file__))
+
 
 class TestImport(unittest.TestCase):
 
-    def setUp(self):
-        ctp = CWLToolParser()
-        self.tool = ctp.import_cwl('test/import_cwl.cwl')
+    # def setUp(self):
+    #     ctp = CWLToolParser()
+    #     self.tool = ctp.import_cwl(test_dir + '/import_cwl.cwl')
+
+    @classmethod
+    def setUp(cls):
+        cls.path = test_dir + '/import_commandlinetool.cwl'
+        cls.tool = parse_cwl(cls.path)
 
 
 class TestImportCWL(TestImport):
@@ -59,7 +68,7 @@ class TestInputsParser(TestImport):
         self.assertEqual(self.tool.inputs[0].label, 'label_in')
 
     def test_load_secondaryFiles(self):
-        self.assertEqual(self.tool.inputs[0].secondaryFile, 'sec_file_in')
+        self.assertEqual(self.tool.inputs[0].secondaryFiles, 'sec_file_in')
 
     def test_load_format(self):
         self.assertEqual(self.tool.inputs[0].format, 'format_1930')
@@ -110,7 +119,7 @@ class TestOutputsParser(TestImport):
         self.assertEqual(self.tool.outputs[0].label, 'label_out')
 
     def test_load_secondaryFiles(self):
-        self.assertEqual(self.tool.outputs[0].secondaryFile, 'sec_file_out')
+        self.assertEqual(self.tool.outputs[0].secondaryFiles, 'sec_file_out')
 
     def test_load_format(self):
         self.assertEqual(self.tool.outputs[0].format, 'format_1930')
