@@ -27,7 +27,7 @@ class TestImport(unittest.TestCase):
     #     self.tool = ctp.import_cwl(test_dir + '/import_cwl.cwl')
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.path = test_dir + '/import_commandlinetool.cwl'
         cls.tool = parse_cwl(cls.path)
 

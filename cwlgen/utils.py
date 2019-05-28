@@ -66,13 +66,6 @@ class Serializable(object):
         return d
 
     @classmethod
-    def parse_with_id(cls, d, identifier):
-        if not isinstance(d, dict):
-            raise Exception("parse_with_id will require override to handle default object of type '%s'" % type(d))
-        d["id"] = identifier
-        return d
-
-    @classmethod
     def parse_dict(cls, d):
         pts = {t[0]: t[1] for t in cls.parse_types}
         req = {r: False for r in cls.required_fields}
@@ -80,53 +73,11 @@ class Serializable(object):
 
         # may not be able to just initialise blank class
         # but we can use inspect to get required params and init using **kwargs
-
-        params = dict(inspect.signature(cls.__init__).parameters)
-        inspect_ignore_keys = {"self", "args", "kwargs"}
-        required_param_keys = {k for k in params if params[k].default == inspect._empty}
-
-        # Params can't shadow the built in 'id', so we'll put in a little hack
-        # to guess the required param name that ends in
-
-        id_field_names = [k for k in required_param_keys if k == "id" or k.endswith("_id")]
-        id_field_name = None
-        id_field_value = d.get("id")
-
-        if len(id_field_names) == 1:
-            id_field_name = id_field_names[0]
-            inspect_ignore_keys.add(id_field_name)
-        elif len(id_field_names) > 1:
-            print("Warning, can't determine if there are multiple id fieldnames")
-
-        required_init_kwargs = { k: d[k] for k in required_param_keys if (k not in inspect_ignore_keys) }
-        if id_field_name:
-            required_init_kwargs[id_field_name] = id_field_value
-
+        required_init_kwargs = cls.get_required_input_params_for_cls(cls, d)
         self = cls(**required_init_kwargs)
 
         for k, v in d.items():
-            val = None
-            if k in ignore: continue
-            types = pts.get(k)
-            if types:
-                idx = 0
-                while idx < len(types) and val is None:
-                    T = types[idx]
-                    if T in _unparseable_types:
-                        val = T(val)
-                    elif isinstance(T, list):
-                        T = T[0]
-                        if isinstance(v, list):
-                            val = [T.parse_dict(vv) for vv in v]
-                        elif isinstance(v, dict):
-                            val = []
-                            for nested_key in v:
-                                dd = v[nested_key]
-                                val.append(T.parse_with_id(dd, nested_key))
-                    else:
-                        val = T.parse_dict(v) if not isinstance(v, list) else [T.parse_dict(vv) for vv in v]
-            else:
-                val = v
+            val = cls.try_parse(k, v, pts.get(k), ignore)
 
             if val is not None:
                 req[k] = True
@@ -142,5 +93,85 @@ class Serializable(object):
 
         return self
 
+    @classmethod
+    def parse_with_id(cls, d, identifier):
+        if not isinstance(d, dict):
+            raise Exception("parse_with_id will require override to handle default object of type '%s'" % type(d))
+        d["id"] = identifier
+        return d
+
+    @staticmethod
+    def get_required_input_params_for_cls(cls, valuesdict):
+        try:
+            argspec = inspect.getfullargspec(cls.__init__)
+        except:
+            # we're in Python 2
+            argspec = inspect.getargspec(cls.__init__)
+
+        args, defaults = argspec.args, argspec.defaults
+        required_param_keys = set(args[1:-len(defaults)]) if len(defaults) > 0 else args[1:]
+
+        inspect_ignore_keys = {"self", "args", "kwargs"}
+        # Params can't shadow the built in 'id', so we'll put in a little hack
+        # to guess the required param name that ends in
+
+        id_field_names = [k for k in required_param_keys if k == "id" or k.endswith("_id")]
+        id_field_name = None
+        id_field_value = valuesdict.get("id")
+
+        if len(id_field_names) == 1:
+            id_field_name = id_field_names[0]
+            inspect_ignore_keys.add(id_field_name)
+        elif len(id_field_names) > 1:
+            print("Warning, can't determine if there are multiple id fieldnames")
+
+        required_init_kwargs = {k: valuesdict[k] for k in required_param_keys if (k not in inspect_ignore_keys)}
+        if id_field_name:
+            required_init_kwargs[id_field_name] = id_field_value
+
+        return required_init_kwargs
+
+    @staticmethod
+    def try_parse(key, value, types, ignore_params):
+
+        if key in ignore_params: return None
+        if not types: return value
+
+        for T in types:
+            retval = Serializable.try_parse_type(value, T)
+            if retval:
+                return retval
+
+
+    @staticmethod
+    def try_parse_type(value, T):
+        # We're all good, don't need to do anything
+        if not isinstance(T, list) and isinstance(value, T): return value
+
+        # if T is a primitive (str, bool, int, float), just return the T representation of retval
+        elif T in _unparseable_types:
+            try:
+                return T(value)
+            except:
+                return None
+
+        # the type is [T] which is our our indicator that T will be a (list | dictionary) (with key 'id')
+        elif isinstance(T, list):
+            T = T[0]
+
+            if isinstance(value, list):
+                return [T.parse_dict(vv) for vv in value]
+            elif isinstance(value, dict):
+                # We'll need to map the 'id' back in
+                retval = []
+                for nested_key in value:
+                    dd = value[nested_key]
+                    retval.append(T.parse_with_id(dd, nested_key))
+                return retval
+            else:
+                raise Exception("Don't recognise type '%s', expected dictionary or list" % type(value))
+
+        # T is the retval, or an array of the values (because some params are allowed to be both
+        return T.parse_dict(value) if not isinstance(value, list) else [T.parse_dict(vv) for vv in value]
 
 

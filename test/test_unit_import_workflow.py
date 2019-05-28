@@ -37,10 +37,10 @@ class TestImport(unittest.TestCase):
 
 class TestImportCWL(TestImport):
 
-    def test_export_loaded(self):
-        self.maxDiff = None
-        print(self.wf_dict)
-        print(self.wf.get_dict())
+    # def test_export_loaded(self):
+        # self.maxDiff = None
+        # print(self.wf_dict)
+        # print(self.wf.get_dict())
         # self.assertDictEqual(self.wf_dict, self.wf.get_dict())
 
     def test_load_id(self):
