@@ -172,6 +172,11 @@ class Parameter(Serializable):
         self.doc = doc
         self.type = parse_type(param_type, requires_type)
 
+    @classmethod
+    def parse_with_id(cls, d, identifier):
+        d["id"] = identifier
+        return super(Parameter, cls).parse_dict(d)
+
     # @classmethod
     # def parse_dict(cls, d):
     #     self = super(Parameter, cls).parse_dict(d)

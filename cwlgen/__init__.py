@@ -24,6 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 from .common import *
 from .commandlinetool import *
 from .workflow import *
+from .workflowdeps import *
 from .commandlinebinding import CommandLineBinding
 from .requirements import *
 
