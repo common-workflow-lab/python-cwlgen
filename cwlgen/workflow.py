@@ -36,6 +36,7 @@ class Workflow(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
+    ignore_fields_on_convert = ["inputs", "outputs"]
     parse_types = [
         ("inputs", [[InputParameter]]),
         ("outputs", [[WorkflowOutputParameter]]),
@@ -64,8 +65,6 @@ class Workflow(Serializable):
         self.requirements = []      # list[Requirement]
         self.hints = []             # list[Requirement]
         self._path = None
-
-        self.ignore_attributes = ["inputs", "outputs"]
 
     def get_dict(self):
         cwl_workflow = super(Workflow, self).get_dict()
@@ -105,10 +104,6 @@ class Workflow(Serializable):
             out_write.write(CWL_SHEBANG + '\n\n')
             out_write.write(rep)
             out_write.close()
-
-    # def add(self, step_id, tool, params):
-    #     return StepRun(self, step_id, tool, params)
-
 
 
 

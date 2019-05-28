@@ -25,7 +25,8 @@ class Serializable(object):
     the type will need to override the parse_dict method.
     """
     parse_types = []        # type: [(str, [type])]
-    ignore_fields = []
+    ignore_fields_on_parse = []
+    ignore_fields_on_convert = []
     required_fields = []    # type: str
 
     @staticmethod
@@ -52,6 +53,9 @@ class Serializable(object):
         if hasattr(self, "ignore_attributes") and self.ignore_attributes:
             ignore_attributes = set(self.ignore_attributes)
 
+        if self.ignore_fields_on_convert:
+            ignore_attributes = ignore_attributes.union(self.ignore_fields_on_convert)
+
         for k, v in vars(self).items():
             if self.should_exclude_object(v) or k.startswith("_") or k in ignore_attributes or k == "ignore_attributes":
                 continue
@@ -60,17 +64,19 @@ class Serializable(object):
                 continue
             d[k] = s
         return d
-        # return {k: self.serialize(v) for k, v in vars(self).items() if v is not None}
 
     @classmethod
     def parse_with_id(cls, d, identifier):
+        if not isinstance(d, dict):
+            raise Exception("parse_with_id will require override to handle default object of type '%s'" % type(d))
+        d["id"] = identifier
         return d
 
     @classmethod
     def parse_dict(cls, d):
         pts = {t[0]: t[1] for t in cls.parse_types}
         req = {r: False for r in cls.required_fields}
-        ignore = set(cls.ignore_fields)
+        ignore = set(cls.ignore_fields_on_parse)
 
         # may not be able to just initialise blank class
         # but we can use inspect to get required params and init using **kwargs
