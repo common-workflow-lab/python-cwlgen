@@ -56,28 +56,28 @@ class TestImportCWL(TestImport):
 class TestInputsParser(TestImport):
 
     def test_init_input(self):
-        self.assertEqual(self.wf.inputs[2].id, 'test_input')
+        self.assertEqual(self.wf.inputs[0].id, 'tarball')
 
     def test_load_label(self):
-        self.assertEqual(self.wf.inputs[2].label, 'label_in')
+        self.assertEqual(self.wf.inputs[0].label, 'label_in')
 
     def test_load_secondaryFiles(self):
-        self.assertEqual(self.wf.inputs[2].secondaryFiles, 'sec_file_in')
+        self.assertEqual(self.wf.inputs[0].secondaryFiles, 'sec_file_in')
 
     def test_load_format(self):
-        self.assertEqual(self.wf.inputs[2].format, 'format_1930')
+        self.assertEqual(self.wf.inputs[0].format, 'format_1930')
 
     def test_load_streamable(self):
-        self.assertTrue(self.wf.inputs[2].streamable)
+        self.assertTrue(self.wf.inputs[0].streamable)
 
     def test_load_doc(self):
-        self.assertEqual(self.wf.inputs[2].doc, 'documentation_in')
+        self.assertEqual(self.wf.inputs[0].doc, 'documentation_in')
 
     def test_load_default(self):
-        self.assertEqual(self.wf.inputs[2].default, 'def_in')
+        self.assertEqual(self.wf.inputs[0].default, 'def_in')
 
     def test_load_type(self):
-        self.assertEqual(self.wf.inputs[2].type, 'File')
+        self.assertEqual(self.wf.inputs[0].type, 'File')
 
 
 class TestOutputsParser(TestImport):

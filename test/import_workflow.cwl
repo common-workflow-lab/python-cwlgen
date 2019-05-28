@@ -3,13 +3,9 @@ cwlVersion: v1.0
 doc: This is a documentation string
 id: 1stWorkflow
 inputs:
-  name_of_file_to_extract:
-    id: name_of_file_to_extract
-    type: string
   tarball:
     id: tarball
     type: File
-  test_input:
     default: def_in
     doc: documentation_in
     format: format_1930
@@ -18,6 +14,9 @@ inputs:
     secondaryFiles: sec_file_in
     streamable: true
     type: File
+  name_of_file_to_extract:
+    id: name_of_file_to_extract
+    type: string
 outputs:
   compiled_class:
     id: compiled_class
