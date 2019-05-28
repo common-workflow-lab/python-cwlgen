@@ -5,6 +5,8 @@ import inspect
 
 class literal(str): pass
 
+_unparseable_types = [str, int, float, bool]
+
 
 def literal_presenter(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style="|")
@@ -61,6 +63,10 @@ class Serializable(object):
         # return {k: self.serialize(v) for k, v in vars(self).items() if v is not None}
 
     @classmethod
+    def parse_with_id(cls, d, identifier):
+        return d
+
+    @classmethod
     def parse_dict(cls, d):
         pts = {t[0]: t[1] for t in cls.parse_types}
         req = {r: False for r in cls.required_fields}
@@ -100,17 +106,17 @@ class Serializable(object):
                 idx = 0
                 while idx < len(types) and val is None:
                     T = types[idx]
-                    if isinstance(T, list):
+                    if T in _unparseable_types:
+                        val = T(val)
+                    elif isinstance(T, list):
                         T = T[0]
                         if isinstance(v, list):
-                            val = [T[0].parse_dict(vv) for vv in v]
+                            val = [T.parse_dict(vv) for vv in v]
                         elif isinstance(v, dict):
                             val = []
                             for nested_key in v:
                                 dd = v[nested_key]
-                                dd["id"] = nested_key
-                                parsed = T.parse_dict(dd)
-                                val.append(parsed)
+                                val.append(T.parse_with_id(dd, nested_key))
                     else:
                         val = T.parse_dict(v) if not isinstance(v, list) else [T.parse_dict(vv) for vv in v]
             else:
