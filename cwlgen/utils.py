@@ -14,17 +14,27 @@ def literal_presenter(dumper, data):
 
 class Serializable(object):
     """
-    Serializable docstring
+    The Serializable class contains logic to automatically serialize a class based on
+    its attributes. This behaviour can be overridden via the ``get_dict`` method on its
+    subclasses with a call to super. Fields can be ignored by the base converter through
+    the ``ignore_field_on_convert`` static attribute on your subclass.
+
+    The parsing behaviour (beta) is similar, however it will attempt to set all attributes
+    from the dictionary onto a newly initialised class. If your initialiser has required
+    arguments, this converter will do its best to pull the id out of the dictionary to provide
+    to your initializer (or pull it from the { $id: value } dictionary). Typing hints can be
+    provided by the ``parse_types`` static attribute, and required attributes can be tagged
+    the ``required_fields`` attribute.
     """
 
 
     """
-    This is a special field, with format: [(fieldName: str, [Serializable])]
+    This is a special field, with format: {fieldName: str, [Serializable]}
     If the field name is present in the dict, then it will call the parse_dict(cls, d)
-    method on that type. It should return None if it can't parse that dictionary. This means
-    the type will need to override the parse_dict method.
+    method on that type. It should return None if it can't parse that dictionary. This 
+    means the type will need to override the ``parse_dict`` method.
     """
-    parse_types = []        # type: [(str, [type])]
+    parse_types = {}        # type: {str, [type]}
     ignore_fields_on_parse = []
     ignore_fields_on_convert = []
     required_fields = []    # type: str
@@ -67,7 +77,7 @@ class Serializable(object):
 
     @classmethod
     def parse_dict(cls, d):
-        pts = {t[0]: t[1] for t in cls.parse_types}
+        pts = cls.parse_types
         req = {r: False for r in cls.required_fields}
         ignore = set(cls.ignore_fields_on_parse)
 
