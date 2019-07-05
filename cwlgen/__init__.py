@@ -14,7 +14,7 @@ from .version import __version__
 
 from .utils import literal, literal_presenter
 
-from .import_cwl import parse_cwl
+from .import_cwl import parse_cwl, parse_cwl_dict
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
