@@ -38,11 +38,11 @@ class Workflow(Serializable):
     __CLASS__ = 'Workflow'
     ignore_fields_on_parse = ["class"]
     ignore_fields_on_convert = ["inputs", "outputs"]
-    parse_types = [
-        ("inputs", [[InputParameter]]),
-        ("outputs", [[WorkflowOutputParameter]]),
-        ("steps", [[WorkflowStep]])
-    ]
+    parse_types = {
+        "inputs": [[InputParameter]],
+        "outputs": [[WorkflowOutputParameter]],
+        "steps": [[WorkflowStep]],
+    }
 
     def __init__(self, workflow_id=None, label=None, doc=None, cwl_version='v1.0'):
         """

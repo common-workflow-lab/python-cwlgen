@@ -134,6 +134,26 @@ class WorkflowStepInput(Serializable):
         return super(WorkflowStepInput, cls).parse_dict(d)
 
 
+class WorkflowStepOutput(Serializable):
+    """
+    Associate an output parameter of the underlying process with a workflow parameter.
+    The workflow parameter (given in the id field) be may be used as a source to connect with
+    input parameters of other workflow steps, or with an output parameter of the process.
+
+    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepOutput
+    """
+    def __init__(self, output_id):
+        """
+        :param output_id: A unique identifier for this workflow output parameter. This is the identifier to use in
+        the source field of WorkflowStepInput to connect the output value to downstream parameters.
+        :type output_id: STRING
+        """
+        self.id = output_id
+
+    def get_dict(self):
+        return self.id
+
+
 class WorkflowStep(Serializable):
     """
     A workflow step is an executable element of a workflow. It specifies the underlying process implementation
@@ -143,7 +163,11 @@ class WorkflowStep(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStep
     """
 
-    parse_types = [("inputs", [[WorkflowStepInput]])]
+    # dict['in'] gets converted to dict['inputs'] as 'in' is a reserved keyword
+    parse_types = {
+        "inputs": [[WorkflowStepInput]],
+        "out": [str, [WorkflowStepOutput]]
+    }
 
     def __init__(self, step_id, run, label=None, doc=None, scatter=None, scatter_method=None):
         """
@@ -190,26 +214,6 @@ class WorkflowStep(Serializable):
         # We just need to map in -> inputs instead
         d["inputs"] = d.pop("in", [])
         return super(WorkflowStep, cls).parse_dict(d)
-
-
-class WorkflowStepOutput(Serializable):
-    """
-    Associate an output parameter of the underlying process with a workflow parameter.
-    The workflow parameter (given in the id field) be may be used as a source to connect with
-    input parameters of other workflow steps, or with an output parameter of the process.
-
-    Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStepOutput
-    """
-    def __init__(self, output_id):
-        """
-        :param output_id: A unique identifier for this workflow output parameter. This is the identifier to use in
-        the source field of WorkflowStepInput to connect the output value to downstream parameters.
-        :type output_id: STRING
-        """
-        self.id = output_id
-
-    def get_dict(self):
-        return self.id
 
 
 class WorkflowOutputParameter(Parameter):

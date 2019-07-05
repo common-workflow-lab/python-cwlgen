@@ -41,7 +41,7 @@ class CommandInputParameter(Parameter):
     An input parameter for a :class:`cwlgen.CommandLineTool`.
     """
 
-    parse_types = [("inputBinding", [CommandLineBinding])]
+    parse_types = {"inputBinding": [CommandLineBinding]}
 
     def __init__(
         self,
@@ -96,7 +96,7 @@ class CommandOutputParameter(Parameter):
     An output parameter for a :class:`cwlgen.CommandLineTool`.
     """
 
-    parse_types = [("outputBinding", [CommandOutputBinding])]
+    parse_types = {"outputBinding": [CommandOutputBinding]}
 
     def __init__(
         self,
@@ -149,11 +149,9 @@ class CommandLineTool(Serializable):
 
     __CLASS__ = "CommandLineTool"
 
-    parse_types = [
-        ("inputs", [[CommandInputParameter]]),
-        ("outputs", [[CommandOutputParameter]]),
-    ]
+    parse_types = {'inputs': [[CommandInputParameter]], "outputs": [[CommandOutputParameter]]}
     ignore_fields_on_parse = ["namespaces", "class"]
+    ignore_fields_on_convert = ["namespaces", "class", "metadata", "requirements"]
 
     def __init__(
         self,
@@ -171,20 +169,21 @@ class CommandLineTool(Serializable):
         :param tool_id: Unique identifier for this tool
         :type tool_id: str
         :param base_command: command line for the tool
-        :type base_command: STRING | list[STRING]
+        :type base_command: str | list[STRING]
         :param label: label of this tool
-        :type label: STRING
+        :type label: str
         :param doc: documentation for the tool, usually longer than the label
-        :type doc: STRING
+        :type doc: str
         :param cwl_version: version of the CWL tool
-        :type cwl_version: STRING
+        :type cwl_version: str
         :param stdin: path to a file whose contents must be piped into stdin
-        :type stdin: STRING
+        :type stdin: str
         :param stderr: capture stderr into the given file
-        :type stderr: STRING
+        :type stderr: str
         :param stdout: capture stdout into the given file
-        :type stdout: STRING
-        Inputs (:class:`cwlgen.CommandInputParameter` objects),
+        :type stdout: str
+
+        inputs (:class:`cwlgen.CommandInputParameter` objects),
         outputs (:class:`cwlgen.CommandOutputParameter` objects),
         arguments (:class:`cwlgen.CommandLineBinding` objects),
         hints (any | :class:`cwlgen.Requirement` objects)
