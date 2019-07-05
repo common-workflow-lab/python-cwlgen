@@ -18,10 +18,14 @@ Installation
 python-cwlgen dependencies
 ==========================
 
-python-cwlgen is initially built with Python3 and uses the following libraries:
+python-cwlgen has been primarily tested using Python3 and uses the following libraries:
 
-- ruamel.yaml (between 0.12.4 and 0.15.87)
-- six (1.10.0)
+- ``ruamel.yaml`` (between 0.12.4 and 0.15.87)
+- ``six`` (1.10.0)
+
+The project has been designed to work with Python 2.7+ and has accompanying tests, however
+please raise an issue if you have incompatibility issues.
+
 
 .. _installation:
 
@@ -60,7 +64,7 @@ You can remove python-cwlgen with the following command:
 
 .. code-block:: bash
 
-    pip uninstall python-cwlgen
+    pip uninstall cwlgen
 
 .. Note::
     This will not uninstall dependencies. To do so you can make use of `pip-autoremove`_.

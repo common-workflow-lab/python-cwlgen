@@ -8,6 +8,18 @@ Changelogs
 
 Summary of developments of Python-cwlgen library.
 
+v0.3
+====
+
+v0.3.0
+------
+
+This update brings more completeness to the v1.0 spec.
+
+* Large increase in the number of supported classes
+* New translation mechanism
+* More docstrings
+
 v0.2
 ====
 
