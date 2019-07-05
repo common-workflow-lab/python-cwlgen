@@ -120,7 +120,7 @@ class Serializable(object):
             argspec = inspect.getargspec(cls.__init__)
 
         args, defaults = argspec.args, argspec.defaults
-        required_param_keys = set(args[1:-len(defaults)]) if len(defaults) > 0 else args[1:]
+        required_param_keys = set(args[1:-len(defaults)]) if defaults is not None and len(defaults) > 0 else args[1:]
 
         inspect_ignore_keys = {"self", "args", "kwargs"}
         # Params can't shadow the built in 'id', so we'll put in a little hack
@@ -160,6 +160,8 @@ class Serializable(object):
         # if T is a primitive (str, bool, int, float), just return the T representation of retval
         elif T in _unparseable_types:
             try:
+                if isinstance(value, list):
+                    return [T(v) for v in value]
                 return T(value)
             except:
                 return None

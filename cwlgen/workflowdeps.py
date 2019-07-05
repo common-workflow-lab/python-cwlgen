@@ -166,7 +166,7 @@ class WorkflowStep(Serializable):
     # dict['in'] gets converted to dict['inputs'] as 'in' is a reserved keyword
     parse_types = {
         "inputs": [[WorkflowStepInput]],
-        "out": [[WorkflowStepOutput]]
+        "out": [str, [WorkflowStepOutput]]
     }
 
     def __init__(self, step_id, run, label=None, doc=None, scatter=None, scatter_method=None):
