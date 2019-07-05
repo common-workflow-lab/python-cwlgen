@@ -138,65 +138,30 @@ DockerRequirement
 Import CWL
 ==========
 
-CWLToolParser
-"""""""""""""
+As of release v0.3.0 the existing importing CWL has been replaced by an
+automated deserialization. Each function that inherits from the :class:`Serializable`
+class will have a ``parse_dict`` method.
 
-.. autoclass:: cwlgen.import_cwl.CWLToolParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref_
+If you're adding a class and want to provide a hint on how to parse a particular
+field, you can add a static ``parse_types`` dictionary onto your class with the
+fieldname and a list of types that you want to try and parse as. If your input
+can be a list (eg: ``T[]``), or a dictionary with the identifier as the key
+(eg: ``{ $identifier: T }``, you can let your type be ``[T]`` in the ``parse_types``
+dict. It will automatically inject this identifier in the constructor.
+See the ``Serializable.parse_dict`` class for more information.
 
-InputsParser
-""""""""""""
+.. code-block:: python
 
-.. autoclass:: cwlgen.import_cwl.InputsParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
+   class Workflow:
+       parse_types = {
+           # Parse inputs as : [InputParameter] or { id: InputParameter }
+           "inputs": [[InputParameter]],
 
-InputBindingParser
-""""""""""""""""""
+           # will attempt to parse extraParam as a string, then SecondaryType,
+           # then (TertiaryType[] || { $identifier: TertiaryType }
+           "extraParam": [str, SecondaryType, [TertiaryType]]
+       }
 
-.. autoclass:: cwlgen.import_cwl.InputBindingParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
+.. autofunction:: cwlgen.parse_cwl
 
-OutputsParser
-"""""""""""""
-
-.. autoclass:: cwlgen.import_cwl.OutputsParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
-
-OutputBindingParser
-"""""""""""""""""""
-
-.. autoclass:: cwlgen.import_cwl.OutputBindingParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
-
-CWLWorkflowParser
-"""""""""""""""""
-
-.. autoclass:: cwlgen.import_cwl.CWLWorkflowParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
-
-StepsParser
-"""""""""""
-
-.. autoclass:: cwlgen.import_cwl.StepsParser
-    :members:
-    :private-members:
-    :special-members:
-    :exclude-members: __weakref__
+.. autofunction:: cwlgen.parse_cwl_dict

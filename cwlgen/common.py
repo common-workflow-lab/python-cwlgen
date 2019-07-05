@@ -116,7 +116,7 @@ class CwlTypes:
 
 # functions
 
-class Namespaces(object):
+class Namespaces(Serializable):
     """
     Define different namespace for the description.
     """
@@ -171,6 +171,20 @@ class Parameter(Serializable):
         self.streamable = streamable
         self.doc = doc
         self.type = parse_type(param_type, requires_type)
+
+    @classmethod
+    def parse_with_id(cls, d, identifier):
+        d["id"] = identifier
+        return super(Parameter, cls).parse_dict(d)
+
+    # @classmethod
+    # def parse_dict(cls, d):
+    #     self = super(Parameter, cls).parse_dict(d)
+    #     secs = d.get("secondaryFiles")
+    #     self.secondaryFiles = []
+    #     if secs:
+    #         self.secondaryFiles = secs if isinstance(secs, list) else [secs]
+    #     return self
 
 
 class CommandInputArraySchema(Serializable):
