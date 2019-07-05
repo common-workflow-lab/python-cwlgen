@@ -143,7 +143,7 @@ class WorkflowStep(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#WorkflowStep
     """
 
-    parse_types = [("inputs", [[WorkflowStepInput]])]
+    parse_types = {"inputs": [[WorkflowStepInput]]}
 
     def __init__(self, step_id, run, label=None, doc=None, scatter=None, scatter_method=None):
         """
