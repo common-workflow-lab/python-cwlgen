@@ -38,8 +38,8 @@ You can install Python-CWLGen through pip with the following command:
 The classes very closely (if not exactly) mirror the CWL v1.0 specification. You can find
 more about their parameters in the following specifications:
 
-- :class:`CommandLineTool`
-- :class:`Workflow`
+- :class:`cwlgen.CommandLineTool`
+- :class:`cwlgen.Workflow`
 
 
 Python-cwlgen
