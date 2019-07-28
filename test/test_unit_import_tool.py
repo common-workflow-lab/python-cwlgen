@@ -182,9 +182,6 @@ requirements:
     SubworkflowFeatureRequirement: {}"""
         wf = parse_cwl_string(wfstr)
         self.assertEqual(3, len(wf.requirements))
-        self.assertIsInstance(wf.requirements[0], Requirements.MultipleInputFeatureRequirement)
-        self.assertIsInstance(wf.requirements[1], Requirements.StepInputExpressionRequirement)
-        self.assertIsInstance(wf.requirements[2], Requirements.SubworkflowFeatureRequirement)
 
         wfd = wf.get_dict()
         expected = {
