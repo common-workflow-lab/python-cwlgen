@@ -150,7 +150,7 @@ class CommandLineTool(Serializable):
     __CLASS__ = "CommandLineTool"
 
     parse_types = {'inputs': [[CommandInputParameter]], "outputs": [[CommandOutputParameter]]}
-    ignore_fields_on_parse = ["namespaces", "class"]
+    ignore_fields_on_parse = ["namespaces", "class", "requirements"]
     ignore_fields_on_convert = ["namespaces", "class", "metadata", "requirements"]
 
     def __init__(
@@ -236,6 +236,23 @@ class CommandLineTool(Serializable):
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
         return d
+
+    @classmethod
+    def parse_dict(cls, d):
+        wf = super(CommandLineTool, cls).parse_dict(d)
+
+        reqs = d.get("requirements")
+        if reqs:
+            if isinstance(reqs, list):
+                wf.requirements = [Requirement.parse_dict(r) for r in reqs]
+            elif isinstance(reqs, dict):
+                # splat operator here would be so nice {**r, "class": c}
+                for c, r in reqs.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    wf.requirements.append(Requirement.parse_dict(rdict))
+
+        return wf
 
     def export_string(self):
         ruamel.yaml.add_representer(literal, literal_presenter)
