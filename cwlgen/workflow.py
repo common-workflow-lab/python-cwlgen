@@ -36,7 +36,7 @@ class Workflow(Serializable):
     """
     __CLASS__ = 'Workflow'
     ignore_fields_on_parse = ["class"]
-    ignore_fields_on_convert = ["inputs", "outputs", "requirements"]
+    ignore_fields_on_convert = ["inputs", "outputs"]
     parse_types = {
         "inputs": [[InputParameter]],
         "outputs": [[WorkflowOutputParameter]],

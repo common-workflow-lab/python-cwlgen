@@ -21,10 +21,13 @@ _LOGGER = logging.getLogger(__name__)
 
 def parse_cwl(cwl_path):
     """
-    Method that parse a CWL file.
+    Method that parses a CWL file and will a
+    :class:`cwlgen.Workflow` or :class:`cwlgen.CommandLineTool`.
+    Note: this will not import additional files.
 
     :param cwl_path: PATH to the CWL file
-    :type cwl_path: STRING
+    :type cwl_path: str
+    :return: :class:`cwlgen.Workflow` | :class:`cwlgen.CommandLineTool`
     """
 
     with open(cwl_path) as yaml_file:
@@ -38,11 +41,19 @@ def parse_cwl_string(cwlstr):
 
 
 def parse_cwl_dict(cwl_dict):
-    cl = cwl_dict['class']
+    """
+    Method that parses a dictionary and will return a
+    :class:`cwlgen.Workflow` or :class:`cwlgen.CommandLineTool`.
+
+    :param cwl_dict: The dictionary to pass, must contain a 'class' field.
+    :type cwl_dict: :class:`dict`
+    :return: :class:`cwlgen.Workflow` | :class:`cwlgen.CommandLineTool`
+    """
+    cl = cwl_dict.get("class")
 
     if cl == "CommandLineTool":
         return cwlgen.CommandLineTool.parse_dict(cwl_dict)
     elif cl == "Workflow":
         return cwlgen.Workflow.parse_dict(cwl_dict)
 
-    return None
+    raise NotImplementedError("The CWL class '" + str(cl) + "' was not a recognised CWL class")
