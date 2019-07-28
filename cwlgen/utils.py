@@ -14,17 +14,27 @@ def literal_presenter(dumper, data):
 
 class Serializable(object):
     """
-    Serializable docstring
+    The Serializable class contains logic to automatically serialize a class based on
+    its attributes. This behaviour can be overridden via the ``get_dict`` method on its
+    subclasses with a call to super. Fields can be ignored by the base converter through
+    the ``ignore_field_on_convert`` static attribute on your subclass.
+
+    The parsing behaviour (beta) is similar, however it will attempt to set all attributes
+    from the dictionary onto a newly initialised class. If your initialiser has required
+    arguments, this converter will do its best to pull the id out of the dictionary to provide
+    to your initializer (or pull it from the { $id: value } dictionary). Typing hints can be
+    provided by the ``parse_types`` static attribute, and required attributes can be tagged
+    the ``required_fields`` attribute.
     """
 
 
     """
-    This is a special field, with format: [(fieldName: str, [Serializable])]
+    This is a special field, with format: {fieldName: str, [Serializable]}
     If the field name is present in the dict, then it will call the parse_dict(cls, d)
-    method on that type. It should return None if it can't parse that dictionary. This means
-    the type will need to override the parse_dict method.
+    method on that type. It should return None if it can't parse that dictionary. This 
+    means the type will need to override the ``parse_dict`` method.
     """
-    parse_types = []        # type: [(str, [type])]
+    parse_types = {}        # type: {str, [type]}
     ignore_fields_on_parse = []
     ignore_fields_on_convert = []
     required_fields = []    # type: str
@@ -67,18 +77,33 @@ class Serializable(object):
 
     @classmethod
     def parse_dict(cls, d):
-        pts = {t[0]: t[1] for t in cls.parse_types}
-        req = {r: False for r in cls.required_fields}
-        ignore = set(cls.ignore_fields_on_parse)
+        return cls.parse_dict_generic(cls, d)
+
+    @staticmethod
+    def parse_dict_generic(T, d, parse_types=None, required_fields=None, ignore_fields_on_parse=None):
+
+        if parse_types is None and hasattr(T, "parse_types"):
+            parse_types = T.parse_types
+        if required_fields is None and hasattr(T, "required_fields"):
+            required_fields = T.required_fields
+        if ignore_fields_on_parse is None and hasattr(T, "ignore_fields_on_parse"):
+            ignore_fields_on_parse = T.ignore_fields_on_parse
+
+        pts = parse_types
+        req = {r: False for r in required_fields}
+        ignore = set(ignore_fields_on_parse)
 
         # may not be able to just initialise blank class
         # but we can use inspect to get required params and init using **kwargs
-        required_init_kwargs = cls.get_required_input_params_for_cls(cls, d)
-        self = cls(**required_init_kwargs)
+        try:
+            required_init_kwargs = T.get_required_input_params_for_cls(T, d)
+            self = T(**required_init_kwargs)
+        except:
+            return None
 
         for k, v in d.items():
             if k in ignore: continue
-            val = cls.try_parse(v, pts.get(k))
+            val = T.try_parse(v, pts.get(k))
             if val is None: continue
             if not hasattr(self, k):
                 raise KeyError("Key '%s' does not exist on type '%s'" % (k, type(self)))
@@ -88,9 +113,9 @@ class Serializable(object):
         if not all(req.values()):
             # There was a required field that wasn't mapped
             req_fields = ", ".join(r for r in req if not req[r])
-            clsname = cls.__name__
+            clsname = T.__name__
 
-            raise Exception("The fields %s were not found when parsing type '%",format(req_fields, clsname))
+            raise Exception("The fields %s were not found when parsing type '%", format(req_fields, clsname))
 
         return self
 
@@ -110,7 +135,7 @@ class Serializable(object):
             argspec = inspect.getargspec(cls.__init__)
 
         args, defaults = argspec.args, argspec.defaults
-        required_param_keys = set(args[1:-len(defaults)]) if len(defaults) > 0 else args[1:]
+        required_param_keys = set(args[1:-len(defaults)]) if defaults is not None and len(defaults) > 0 else args[1:]
 
         inspect_ignore_keys = {"self", "args", "kwargs"}
         # Params can't shadow the built in 'id', so we'll put in a little hack
@@ -150,6 +175,8 @@ class Serializable(object):
         # if T is a primitive (str, bool, int, float), just return the T representation of retval
         elif T in _unparseable_types:
             try:
+                if isinstance(value, list):
+                    return [T(v) for v in value]
                 return T(value)
             except:
                 return None

@@ -41,7 +41,9 @@ class CommandInputParameter(Parameter):
     An input parameter for a :class:`cwlgen.CommandLineTool`.
     """
 
-    parse_types = [("inputBinding", [CommandLineBinding])]
+    parse_types = {
+        "inputBinding": [CommandLineBinding]
+    }
 
     def __init__(
         self,
@@ -96,7 +98,7 @@ class CommandOutputParameter(Parameter):
     An output parameter for a :class:`cwlgen.CommandLineTool`.
     """
 
-    parse_types = [("outputBinding", [CommandOutputBinding])]
+    parse_types = {"outputBinding": [CommandOutputBinding]}
 
     def __init__(
         self,
@@ -149,10 +151,10 @@ class CommandLineTool(Serializable):
 
     __CLASS__ = "CommandLineTool"
 
-    parse_types = [
-        ("inputs", [[CommandInputParameter]]),
-        ("outputs", [[CommandOutputParameter]]),
-    ]
+    parse_types = {
+        "inputs": [[CommandInputParameter]],
+        "outputs": [[CommandOutputParameter]],
+    }
     ignore_fields_on_parse = ["namespaces", "class"]
 
     def __init__(

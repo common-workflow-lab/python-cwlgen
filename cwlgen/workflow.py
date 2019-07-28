@@ -7,10 +7,9 @@ import logging
 import ruamel.yaml
 import six
 
-from .version import __version__
-
 # Internal libraries
 
+from .requirements import Requirement
 from .utils import literal, literal_presenter, Serializable
 from .common import Parameter, CWL_SHEBANG
 from .workflowdeps import InputParameter, WorkflowOutputParameter, WorkflowStep
@@ -37,12 +36,12 @@ class Workflow(Serializable):
     """
     __CLASS__ = 'Workflow'
     ignore_fields_on_parse = ["class"]
-    ignore_fields_on_convert = ["inputs", "outputs"]
-    parse_types = [
-        ("inputs", [[InputParameter]]),
-        ("outputs", [[WorkflowOutputParameter]]),
-        ("steps", [[WorkflowStep]])
-    ]
+    ignore_fields_on_convert = ["inputs", "outputs", "requirements"]
+    parse_types = {
+        "inputs": [[InputParameter]],
+        "outputs": [[WorkflowOutputParameter]],
+        "steps": [[WorkflowStep]],
+    }
 
     def __init__(self, workflow_id=None, label=None, doc=None, cwl_version='v1.0'):
         """
@@ -84,6 +83,19 @@ class Workflow(Serializable):
             cwl_workflow['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
 
         return cwl_workflow
+
+    @classmethod
+    def parse_dict(cls, d):
+        wf = super(Workflow, cls).parse_dict(d)
+
+        reqs = d.get("requirements")
+        if reqs:
+            if isinstance(reqs, list):
+                wf.requirements = [Requirement.parse_dict(r) for r in reqs]
+            elif isinstance(reqs, dict):
+                wf.requirements = [Requirement.parse_dict({**r, "class": c}) for c, r in reqs.items()]
+
+        return wf
 
     def export_string(self):
         ruamel.yaml.add_representer(literal, literal_presenter)
