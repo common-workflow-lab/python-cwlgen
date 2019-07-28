@@ -35,8 +35,8 @@ class Workflow(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
-    ignore_fields_on_parse = ["class"]
-    ignore_fields_on_convert = ["inputs", "outputs"]
+    ignore_fields_on_parse = ["class", "requirements"]
+    ignore_fields_on_convert = ["inputs", "outputs", "requirements"]
     parse_types = {
         "inputs": [[InputParameter]],
         "outputs": [[WorkflowOutputParameter]],
@@ -71,9 +71,6 @@ class Workflow(Serializable):
 
         cwl_workflow['class'] = self.__CLASS__
 
-        cwl_workflow['inputs'] = {}
-        cwl_workflow['outputs'] = {}
-
         # steps, inputs, outputs are required properties, so it should fail if we can't place it
         cwl_workflow['steps'] = {step.id: step.get_dict() for step in self.steps}
         cwl_workflow['inputs'] = {i.id: i.get_dict() for i in self.inputs}
@@ -93,7 +90,11 @@ class Workflow(Serializable):
             if isinstance(reqs, list):
                 wf.requirements = [Requirement.parse_dict(r) for r in reqs]
             elif isinstance(reqs, dict):
-                wf.requirements = [Requirement.parse_dict({**r, "class": c}) for c, r in reqs.items()]
+                # splat operator here would be so nice {**r, "class": c}
+                for c, r in reqs.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    wf.requirements.append(Requirement.parse_dict(rdict))
 
         return wf
 
