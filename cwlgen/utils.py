@@ -168,8 +168,8 @@ class Serializable(object):
             invalid_values = get_indices_of_element_in_list([False if v is None else True for v in retval], False)
             if invalid_values:
                 invalid_valuesstr = ','.join(str(i) for i in invalid_values)
-                raise Exception(f"Couldn't parse items at indices {invalid_valuesstr}, corresponding to: "
-                                + ", ".join([str(value[i]) for i in invalid_values]))
+                invalid_itemstr = ", ".join([str(value[i]) for i in invalid_values])
+                raise Exception("Couldn't parse items at indices " + invalid_valuesstr + ", corresponding to: " + invalid_itemstr)
             return retval
 
         for T in types:
