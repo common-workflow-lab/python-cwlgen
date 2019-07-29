@@ -98,7 +98,7 @@ class Serializable(object):
         try:
             required_init_kwargs = T.get_required_input_params_for_cls(T, d)
             self = T(**required_init_kwargs)
-        except:
+        except Exception as e:
             return None
 
         for k, v in d.items():
@@ -168,8 +168,8 @@ class Serializable(object):
             invalid_values = get_indices_of_element_in_list([False if v is None else True for v in retval], False)
             if invalid_values:
                 invalid_valuesstr = ','.join(str(i) for i in invalid_values)
-                raise Exception(f"Couldn't parse items: {invalid_valuesstr}, corresponding to: "
-                                + ", ".join(str(value[i] for i in invalid_values)))
+                raise Exception(f"Couldn't parse items at indices {invalid_valuesstr}, corresponding to: "
+                                + ", ".join([str(value[i]) for i in invalid_values]))
             return retval
 
         for T in types:
