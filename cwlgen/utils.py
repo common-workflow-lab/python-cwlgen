@@ -161,6 +161,17 @@ class Serializable(object):
     def try_parse(value, types):
         if not types: return value
 
+        # If it's an array, we should call try_parse (recursively)
+
+        if isinstance(value, list):
+            retval = [Serializable.try_parse(t, types) for t in value]
+            invalid_values = get_indices_of_element_in_list([False if v is None else True for v in retval], False)
+            if invalid_values:
+                invalid_valuesstr = ','.join(str(i) for i in invalid_values)
+                raise Exception(f"Couldn't parse items: {invalid_valuesstr}, corresponding to: "
+                                + ", ".join(str(value[i] for i in invalid_values)))
+            return retval
+
         for T in types:
             retval = Serializable.try_parse_type(value, T)
             if retval:
@@ -185,7 +196,14 @@ class Serializable(object):
         elif isinstance(T, list):
             T = T[0]
 
-            if isinstance(value, list):
+            if T in _unparseable_types:
+                try:
+                    if isinstance(value, list):
+                        return [T(v) for v in value]
+                    return T(value)
+                except:
+                    return None
+            elif isinstance(value, list):
                 return [T.parse_dict(vv) for vv in value]
             elif isinstance(value, dict):
                 # We'll need to map the 'id' back in
@@ -198,6 +216,12 @@ class Serializable(object):
                 raise Exception("Don't recognise type '%s', expected dictionary or list" % type(value))
 
         # T is the retval, or an array of the values (because some params are allowed to be both
-        return T.parse_dict(value) if not isinstance(value, list) else [T.parse_dict(vv) for vv in value]
+        return T.parse_dict_generic(T, value) if not isinstance(value, list) else [T.parse_dict_generic(T, vv) for vv in value]
 
 
+def get_indices_of_element_in_list(searchable, element):
+    indices = []
+    for i in range(len(searchable)):
+        if element == searchable[i]:
+            indices.append(i)
+    return indices
