@@ -196,15 +196,15 @@ class SchemaDefRequirement(Requirement):
         }
 
     parse_types = {
-        "types": [InputRecordSchema, InputEnumSchema, InputArraySchema],
+        # "types": [InputRecordSchema, InputEnumSchema, InputArraySchema],
     }
 
 
 # declare this here, because inside the InputArraySchema we haven't fully defined the schemas
-SchemaDefRequirement.InputArraySchema.parse_types = {
-    "items": [SchemaDefRequirement.InputRecordSchema, SchemaDefRequirement.InputEnumSchema,
-              SchemaDefRequirement.InputArraySchema, str]
-}
+# SchemaDefRequirement.InputArraySchema.parse_types = {
+#     "items": [SchemaDefRequirement.InputRecordSchema, SchemaDefRequirement.InputEnumSchema,
+#               SchemaDefRequirement.InputArraySchema, str]
+# }
 
 
 class SoftwareRequirement(Requirement):
