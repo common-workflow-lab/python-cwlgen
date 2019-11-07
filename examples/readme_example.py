@@ -15,3 +15,5 @@ yaml_export = tool_object.export_string()
 
 # print to console
 tool_object.export()
+
+tool_object.export("echotool.cwl")
