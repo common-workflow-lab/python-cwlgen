@@ -68,8 +68,7 @@ yaml_export = tool_object.export_string()
 tool_object.export()
 
 # print to file
-with open("echotool.cwl", "w") as f:
-    tool_object.export(f)
+tool_object.export("echotool.cwl")
 ```
 
 ## References
