@@ -1,4 +1,5 @@
 import unittest
+
 import cwlgen
 
 
@@ -6,7 +7,7 @@ class TestAddRequirements(unittest.TestCase):
 
     def test_inlinejs(self):
         w = cwlgen.Workflow()
-        req = cwlgen.InlineJavascriptReq(["expression"])
+        req = cwlgen.InlineJavascriptRequirement(["expression"])
         w.requirements.append(req)
         d = w.get_dict()
         self.assertIn("requirements", d)
@@ -29,8 +30,8 @@ class TestAddRequirements(unittest.TestCase):
 class TestInlineJavascriptReq(unittest.TestCase):
 
     def setUp(self):
-        self.js_req = cwlgen.InlineJavascriptReq(expression_lib=['expression'])
-        self.js_req_nolib = cwlgen.InlineJavascriptReq()
+        self.js_req = cwlgen.InlineJavascriptRequirement(expression_lib=['expression'])
+        self.js_req_nolib = cwlgen.InlineJavascriptRequirement()
 
     def test_init(self):
         self.assertEqual(self.js_req.get_class(), 'InlineJavascriptRequirement')
@@ -269,3 +270,104 @@ class TestResourceRequirement(unittest.TestCase):
         self.assertEqual(r.get("outdirMin"), "out/min")
         self.assertEqual(r.get("outdirMax"), "out/max")
 
+
+class TestParseRequirements(unittest.TestCase):
+
+    def test_parse_requirement_docker(self):
+        d = {
+            "class": "DockerRequirement",
+            "dockerPull": "ubuntu/latest"
+        }
+
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.DockerRequirement)
+        self.assertEqual(d["dockerPull"], req.dockerPull)
+
+    def test_parse_expression_lib(self):
+        d = {
+            "class": "InlineJavascriptRequirement",
+            "expressionLib": ["expression", "lib"]
+        }
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.InlineJavascriptRequirement)
+        self.assertEqual(d["expressionLib"], req.expressionLib)
+
+    def test_parse_software_requirement(self):
+        d = {
+            "class": "SoftwareRequirement",
+            "packages": [{
+                "package": "Half-Life",
+                "version": 3,
+                "specs": "Classified"
+            }]
+        }
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.SoftwareRequirement)
+        hl3 = req.packages[0]
+        self.assertIsInstance(hl3, cwlgen.SoftwareRequirement.SoftwarePackage)
+        self.assertEqual(d["packages"][0]["package"], hl3.package)
+        self.assertEqual(d["packages"][0]["version"], hl3.version)
+        self.assertEqual(d["packages"][0]["specs"], hl3.specs)
+
+    def test_parse_initialworkdir_requirement_1(self):
+        d = {
+            "class": "InitialWorkDirRequirement",
+            "listing": [{
+                "entry": "test1",
+                "entryname": "test",
+                "writable": True
+            }]
+        }
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.InitialWorkDirRequirement)
+        l = req.listing[0]
+        self.assertIsInstance(l, cwlgen.InitialWorkDirRequirement.Dirent)
+        self.assertEqual(d["listing"][0]["entry"], l.entry)
+        self.assertEqual(d["listing"][0]["entryname"], l.entryname)
+        self.assertEqual(d["listing"][0]["writable"], l.writable)
+
+    def test_parse_initialworkdir_requirement_2(self):
+        d = {
+            "class": "InitialWorkDirRequirement",
+            "listing": ["test2"]
+        }
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.InitialWorkDirRequirement)
+        self.assertListEqual(d["listing"], req.listing)
+
+    def test_parse_initialworkdir_requirement_3(self):
+        d = {
+            "class": "InitialWorkDirRequirement",
+            "listing": "test3"
+        }
+        req = cwlgen.Requirement.parse_dict(d)
+        self.assertIsInstance(req, cwlgen.InitialWorkDirRequirement)
+        self.assertEqual(d["listing"], req.listing)
+
+    # def test_schema_def_requirement_1(self):
+    #     d = {
+    #         "class": "SchemaDefRequirement",
+    #         "types": [
+    #             {
+    #                 "type": "record",
+    #                 "name": "test_inputRecordSchema",
+    #                 "fields": [{
+    #                     "name": "test_inputRecordSchema_field1",
+    #                     "type": "string",
+    #                     "inputBinding": None,
+    #                 }]
+    #             },
+    #             {
+    #                 "type": "enum",
+    #                 "symbols": ["one", "two", "three"],
+    #                 "name": "test_inputEnumSchema"
+    #             },
+    #             {
+    #                 "type": "array",
+    #                 "items": "string"
+    #             }
+    #         ]
+    #     }
+    #
+    #     req = cwlgen.Requirement.parse_dict(d)
+    #     print(req)

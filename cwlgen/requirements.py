@@ -1,14 +1,17 @@
 import six
+from cwlgen.commandlinebinding import CommandLineBinding
 
 from .common import parse_type, get_type_dict
 from .utils import Serializable
 
 
 class Requirement(Serializable):
+
+    ignore_fields_on_parse = ["class"]
+
     '''
     Requirement that must be met in order to execute the process.
     '''
-
     def __init__(self, req_class):
         '''
         :param req_class: requirement class
@@ -20,8 +23,25 @@ class Requirement(Serializable):
     def get_class(self):
         return self._req_class
 
+    @classmethod
+    def parse_dict(cls, d):
 
-class InlineJavascriptReq(Requirement):
+        c = d["class"]
+        requirements = [
+            InlineJavascriptRequirement, SchemaDefRequirement, SoftwareRequirement, InitialWorkDirRequirement,
+            SubworkflowFeatureRequirement, ScatterFeatureRequirement, MultipleInputFeatureRequirement,
+            StepInputExpressionRequirement, DockerRequirement, EnvVarRequirement, ShellCommandRequirement,
+            ResourceRequirement
+        ]
+
+        for Req in requirements:
+            if Req.__name__ == c:
+                return Req.parse_dict_generic(Req, d)
+
+        return None
+
+
+class InlineJavascriptRequirement(Requirement):
     """
     Indicates that the workflow platform must support inline Javascript expressions.
     If this requirement is not present, the workflow platform must not perform expression interpolatation.
@@ -73,11 +93,16 @@ class SchemaDefRequirement(Requirement):
             self.name = name
             self.type = "record"
 
+        def parse_dict(cls, d):
+            if d["type"] != "record":
+                return None
+            return cls.parse_dict_generic(cls, d)
+
         class InputRecordField(Serializable):
             """
             Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputRecordField
             """
-            def __init__(self, name, input_type, doc=None, input_binding=None, label=None):
+            def __init__(self, name, type, doc=None, input_binding=None, label=None):
                 """
                 :param name:
                 :param input_type:
@@ -89,7 +114,7 @@ class SchemaDefRequirement(Requirement):
                 :param label:
                 """
                 self.name = name
-                self.type = parse_type(input_type, requires_type=True)
+                self.type = parse_type(type, requires_type=True)
                 self.doc = doc
                 self.inputBinding = input_binding
                 self.label = label
@@ -98,6 +123,18 @@ class SchemaDefRequirement(Requirement):
                 d = super(self, self).get_dict()
                 d["type"] = get_type_dict(self.type)
                 return d
+
+            # def parse_dict(cls, d):
+            #     d["input_type"] = "string"
+            #     ret = super(SchemaDefRequirement.InputRecordSchema.InputRecordField, cls).parse_dict(d)
+            #     ret.type =
+
+
+        # ignore_fields_on_parse = "type"
+        parse_types = {
+            "fields": [InputRecordField],
+            "inputBinding": [CommandLineBinding]
+        }
 
     class InputEnumSchema(Serializable):
         """
@@ -120,6 +157,15 @@ class SchemaDefRequirement(Requirement):
             self.name = name
             self.inputBinding = input_binding
 
+        def parse_dict(cls, d):
+            if d["type"] != "enum":
+                return None
+            return cls.parse_dict_generic(cls, d)
+
+        parse_types = {
+            "inputBinding": CommandLineBinding
+        }
+
     class InputArraySchema(Serializable):
         """
         Documentation: https://www.commonwl.org/v1.0/Workflow.html#InputArraySchema
@@ -139,6 +185,26 @@ class SchemaDefRequirement(Requirement):
             self.items = items
             self.label = label
             self.inputBinding = input_binding
+
+        def parse_dict(cls, d):
+            if d["type"] != "record":
+                return None
+            return cls.parse_dict_generic(cls, d)
+
+        parse_types = {
+            # Defined below because we need to have declared the class before we can use it
+        }
+
+    parse_types = {
+        # "types": [InputRecordSchema, InputEnumSchema, InputArraySchema],
+    }
+
+
+# declare this here, because inside the InputArraySchema we haven't fully defined the schemas
+# SchemaDefRequirement.InputArraySchema.parse_types = {
+#     "items": [SchemaDefRequirement.InputRecordSchema, SchemaDefRequirement.InputEnumSchema,
+#               SchemaDefRequirement.InputArraySchema, str]
+# }
 
 
 class SoftwareRequirement(Requirement):
@@ -165,6 +231,10 @@ class SoftwareRequirement(Requirement):
             self.package = package
             self.version = version
             self.specs = specs
+
+    parse_types = {
+        "packages": [SoftwarePackage]
+    }
 
 
 class InitialWorkDirRequirement(Requirement):
@@ -210,6 +280,10 @@ class InitialWorkDirRequirement(Requirement):
             self.entry = entry
             self.entryname = entryname
             self.writable = writable
+
+    parse_types = {
+        "listing": [Dirent, str]
+    }
 
 
 class SubworkflowFeatureRequirement(Requirement):

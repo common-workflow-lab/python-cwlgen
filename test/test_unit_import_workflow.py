@@ -13,7 +13,8 @@ from os import path
 import ruamel.yaml as ryaml
 
 # External libraries
-from cwlgen.import_cwl import parse_cwl_dict
+import cwlgen.requirements as Requirements
+from cwlgen.import_cwl import parse_cwl_dict, parse_cwl_string
 
 #  Class(es)  ------------------------------
 
@@ -109,3 +110,53 @@ class TestStepInputParser(TestImport):
     def test_load_source(self):
         self.assertEqual(self.wf.steps[0].inputs[0].source, "untar/extracted_file")
 
+
+class TestIntegrationImportWorkflow(unittest.TestCase):
+    def test_issue_25_requirements(self):
+        wfstr = """\
+class: Workflow
+cwlVersion: v1.0
+
+label: joint calling workflow
+doc: Perform joint calling on multiple sets aligned reads from the same family.
+
+requirements:
+  - class: MultipleInputFeatureRequirement
+  - class: StepInputExpressionRequirement
+  - class: SubworkflowFeatureRequirement"""
+        wf = parse_cwl_string(wfstr)
+        self.assertEqual(3, len(wf.requirements))
+        self.assertIsInstance(wf.requirements[0], Requirements.MultipleInputFeatureRequirement)
+        self.assertIsInstance(wf.requirements[1], Requirements.StepInputExpressionRequirement)
+        self.assertIsInstance(wf.requirements[2], Requirements.SubworkflowFeatureRequirement)
+
+        wfd = wf.get_dict()
+        expected = {
+            'MultipleInputFeatureRequirement': {},
+            'StepInputExpressionRequirement': {},
+            'SubworkflowFeatureRequirement': {}
+        }
+        self.assertDictEqual(expected, wfd["requirements"])
+
+    def test_issue_25_requirements_dict(self):
+        wfstr = """\
+class: Workflow
+cwlVersion: v1.0
+
+label: joint calling workflow
+doc: Perform joint calling on multiple sets aligned reads from the same family.
+
+requirements:
+    MultipleInputFeatureRequirement: {} 
+    StepInputExpressionRequirement: {}
+    SubworkflowFeatureRequirement: {}"""
+        wf = parse_cwl_string(wfstr)
+        self.assertEqual(3, len(wf.requirements))
+
+        wfd = wf.get_dict()
+        expected = {
+            'MultipleInputFeatureRequirement': {},
+            'StepInputExpressionRequirement': {},
+            'SubworkflowFeatureRequirement': {}
+        }
+        self.assertDictEqual(expected, wfd["requirements"])

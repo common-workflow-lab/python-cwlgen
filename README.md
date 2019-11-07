@@ -77,3 +77,9 @@ with open("echotool.cwl", "w") as f:
 CWL is developed by an informal, multi-vendor working group consisting of organizations and individuals 
 aiming to enable scientists to share data analysis workflows. 
 The [CWL project is on Github](https://github.com/common-workflow-language/common-workflow-language).
+
+
+## Known issues
+
+- `SchemaDefRequirement` doesn't parse the `types` subfield into the specific types 
+(`InputRecordSchema | InputEnumSchema |  InputArraySchema`), but leaves them as a simple dictionary.

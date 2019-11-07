@@ -87,7 +87,7 @@ steps:
 
     def test_add_requirements(self):
         w = cwlgen.Workflow("test_add_requirements")
-        req = cwlgen.InlineJavascriptReq()
+        req = cwlgen.InlineJavascriptRequirement()
         w.requirements.append(req)
         generated = self.capture_tempfile(w.export)
         expected = b"""#!/usr/bin/env cwl-runner

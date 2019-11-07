@@ -77,18 +77,33 @@ class Serializable(object):
 
     @classmethod
     def parse_dict(cls, d):
-        pts = cls.parse_types
-        req = {r: False for r in cls.required_fields}
-        ignore = set(cls.ignore_fields_on_parse)
+        return cls.parse_dict_generic(cls, d)
+
+    @staticmethod
+    def parse_dict_generic(T, d, parse_types=None, required_fields=None, ignore_fields_on_parse=None):
+
+        if parse_types is None and hasattr(T, "parse_types"):
+            parse_types = T.parse_types
+        if required_fields is None and hasattr(T, "required_fields"):
+            required_fields = T.required_fields
+        if ignore_fields_on_parse is None and hasattr(T, "ignore_fields_on_parse"):
+            ignore_fields_on_parse = T.ignore_fields_on_parse
+
+        pts = parse_types
+        req = {r: False for r in required_fields}
+        ignore = set(ignore_fields_on_parse)
 
         # may not be able to just initialise blank class
         # but we can use inspect to get required params and init using **kwargs
-        required_init_kwargs = cls.get_required_input_params_for_cls(cls, d)
-        self = cls(**required_init_kwargs)
+        try:
+            required_init_kwargs = T.get_required_input_params_for_cls(T, d)
+            self = T(**required_init_kwargs)
+        except Exception as e:
+            return None
 
         for k, v in d.items():
             if k in ignore: continue
-            val = cls.try_parse(v, pts.get(k))
+            val = T.try_parse(v, pts.get(k))
             if val is None: continue
             if not hasattr(self, k):
                 raise KeyError("Key '%s' does not exist on type '%s'" % (k, type(self)))
@@ -98,9 +113,9 @@ class Serializable(object):
         if not all(req.values()):
             # There was a required field that wasn't mapped
             req_fields = ", ".join(r for r in req if not req[r])
-            clsname = cls.__name__
+            clsname = T.__name__
 
-            raise Exception("The fields %s were not found when parsing type '%",format(req_fields, clsname))
+            raise Exception("The fields %s were not found when parsing type '%", format(req_fields, clsname))
 
         return self
 
@@ -146,6 +161,17 @@ class Serializable(object):
     def try_parse(value, types):
         if not types: return value
 
+        # If it's an array, we should call try_parse (recursively)
+
+        if isinstance(value, list):
+            retval = [Serializable.try_parse(t, types) for t in value]
+            invalid_values = get_indices_of_element_in_list([False if v is None else True for v in retval], False)
+            if invalid_values:
+                invalid_valuesstr = ','.join(str(i) for i in invalid_values)
+                invalid_itemstr = ", ".join([str(value[i]) for i in invalid_values])
+                raise Exception("Couldn't parse items at indices " + invalid_valuesstr + ", corresponding to: " + invalid_itemstr)
+            return retval
+
         for T in types:
             retval = Serializable.try_parse_type(value, T)
             if retval:
@@ -170,7 +196,14 @@ class Serializable(object):
         elif isinstance(T, list):
             T = T[0]
 
-            if isinstance(value, list):
+            if T in _unparseable_types:
+                try:
+                    if isinstance(value, list):
+                        return [T(v) for v in value]
+                    return T(value)
+                except:
+                    return None
+            elif isinstance(value, list):
                 return [T.parse_dict(vv) for vv in value]
             elif isinstance(value, dict):
                 # We'll need to map the 'id' back in
@@ -183,6 +216,12 @@ class Serializable(object):
                 raise Exception("Don't recognise type '%s', expected dictionary or list" % type(value))
 
         # T is the retval, or an array of the values (because some params are allowed to be both
-        return T.parse_dict(value) if not isinstance(value, list) else [T.parse_dict(vv) for vv in value]
+        return T.parse_dict_generic(T, value) if not isinstance(value, list) else [T.parse_dict_generic(T, vv) for vv in value]
 
 
+def get_indices_of_element_in_list(searchable, element):
+    indices = []
+    for i in range(len(searchable)):
+        if element == searchable[i]:
+            indices.append(i)
+    return indices

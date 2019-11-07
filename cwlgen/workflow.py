@@ -7,10 +7,9 @@ import logging
 import ruamel.yaml
 import six
 
-from .version import __version__
-
 # Internal libraries
 
+from .requirements import Requirement
 from .utils import literal, literal_presenter, Serializable
 from .common import Parameter, CWL_SHEBANG
 from .workflowdeps import InputParameter, WorkflowOutputParameter, WorkflowStep
@@ -36,8 +35,8 @@ class Workflow(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
-    ignore_fields_on_parse = ["class"]
-    ignore_fields_on_convert = ["inputs", "outputs"]
+    ignore_fields_on_parse = ["class", "requirements"]
+    ignore_fields_on_convert = ["inputs", "outputs", "requirements"]
     parse_types = {
         "inputs": [[InputParameter]],
         "outputs": [[WorkflowOutputParameter]],
@@ -72,9 +71,6 @@ class Workflow(Serializable):
 
         cwl_workflow['class'] = self.__CLASS__
 
-        cwl_workflow['inputs'] = {}
-        cwl_workflow['outputs'] = {}
-
         # steps, inputs, outputs are required properties, so it should fail if we can't place it
         cwl_workflow['steps'] = {step.id: step.get_dict() for step in self.steps}
         cwl_workflow['inputs'] = {i.id: i.get_dict() for i in self.inputs}
@@ -84,6 +80,23 @@ class Workflow(Serializable):
             cwl_workflow['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
 
         return cwl_workflow
+
+    @classmethod
+    def parse_dict(cls, d):
+        wf = super(Workflow, cls).parse_dict(d)
+
+        reqs = d.get("requirements")
+        if reqs:
+            if isinstance(reqs, list):
+                wf.requirements = [Requirement.parse_dict(r) for r in reqs]
+            elif isinstance(reqs, dict):
+                # splat operator here would be so nice {**r, "class": c}
+                for c, r in reqs.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    wf.requirements.append(Requirement.parse_dict(rdict))
+
+        return wf
 
     def export_string(self):
         ruamel.yaml.add_representer(literal, literal_presenter)

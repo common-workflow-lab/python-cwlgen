@@ -35,6 +35,11 @@ def parse_cwl(cwl_path):
     return parse_cwl_dict(cwl_dict)
 
 
+def parse_cwl_string(cwlstr):
+    cwl_dict = ryaml.load(cwlstr, Loader=ryaml.Loader)
+    return parse_cwl_dict(cwl_dict)
+
+
 def parse_cwl_dict(cwl_dict):
     """
     Method that parses a dictionary and will return a

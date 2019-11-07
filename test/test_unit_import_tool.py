@@ -13,7 +13,8 @@ import unittest
 import ruamel.yaml as ryaml
 
 # External libraries
-from cwlgen.import_cwl import parse_cwl
+import cwlgen.requirements as Requirements
+from cwlgen.import_cwl import parse_cwl, parse_cwl_string
 
 #  Class(es)  ------------------------------
 
@@ -144,3 +145,48 @@ class TestOutputBindingParser(TestImport):
 
     def test_load_outputEval(self):
         self.assertEqual(self.tool.outputs[0].outputBinding.outputEval, "eval")
+
+
+class TestIntegrationImportWorkflow(unittest.TestCase):
+    def test_issue_25_requirements(self):
+        wfstr = """\
+class: CommandLineTool
+cwlVersion: v1.0
+
+requirements:
+  - class: MultipleInputFeatureRequirement
+  - class: StepInputExpressionRequirement
+  - class: SubworkflowFeatureRequirement"""
+        wf = parse_cwl_string(wfstr)
+        self.assertEqual(3, len(wf.requirements))
+        self.assertIsInstance(wf.requirements[0], Requirements.MultipleInputFeatureRequirement)
+        self.assertIsInstance(wf.requirements[1], Requirements.StepInputExpressionRequirement)
+        self.assertIsInstance(wf.requirements[2], Requirements.SubworkflowFeatureRequirement)
+
+        wfd = wf.get_dict()
+        expected = {
+            'MultipleInputFeatureRequirement': {},
+            'StepInputExpressionRequirement': {},
+            'SubworkflowFeatureRequirement': {}
+        }
+        self.assertDictEqual(expected, wfd["requirements"])
+
+    def test_issue_25_requirements_dict(self):
+        wfstr = """\
+class: CommandLineTool
+cwlVersion: v1.0
+
+requirements:
+    MultipleInputFeatureRequirement: {} 
+    StepInputExpressionRequirement: {}
+    SubworkflowFeatureRequirement: {}"""
+        wf = parse_cwl_string(wfstr)
+        self.assertEqual(3, len(wf.requirements))
+
+        wfd = wf.get_dict()
+        expected = {
+            'MultipleInputFeatureRequirement': {},
+            'StepInputExpressionRequirement': {},
+            'SubworkflowFeatureRequirement': {}
+        }
+        self.assertDictEqual(expected, wfd["requirements"])
