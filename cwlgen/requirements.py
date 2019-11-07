@@ -23,6 +23,9 @@ class Requirement(Serializable):
     def get_class(self):
         return self._req_class
 
+    def __hash__(self):
+        return hash(self.get_class())
+
     @classmethod
     def parse_dict(cls, d):
 
