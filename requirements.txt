@@ -1,2 +1,2 @@
 six
-ruamel.yaml>=0.12.4,<=0.15.77
+ruamel.yaml>=0.12.4,<0.16.6
