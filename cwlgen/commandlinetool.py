@@ -233,6 +233,10 @@ class CommandLineTool(Serializable):
                 if "$" not in v:
                     d[self.namespaces.name][k] = v
 
+        if "inputs" not in d:
+            # Tool can have no inputs but still needs to be bound
+            d["inputs"] = []
+
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
         if self.hints:
