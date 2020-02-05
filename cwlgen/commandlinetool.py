@@ -201,8 +201,8 @@ class CommandLineTool(Serializable):
         self.cwlVersion = cwl_version
         self.id = tool_id
         self.label = label
-        self.requirements = []  # List of Several object inhereting from [Requirement]
-        self.hints = []
+        self.requirements = []  # List of objects inheriting from [Requirement]
+        self.hints = [] # List of objects inheriting from [Requirement]
         self.inputs = []  # List of [CommandInputParameter] objects
         self.outputs = []  # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
@@ -235,6 +235,9 @@ class CommandLineTool(Serializable):
 
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
+        if self.hints:
+            d["hints"] = {r.get_class(): r.get_dict() for r in self.hints}
+
         return d
 
     @classmethod

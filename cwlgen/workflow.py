@@ -78,6 +78,8 @@ class Workflow(Serializable):
 
         if self.requirements:
             cwl_workflow['requirements'] = {r.get_class(): r.get_dict() for r in self.requirements}
+        if self.hints:
+            cwl_workflow["hints"] = {r.get_class(): r.get_dict() for r in self.hints}
 
         return cwl_workflow
 
