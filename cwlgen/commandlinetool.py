@@ -201,8 +201,8 @@ class CommandLineTool(Serializable):
         self.cwlVersion = cwl_version
         self.id = tool_id
         self.label = label
-        self.requirements = []  # List of Several object inhereting from [Requirement]
-        self.hints = []
+        self.requirements = []  # List of objects inheriting from [Requirement]
+        self.hints = [] # List of objects inheriting from [Requirement]
         self.inputs = []  # List of [CommandInputParameter] objects
         self.outputs = []  # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
@@ -233,26 +233,46 @@ class CommandLineTool(Serializable):
                 if "$" not in v:
                     d[self.namespaces.name][k] = v
 
+        if "inputs" not in d:
+            # Tool can have no inputs but still needs to be bound
+            d["inputs"] = []
+
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
+        if self.hints:
+            d["hints"] = {r.get_class(): r.get_dict() for r in self.hints}
+
         return d
 
     @classmethod
     def parse_dict(cls, d):
-        wf = super(CommandLineTool, cls).parse_dict(d)
+        clt = super(CommandLineTool, cls).parse_dict(d)
 
         reqs = d.get("requirements")
         if reqs:
             if isinstance(reqs, list):
-                wf.requirements = [Requirement.parse_dict(r) for r in reqs]
+                clt.requirements = [Requirement.parse_dict(r) for r in reqs]
             elif isinstance(reqs, dict):
                 # splat operator here would be so nice {**r, "class": c}
+                clt.requirements = []
                 for c, r in reqs.items():
                     rdict = {'class': c}
                     rdict.update(r)
-                    wf.requirements.append(Requirement.parse_dict(rdict))
+                    clt.requirements.append(Requirement.parse_dict(rdict))
 
-        return wf
+        hnts = d.get("hints")
+        if hnts:
+            if isinstance(hnts, list):
+                clt.hints = [Requirement.parse_dict(r) for r in hnts]
+            elif isinstance(hnts, dict):
+                # splat operator here would be so nice {**r, "class": c}
+                clt.hints = []
+                for c, r in hnts.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    clt.hints.append(Requirement.parse_dict(rdict))
+
+        return clt
 
     def export_string(self):
         ruamel.yaml.add_representer(literal, literal_presenter)
