@@ -210,8 +210,7 @@ class SchemaDefRequirement(Requirement):
 # }
 
 
-class 
-ment(Requirement):
+class SoftwareRequirement(Requirement):
     """
     A list of software packages that should be configured in the environment of the defined process.
 
