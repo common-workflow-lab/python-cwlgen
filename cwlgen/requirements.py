@@ -210,15 +210,16 @@ class SchemaDefRequirement(Requirement):
 # }
 
 
-class SoftwareRequirement(Requirement):
+class 
+ment(Requirement):
     """
     A list of software packages that should be configured in the environment of the defined process.
 
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#SoftwareRequirement
     """
-    def __init__(self):
+    def __init__(self, packages=None):
         Requirement.__init__(self, "SoftwareRequirement")
-        self.packages = []      # list[SoftwarePackage]
+        self.packages = packages or []      # list[SoftwarePackage]
 
     class SoftwarePackage(Serializable):
         """
