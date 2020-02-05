@@ -242,20 +242,33 @@ class CommandLineTool(Serializable):
 
     @classmethod
     def parse_dict(cls, d):
-        wf = super(CommandLineTool, cls).parse_dict(d)
+        clt = super(CommandLineTool, cls).parse_dict(d)
 
         reqs = d.get("requirements")
         if reqs:
             if isinstance(reqs, list):
-                wf.requirements = [Requirement.parse_dict(r) for r in reqs]
+                clt.requirements = [Requirement.parse_dict(r) for r in reqs]
             elif isinstance(reqs, dict):
                 # splat operator here would be so nice {**r, "class": c}
+                clt.requirements = []
                 for c, r in reqs.items():
                     rdict = {'class': c}
                     rdict.update(r)
-                    wf.requirements.append(Requirement.parse_dict(rdict))
+                    clt.requirements.append(Requirement.parse_dict(rdict))
 
-        return wf
+        hnts = d.get("hints")
+        if hnts:
+            if isinstance(hnts, list):
+                clt.hints = [Requirement.parse_dict(r) for r in hnts]
+            elif isinstance(hnts, dict):
+                # splat operator here would be so nice {**r, "class": c}
+                clt.hints = []
+                for c, r in hnts.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    clt.hints.append(Requirement.parse_dict(rdict))
+
+        return clt
 
     def export_string(self):
         ruamel.yaml.add_representer(literal, literal_presenter)

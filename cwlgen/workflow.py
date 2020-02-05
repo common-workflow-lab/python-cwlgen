@@ -93,10 +93,23 @@ class Workflow(Serializable):
                 wf.requirements = [Requirement.parse_dict(r) for r in reqs]
             elif isinstance(reqs, dict):
                 # splat operator here would be so nice {**r, "class": c}
+                wf.requirements = []
                 for c, r in reqs.items():
                     rdict = {'class': c}
                     rdict.update(r)
                     wf.requirements.append(Requirement.parse_dict(rdict))
+
+        hnts = d.get("hints")
+        if hnts:
+            if isinstance(hnts, list):
+                wf.hints = [Requirement.parse_dict(r) for r in hnts]
+            elif isinstance(hnts, dict):
+                # splat operator here would be so nice {**r, "class": c}
+                wf.hints = []
+                for c, r in hnts.items():
+                    rdict = {'class': c}
+                    rdict.update(r)
+                    wf.hints.append(Requirement.parse_dict(rdict))
 
         return wf
 
