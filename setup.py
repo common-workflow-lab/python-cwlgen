@@ -12,7 +12,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     keywords=["cwl"],
-    install_requires=["ruamel.yaml >= 0.12.4, < 0.16.6"],
+    install_requires=["ruamel.yaml >= 0.12.4, < 0.16.10"],
     packages=["cwlgen"],
     classifiers=[
         "Development Status :: 4 - Beta",
