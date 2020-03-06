@@ -67,7 +67,7 @@ class TestDockerRequirement(unittest.TestCase):
         self.assertEqual(self.dock_req.dockerFile, 'file')
         self.assertEqual(self.dock_req.dockerImport, 'import')
         self.assertEqual(self.dock_req.dockerImageId, 'id')
-        self.assertEqual(self.dock_req.dockerOutputDir, 'dir')
+        self.assertEqual(self.dock_req.dockerOutputDirectory, 'dir')
 
     def test_export(self):
         d = self.dock_req.get_dict()
@@ -76,7 +76,7 @@ class TestDockerRequirement(unittest.TestCase):
             'dockerImageId': 'id',
             'dockerImport': 'import',
             'dockerLoad': 'load',
-            'dockerOutputDir': 'dir',
+            'dockerOutputDirectory': 'dir',
             'dockerPull': 'pull'
         }
         self.assertEqual(d, comparison)

@@ -364,7 +364,7 @@ class DockerRequirement(Requirement):
         self.dockerFile = docker_file
         self.dockerImport = docker_import
         self.dockerImageId = docker_image_id
-        self.dockerOutputDir = docker_output_dir
+        self.dockerOutputDirectory = docker_output_dir
 
 
 class EnvVarRequirement(Requirement):
