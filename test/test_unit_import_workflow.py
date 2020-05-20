@@ -120,6 +120,10 @@ cwlVersion: v1.0
 label: joint calling workflow
 doc: Perform joint calling on multiple sets aligned reads from the same family.
 
+inputs: {}
+steps: {}
+outputs: {}
+
 requirements:
   - class: MultipleInputFeatureRequirement
   - class: StepInputExpressionRequirement
@@ -145,6 +149,10 @@ cwlVersion: v1.0
 
 label: joint calling workflow
 doc: Perform joint calling on multiple sets aligned reads from the same family.
+
+inputs: {}
+outputs: {}
+steps: {}
 
 requirements:
     MultipleInputFeatureRequirement: {} 

@@ -10,7 +10,7 @@ import six
 # Internal libraries
 
 from .requirements import Requirement
-from .utils import literal, literal_presenter, Serializable
+from .utils import literal, literal_presenter, Serializable, value_or_default
 from .common import Parameter, CWL_SHEBANG
 from .workflowdeps import InputParameter, WorkflowOutputParameter, WorkflowStep
 
@@ -35,6 +35,7 @@ class Workflow(Serializable):
     Documentation: https://www.commonwl.org/v1.0/Workflow.html#Workflow
     """
     __CLASS__ = 'Workflow'
+    required_fields = ["inputs", "outputs", "steps"]
     ignore_fields_on_parse = ["class", "requirements"]
     ignore_fields_on_convert = ["inputs", "outputs", "requirements"]
     parse_types = {
@@ -43,7 +44,7 @@ class Workflow(Serializable):
         "steps": [[WorkflowStep]],
     }
 
-    def __init__(self, workflow_id=None, label=None, doc=None, cwl_version='v1.0'):
+    def __init__(self, workflow_id=None, label=None, doc=None, cwl_version='v1.0', inputs=None, outputs=None, steps=None, requirements=None, hints=None):
         """
         :param workflow_id: The unique identifier for this process object.
         :type workflow_id: STRING
@@ -59,11 +60,11 @@ class Workflow(Serializable):
         self.doc = doc
         self.cwlVersion = cwl_version
 
-        self.inputs = []            # list[InputParameter]
-        self.outputs = []           # list[WorkflowOutputParameter]
-        self.steps = []             # list[WorkflowStep]
-        self.requirements = []      # list[Requirement]
-        self.hints = []             # list[Requirement]
+        self.inputs = value_or_default(inputs, [])              # list[InputParameter]
+        self.outputs = value_or_default(outputs, [])            # list[WorkflowOutputParameter]
+        self.steps = value_or_default(steps, [])                # list[WorkflowStep]
+        self.requirements = value_or_default(requirements, [])  # list[Requirement]
+        self.hints = value_or_default(hints, [])                # list[Requirement]
         self._path = None
 
     def get_dict(self):

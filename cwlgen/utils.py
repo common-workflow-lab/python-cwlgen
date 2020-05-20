@@ -60,6 +60,8 @@ class Serializable(object):
     def get_dict(self):
         d = {}
         ignore_attributes = set()
+        req_fields = set(self.required_fields or [])
+
         if hasattr(self, "ignore_attributes") and self.ignore_attributes:
             ignore_attributes = set(self.ignore_attributes)
 
@@ -67,7 +69,14 @@ class Serializable(object):
             ignore_attributes = ignore_attributes.union(self.ignore_fields_on_convert)
 
         for k, v in vars(self).items():
-            if self.should_exclude_object(v) or k.startswith("_") or k in ignore_attributes or k == "ignore_attributes":
+            is_required = k in req_fields
+            should_skip = (
+                self.should_exclude_object(v)
+                or k.startswith("_")
+                or k in ignore_attributes
+                or k == "ignore_attributes"
+            )
+            if not is_required and should_skip:
                 continue
             s = self.serialize(v)
             if self.should_exclude_object(s):
@@ -115,7 +124,7 @@ class Serializable(object):
             req_fields = ", ".join(r for r in req if not req[r])
             clsname = T.__name__
 
-            raise Exception("The fields %s were not found when parsing type '%", format(req_fields, clsname))
+            raise Exception("The fields %s were not found when parsing type '%s'" % (req_fields, clsname))
 
         return self
 
@@ -159,7 +168,8 @@ class Serializable(object):
 
     @staticmethod
     def try_parse(value, types):
-        if not types: return value
+        if types is None: return value
+        if isinstance(value, (dict, list)) and len(value) == 0: return []
 
         # If it's an array, we should call try_parse (recursively)
 
@@ -176,6 +186,8 @@ class Serializable(object):
             retval = Serializable.try_parse_type(value, T)
             if retval:
                 return retval
+
+        return
 
 
     @staticmethod
@@ -225,3 +237,7 @@ def get_indices_of_element_in_list(searchable, element):
         if element == searchable[i]:
             indices.append(i)
     return indices
+
+
+def value_or_default(value, default):
+    return value if value is not None else default

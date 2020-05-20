@@ -153,6 +153,9 @@ class TestIntegrationImportWorkflow(unittest.TestCase):
 class: CommandLineTool
 cwlVersion: v1.0
 
+inputs: {}
+outputs: {}
+
 requirements:
   - class: MultipleInputFeatureRequirement
   - class: StepInputExpressionRequirement
@@ -175,6 +178,9 @@ requirements:
         wfstr = """\
 class: CommandLineTool
 cwlVersion: v1.0
+
+inputs: {}
+outputs: {}
 
 requirements:
     MultipleInputFeatureRequirement: {} 

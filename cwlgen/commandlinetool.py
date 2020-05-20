@@ -6,7 +6,7 @@ import ruamel.yaml
 from cwlgen.commandlinebinding import CommandLineBinding
 from .common import CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG, Namespaces, Parameter
 from .requirements import *
-from .utils import literal, literal_presenter, Serializable
+from .utils import literal, literal_presenter, Serializable, value_or_default
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
@@ -149,6 +149,7 @@ class CommandLineTool(Serializable):
 
     __CLASS__ = "CommandLineTool"
 
+    required_fields = ["inputs", "outputs"]
     parse_types = {'inputs': [[CommandInputParameter]], "outputs": [[CommandOutputParameter]]}
     ignore_fields_on_parse = ["namespaces", "class", "requirements"]
     ignore_fields_on_convert = ["namespaces", "class", "metadata", "requirements"]
@@ -159,11 +160,16 @@ class CommandLineTool(Serializable):
         base_command=None,
         label=None,
         doc=None,
-        cwl_version=None,
+        cwl_version="v1.0",
         stdin=None,
         stderr=None,
         stdout=None,
-        path=None
+        path=None,
+        requirements=None,
+        hints=None,
+        inputs=None,
+        outputs=None,
+        arguments=None,
     ):
         """
         :param tool_id: Unique identifier for this tool
@@ -201,12 +207,12 @@ class CommandLineTool(Serializable):
         self.cwlVersion = cwl_version
         self.id = tool_id
         self.label = label
-        self.requirements = []  # List of objects inheriting from [Requirement]
-        self.hints = [] # List of objects inheriting from [Requirement]
-        self.inputs = []  # List of [CommandInputParameter] objects
-        self.outputs = []  # List of [CommandOutputParameter] objects
+        self.requirements = value_or_default(requirements, [])    # List of objects inheriting from [Requirement]
+        self.hints = value_or_default(hints, [])     # List of objects inheriting from [Requirement]
+        self.inputs = value_or_default(inputs, [])    # List of [CommandInputParameter] objects
+        self.outputs = value_or_default(outputs, [])      # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
-        self.arguments = []  # List of [CommandLineBinding] objects
+        self.arguments = value_or_default(arguments, [])      # List of [CommandLineBinding] objects
         self.doc = doc
         self.stdin = stdin
         self.stderr = stderr
@@ -235,7 +241,9 @@ class CommandLineTool(Serializable):
 
         if "inputs" not in d:
             # Tool can have no inputs but still needs to be bound
-            d["inputs"] = []
+            d["inputs"] = {}
+        if "outputs" not in d:
+            d["outputs"] = {}
 
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
