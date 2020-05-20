@@ -149,6 +149,7 @@ class CommandLineTool(Serializable):
 
     __CLASS__ = "CommandLineTool"
 
+    required_fields = ["inputs", "outputs"]
     parse_types = {'inputs': [[CommandInputParameter]], "outputs": [[CommandOutputParameter]]}
     ignore_fields_on_parse = ["namespaces", "class", "requirements"]
     ignore_fields_on_convert = ["namespaces", "class", "metadata", "requirements"]
@@ -159,7 +160,7 @@ class CommandLineTool(Serializable):
         base_command=None,
         label=None,
         doc=None,
-        cwl_version=None,
+        cwl_version="v1.0",
         stdin=None,
         stderr=None,
         stdout=None,
@@ -240,7 +241,9 @@ class CommandLineTool(Serializable):
 
         if "inputs" not in d:
             # Tool can have no inputs but still needs to be bound
-            d["inputs"] = []
+            d["inputs"] = {}
+        if "outputs" not in d:
+            d["outputs"] = {}
 
         if self.requirements:
             d["requirements"] = {r.get_class(): r.get_dict() for r in self.requirements}
