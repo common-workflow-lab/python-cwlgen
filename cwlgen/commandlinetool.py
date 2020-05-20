@@ -6,7 +6,7 @@ import ruamel.yaml
 from cwlgen.commandlinebinding import CommandLineBinding
 from .common import CWL_VERSIONS, DEF_VERSION, CWL_SHEBANG, Namespaces, Parameter
 from .requirements import *
-from .utils import literal, literal_presenter, Serializable
+from .utils import literal, literal_presenter, Serializable, value_or_default
 
 logging.basicConfig(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
@@ -163,7 +163,12 @@ class CommandLineTool(Serializable):
         stdin=None,
         stderr=None,
         stdout=None,
-        path=None
+        path=None,
+        requirements=None,
+        hints=None,
+        inputs=None,
+        outputs=None,
+        arguments=None,
     ):
         """
         :param tool_id: Unique identifier for this tool
@@ -201,12 +206,12 @@ class CommandLineTool(Serializable):
         self.cwlVersion = cwl_version
         self.id = tool_id
         self.label = label
-        self.requirements = []  # List of objects inheriting from [Requirement]
-        self.hints = [] # List of objects inheriting from [Requirement]
-        self.inputs = []  # List of [CommandInputParameter] objects
-        self.outputs = []  # List of [CommandOutputParameter] objects
+        self.requirements = value_or_default(requirements, [])    # List of objects inheriting from [Requirement]
+        self.hints = value_or_default(hints, [])     # List of objects inheriting from [Requirement]
+        self.inputs = value_or_default(inputs, [])    # List of [CommandInputParameter] objects
+        self.outputs = value_or_default(outputs, [])      # List of [CommandOutputParameter] objects
         self.baseCommand = base_command
-        self.arguments = []  # List of [CommandLineBinding] objects
+        self.arguments = value_or_default(arguments, [])      # List of [CommandLineBinding] objects
         self.doc = doc
         self.stdin = stdin
         self.stderr = stderr
