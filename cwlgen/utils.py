@@ -225,3 +225,7 @@ def get_indices_of_element_in_list(searchable, element):
         if element == searchable[i]:
             indices.append(i)
     return indices
+
+
+def value_or_default(value, default):
+    return value if value is not None else default
