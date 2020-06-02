@@ -2,6 +2,16 @@
 Library to handle the manipulation and generation of CWL tool
 '''
 
+import warnings
+
+warnings.warn(
+    "The cwlgen module is deprecated, please use "
+    "cwl-utils >= 0.4: https://github.com/common-workflow-language/cwl-utils",
+    DeprecationWarning,
+    stacklevel=2
+)
+
+
 #  Import  ------------------------------
 
 # General libraries
