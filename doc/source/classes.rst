@@ -26,10 +26,10 @@ This is the (abstract) base requirement class.
     :special-members:
     :exclude-members: __weakref__
 
-InlineJavascriptReq
-"""""""""""""""""""
+InlineJavascriptRequirement
+"""""""""""""""""""""""""""
 
-.. autoclass:: cwlgen.InlineJavascriptReq
+.. autoclass:: cwlgen.InlineJavascriptRequirement
     :members:
     :private-members:
     :special-members:

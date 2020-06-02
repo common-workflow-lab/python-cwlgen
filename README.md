@@ -25,9 +25,9 @@ Migration notes:
     - `StepInput`: `inputs` → `in_`
     
 - Other notes:
-  - Classes aren't nested anymore, ie: `cwlgen.InitialWorkDirRequirement.Dirent` → `cwlutils.
+  - Classes aren't nested anymore, ie: `cwlgen.InitialWorkDirRequirement.Dirent` → `cwl_utils.parser_v1_0.Dirent`.
   - Take care if you're migrating to a newer spec, as some classes might have changed names (notably: `InputParameter` -> `WorkflowInputParameter`)
-  - Don't forget to catch all references of cwlgen, as missing one will cause:
+  - Don't forget to catch all references of cwlgen, as missing one (or using mismatch versions of the parser) will cause:
   
     ```python
     raise RepresenterError('cannot represent an object: %s' % (data,))
